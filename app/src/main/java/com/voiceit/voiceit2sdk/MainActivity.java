@@ -15,6 +15,7 @@ import com.voiceit.voiceit2.VoiceItAPI2;
 public class MainActivity extends AppCompatActivity {
 
     public VoiceItAPI2 myVoiceIt2;
+    public String userId = "TEST_USER_ID";
     public Activity mActivity;
 
     @Override
