@@ -244,7 +244,7 @@ public class VoiceItAPI2 {
         client.get(getAbsoluteUrl("/groups/" + groupId), responseHandler);
     }
 
-    public void checkGroupExists(String groupId, AsyncHttpResponseHandler responseHandler) {
+    public void groupExists(String groupId, AsyncHttpResponseHandler responseHandler) {
         client.get(getAbsoluteUrl("/groups/" + groupId + "/exists"), responseHandler);
     }
 
@@ -352,7 +352,7 @@ public class VoiceItAPI2 {
         client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
     }
 
-    public void videoVerification(String userId, File video, String contentLanguage, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
+    public void videoVerification(String userId, String contentLanguage, File video, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         RequestParams params = new RequestParams();
         params.put("userId", userId);
         params.put("contentLanguage", contentLanguage);
@@ -366,10 +366,10 @@ public class VoiceItAPI2 {
         client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
     }
 
-    public void videoVerification(String userId, File video, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
+    public void videoVerification(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler) {
         RequestParams params = new RequestParams();
         params.put("userId", userId);
-        params.put("contentLanguage", contentLanguage);
+        params.put("contentLanguagels", contentLanguage);
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
@@ -529,7 +529,7 @@ public class VoiceItAPI2 {
         client.post(getAbsoluteUrl("/identification/video/byUrl"), params, responseHandler);
     }
 
-    public void enrollUserView(Activity activity, String userID, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedVideoEnrollment(Activity activity, String userID, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
         Intent intent = new Intent(activity, VideoEnrollmentView.class);
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
@@ -564,7 +564,7 @@ public class VoiceItAPI2 {
         LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, intentFilter);
     }
 
-    public void verifyUserView(Activity activity, String userID, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedVideoVerification(Activity activity, String userID, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
         Intent intent = new Intent(activity, VideoVerificationView.class);
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);

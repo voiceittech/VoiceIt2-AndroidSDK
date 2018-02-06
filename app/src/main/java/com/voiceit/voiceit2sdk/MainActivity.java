@@ -27,8 +27,8 @@ public class MainActivity extends AppCompatActivity {
         mActivity = this;
     }
 
-    public void VideoEnrollmentView(View view) {
-        myVoiceIt2.enrollUserView(mActivity, userId, "en-US", "my face and voice identify me", new JsonHttpResponseHandler() {
+    public void encapsulatedVideoEnrollment(View view) {
+        myVoiceIt2.encapsulatedVideoEnrollment(mActivity, userId, "en-US", "my face and voice identify me", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("VideoEnrollmentView JSONResult : " + response.toString());
@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void VideoVerificationView(View view) {
-        myVoiceIt2.verifyUserView(this, userId, "en-US", "my face and voice identify me", new JsonHttpResponseHandler() {
+    public void encapsulatedVideoVerification(View view) {
+        myVoiceIt2.encapsulatedVideoVerification(this, userId, "en-US", "my face and voice identify me", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("VideoVerificationView JSONResult : " + response.toString());
