@@ -495,26 +495,13 @@ public class VideoEnrollmentView extends AppCompatActivity {
                 System.out.println("getAllEnrollmentsForUser JSONResult : " + response.toString());
 
                 try {
-                    // If enough enrollments then return to previous activity
-                    if(response.getInt("count") >= neededEnrollments) {
-                        overlay.updateDisplayText(getString(R.string.ALL_ENROLL_SUCCESS));
-                        // Wait for ~2.5 seconds
-                        new CountDownTimer(2500, 1000) {
-                            public void onTick(long millisUntilFinished) {}
-                            public void onFinish() {
-                                Intent intent = new Intent("enrollment-success");
-                                intent.putExtra("Response", response.toString());
-                                LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-                                finish();
-                            }
-                        }.start();
-                    } else if (response.getInt("count") < neededEnrollments && enrollmentCount == 0) {
+                    enrollmentCount = response.getInt("count");
+                    if (enrollmentCount > 0) {
                         // Delete enrollments and re-enroll
                         myVoiceIt2.deleteAllEnrollmentsForUser(userID, new JsonHttpResponseHandler() {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                 try {
-                                    enrollmentCount = 0;
                                     mCamera.takePicture(null, null, mPicture);
                                 } catch (Exception e) {
                                     System.out.println("Camera exception : " + e.getMessage());
@@ -532,7 +519,6 @@ public class VideoEnrollmentView extends AppCompatActivity {
                             }
                         });
                     } else {
-                        enrollmentCount = response.getInt("count");
                         // Start enrollment
                         try {
                             mCamera.takePicture(null, null, mPicture);
