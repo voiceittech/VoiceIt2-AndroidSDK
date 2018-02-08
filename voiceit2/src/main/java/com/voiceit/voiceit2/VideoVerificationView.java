@@ -145,7 +145,6 @@ public class VideoVerificationView extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        System.out.println("Back pressed");
         Intent intent = new Intent("verification-failure");
         JSONObject json = new JSONObject();
         try {

@@ -31,13 +31,13 @@ public class MainActivity extends AppCompatActivity {
         myVoiceIt2.encapsulatedVideoEnrollment(mActivity, userId, "en-US", "My face and voice identify me", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                System.out.println("VideoEnrollmentView JSONResult : " + response.toString());
+                System.out.println("encapsulatedVideoEnrollment Result : " + response.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 if (errorResponse != null) {
-                    System.out.println("VideoEnrollmentView JSONResult : " + errorResponse.toString());
+                    System.out.println("encapsulatedVideoEnrollment Result : " + errorResponse.toString());
                 }
             }
         });
@@ -47,13 +47,13 @@ public class MainActivity extends AppCompatActivity {
         myVoiceIt2.encapsulatedVideoVerification(this, userId, "en-US", "My face and voice identify me", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                System.out.println("VideoVerificationView JSONResult : " + response.toString());
+                System.out.println("encapsulatedVideoVerification Result : " + response.toString());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 if (errorResponse != null) {
-                    System.out.println("VideoVerificationView JSONResult : " + errorResponse.toString());
+                    System.out.println("encapsulatedVideoVerification Result : " + errorResponse.toString());
                 }
             }
         });
