@@ -218,7 +218,7 @@ myVoiceIt.createVideoEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File vi
 
 #### Encapsulated Video Enrollment
 
-Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.) and a given phrase such as "my face and voice identify me". Note: Immediately upon calling this method it displays the user and enrollment view controller that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them.
+Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.) and a given phrase such as "my face and voice identify me". Note: Immediately upon calling this method it displays the user and enrollment view controller that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
 
 ```java
 myVoiceIt.encapsulatedVideoEnrollUser(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", new JsonHttpResponseHandler() {...});
