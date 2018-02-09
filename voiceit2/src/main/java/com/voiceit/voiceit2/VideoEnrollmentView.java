@@ -51,7 +51,7 @@ public class VideoEnrollmentView extends AppCompatActivity {
 
     private int enrollmentCount = 0;
     private final int neededEnrollments = 3;
-    private boolean isRecording = false;
+    private boolean isRecording = true;
     private int failedAttempts = 0;
     private final int maxFailedAttempts = 3;
     private RadiusOverlayView overlay;
@@ -116,8 +116,27 @@ public class VideoEnrollmentView extends AppCompatActivity {
 
         // Request media device permissions
         requestHardwarePermissions();
+
         // Try to access and setup access camera
         accessCamera(faceDetectObj);
+
+        // Delete enrollments and re-enroll
+        myVoiceIt2.deleteAllEnrollmentsForUser(userID, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                isRecording = false;
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (errorResponse != null) {
+                    Intent intent = new Intent("enrollment-failure");
+                    intent.putExtra("Response", errorResponse.toString());
+                    LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+                    finish();
+                }
+            }
+        });
     }
 
     public void accessCamera(Camera.FaceDetectionListener faceDetectObj) {
@@ -488,59 +507,22 @@ public class VideoEnrollmentView extends AppCompatActivity {
 
     private void enrollUser() {
         isRecording = true;
-        // Check enrollments then enroll
-        myVoiceIt2.getAllEnrollmentsForUser(userID, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
-                System.out.println("getAllEnrollmentsForUser JSONResult : " + response.toString());
 
-                try {
-                    enrollmentCount = response.getInt("count");
-                    if (enrollmentCount > 0) {
-                        // Delete enrollments and re-enroll
-                        myVoiceIt2.deleteAllEnrollmentsForUser(userID, new JsonHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                try {
-                                    mCamera.takePicture(null, null, mPicture);
-                                } catch (Exception e) {
-                                    System.out.println("Camera exception : " + e.getMessage());
-                                    finish();
-                                }
-                            }
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse){
-                                if (errorResponse != null) {
-                                    Intent intent = new Intent("enrollment-failure");
-                                    intent.putExtra("Response", errorResponse.toString());
-                                    LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-                                    finish();
-                                }
-                            }
-                        });
-                    } else {
-                        // Start enrollment
-                        try {
-                            mCamera.takePicture(null, null, mPicture);
-                        } catch (Exception e) {
-                            System.out.println("Camera exception : " + e.getMessage());
-                            finish();
-                        }
-                    }
-                } catch (JSONException e) {
-                    System.out.println("JSON userId error: " + e.getMessage());
-                    finish();
-                }
+        try {
+            mCamera.takePicture(null, null, mPicture);
+        } catch (Exception e) {
+            System.out.println("Camera exception : " + e.getMessage());
+
+            Intent intent = new Intent("enrollment-failure");
+            JSONObject json = new JSONObject();
+            try {
+                json.put("message", "Camera Error");
+            } catch(JSONException ex) {
+                System.out.println("JSON Exception : " + ex.getMessage());
             }
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse){
-                if (errorResponse != null) {
-                    Intent intent = new Intent("enrollment-failure");
-                    intent.putExtra("Response", errorResponse.toString());
-                    LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
-                    finish();
-                }
-            }
-        });
+            intent.putExtra("Response", json.toString());
+            LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
+            finish();
+        }
     }
 }

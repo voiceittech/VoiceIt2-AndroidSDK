@@ -30,6 +30,7 @@ public class VoiceItAPI2 {
         this.apiToken = apiToken;
         client = new AsyncHttpClient();
         this.client.removeAllHeaders();
+        this.client.setTimeout(15 * 1000);
         this.client.setBasicAuth(apiKey, apiToken);
     }
 
