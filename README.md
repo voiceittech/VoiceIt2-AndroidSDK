@@ -48,7 +48,7 @@ VoiceItApi2AndroidSDK is available through [JitPack](https://jitpack.io/#voiceit
 
 ### Initialization
 
-First import *VoiceItAPI2* and then initialize a reference to the SDK inside a Activity, passing in the API Credentials.
+First import *VoiceItAPI2* and then initialize a reference to the SDK inside an Activity, passing in the API Credentials.
 
 ```java
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -218,7 +218,7 @@ myVoiceIt.createVideoEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File vi
 
 #### Encapsulated Video Enrollment
 
-Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.) and a given phrase such as "my face and voice identify me". Note: Immediately upon calling this method it displays the user and enrollment view controller that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them.
+Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.) and a given phrase such as "my face and voice identify me". Note: Immediately upon calling this method it displays the user and enrollment view controller that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
 
 ```java
 myVoiceIt.encapsulatedVideoEnrollUser(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", new JsonHttpResponseHandler() {...});
