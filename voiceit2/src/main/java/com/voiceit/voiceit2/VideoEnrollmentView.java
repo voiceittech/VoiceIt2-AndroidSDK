@@ -294,7 +294,7 @@ public class VideoEnrollmentView extends AppCompatActivity {
                                 overlay.startDrawingProgressCircle();
                                 // Record for ~5 seconds, then send enrollment data
                                 // 4800 to make sure recording is not over 5 seconds
-                                new CountDownTimer(4800, 10) {
+                                new CountDownTimer(4800, 4800) {
                                     public void onTick(long millisUntilFinished) {}
                                     public void onFinish() {
                                         try {
