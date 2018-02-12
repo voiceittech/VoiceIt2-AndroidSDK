@@ -20,7 +20,7 @@ import java.util.Vector;
 
 public class RadiusOverlayView extends LinearLayout {
     private Bitmap windowFrame;
-    private String displayText = "VoiceIt View";
+    private String displayText = "";
     private int progressCircleAngle = 270; // Start at the top and go clockwise
     private int angleChunkSize = (360/8);
     private int progressCircleColor;
@@ -116,6 +116,11 @@ public class RadiusOverlayView extends LinearLayout {
         // text size in pixels
         textPaint.setTextSize((fontSize * scale));
 
+        // Skip processing text text
+        if(displayText.isEmpty()){
+            return;
+        }
+
         Vector<Rect> bounds = new Vector<>();
         Vector<String> lines = new Vector<>();
         StringBuilder lineBuilder = new StringBuilder();
@@ -132,7 +137,6 @@ public class RadiusOverlayView extends LinearLayout {
             textPaint.setTextSize((fontSize * scale));
             textPaint.getTextBounds(lines.get(0), 0, lines.get(0).length(), bounds.get(0));
         }
-
 
         // Move word(s) onto next line if text is wider than the screen
         int i = 0;
