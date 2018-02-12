@@ -97,13 +97,17 @@ public class VideoEnrollmentView extends AppCompatActivity {
             @Override
             public void onFaceDetection(Camera.Face[] faces, Camera camera) {
                 if(!isRecording && enrollmentCount < neededEnrollments) {
-                    if (faces.length > 0) {
+                    if (faces.length == 0) {
                         Log.d("FaceDetection", "face detected at: " + faces.length +
                                 " Face 1 Location X: " + faces[0].rect.centerX() +
                                 " Y: " + faces[0].rect.centerY());
                         overlay.setProgressCircleAngle(0);
                         // Try to enroll
                         enrollUser();
+                    } else if(faces.length > 1) {
+                        Log.d("FaceDetection", "Too many faces present");
+                        overlay.updateDisplayText(getString(R.string.TOO_MANY_FACES));
+                        overlay.setProgressCircleAngle(0);
                     } else {
                         Log.d("FaceDetection", "No face present");
                         // Tell user there is no face in camera preview
@@ -287,14 +291,12 @@ public class VideoEnrollmentView extends AppCompatActivity {
                                 recorder.start();
 
                                 overlay.setProgressCircleColor(getResources().getColor(R.color.yellow));
+                                overlay.startDrawingProgressCircle();
                                 // Record for ~5 seconds, then send enrollment data
                                 // 4800 to make sure recording is not over 5 seconds
                                 new CountDownTimer(4800, 10) {
-                                    public void onTick(long millisUntilFinished) {
-                                        overlay.setProgressCircleAngle(360 * (1 - ((double) millisUntilFinished / 4800)));
-                                    }
+                                    public void onTick(long millisUntilFinished) {}
                                     public void onFinish() {
-                                        overlay.setProgressCircleAngle(360);
                                         try {
                                             recorder.stop();
                                             recorder.reset();

@@ -21,17 +21,25 @@ import java.util.Vector;
 public class RadiusOverlayView extends LinearLayout {
     private Bitmap windowFrame;
     private String displayText = "";
-    private int progressCircleAngle = 270; // Start at the top and go clockwise
-    private int angleChunkSize = (360/8);
+    private double progressCircleAngle = 270; // Start at the top and go clockwise
     private int progressCircleColor;
+
+    private boolean drawingProgressCircle = false;
+    double progressCircleDuration = 5000; // 5 seconds
+    double startTime;
 
     public void updateDisplayText(String str) {
         displayText = str;
         this.invalidate();
     }
 
+    public void startDrawingProgressCircle() {
+        drawingProgressCircle = true;
+        this.startTime = System.currentTimeMillis();
+    }
+
     public void setProgressCircleAngle(double ang) {
-        progressCircleAngle = ((ang == 360) ? 359 : ((int)(ang/angleChunkSize)) * angleChunkSize);
+        progressCircleAngle = ang;
         this.invalidate();
     }
 
@@ -60,6 +68,17 @@ public class RadiusOverlayView extends LinearLayout {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
+
+        if(drawingProgressCircle) {
+            double elapsedTime = System.currentTimeMillis() - startTime;
+            if(!(elapsedTime >= progressCircleDuration)) {
+                progressCircleAngle = 360 * (elapsedTime / progressCircleDuration);
+                this.invalidate();
+            } else {
+                progressCircleAngle = 359.999;
+                drawingProgressCircle = false;
+            }
+        }
 
         createWindowFrame(); // Creation of the window frame
         canvas.drawBitmap(windowFrame, 0, 0, null);
@@ -90,7 +109,7 @@ public class RadiusOverlayView extends LinearLayout {
         Paint progressCirclePaint = new Paint();
         progressCirclePaint.setAntiAlias(true);
         progressCirclePaint.setStyle(Paint.Style.STROKE);
-        progressCirclePaint.setStrokeCap(Paint.Cap.ROUND);
+        progressCirclePaint.setStrokeCap(Paint.Cap.SQUARE);
         progressCirclePaint.setStrokeWidth(30);
         progressCirclePaint.setColor(progressCircleColor);
 

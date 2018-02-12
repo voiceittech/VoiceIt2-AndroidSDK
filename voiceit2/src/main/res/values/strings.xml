@@ -10,6 +10,7 @@
     <string name="SAY_PASSPHRASE">Please say \"&PASS_PHRASE;\"</string>
     <string name="INCORRECT_PASSPHRASE">Incorrect passphrase. Please say \"&PASS_PHRASE;\"</string>
     <string name="LOOK_INTO_CAM">Please look into the camera</string>
+    <string name="TOO_MANY_FACES">Found too many faces. Make sure only your face is visible.</string>
     <string name="WAIT">Please wait..</string>
     <string name="ENROLL_1_PHRASE">Please say \"&PASS_PHRASE;\"</string>
     <string name="ENROLL_2_PHRASE">Please say \"&PASS_PHRASE;\" again</string>
