@@ -212,7 +212,7 @@ public class VoiceItAPI2 {
         client.post(getAbsoluteUrl("/enrollments/byUrl"), params, responseHandler);
     }
 
-    public void createFaceEnrollment(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler) {
+    public void createFaceEnrollment(String userId, File video, AsyncHttpResponseHandler responseHandler) {
         if(!userIdCheck(userId)) {
             JSONObject json = new JSONObject();
             try {
@@ -225,7 +225,6 @@ public class VoiceItAPI2 {
         }
         RequestParams params = new RequestParams();
         params.put("userId", userId);
-        params.put("contentLanguage", contentLanguage);
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
@@ -235,7 +234,7 @@ public class VoiceItAPI2 {
         client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
     }
 
-    public void createFaceEnrollment(String userId, String contentLanguage, File video, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
+    public void createFaceEnrollment(String userId, File video, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdCheck(userId)) {
             JSONObject json = new JSONObject();
             try {
@@ -249,7 +248,6 @@ public class VoiceItAPI2 {
         RequestParams params = new RequestParams();
         params.put("userId", userId);
         params.put("doBlinkDetection", doBlinkDetection);
-        params.put("contentLanguage", contentLanguage);
         try {
             params.put("videoFilePath", video);
         } catch (FileNotFoundException e) {
