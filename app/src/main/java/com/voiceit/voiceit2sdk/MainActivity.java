@@ -15,7 +15,7 @@ import com.voiceit.voiceit2.VoiceItAPI2;
 public class MainActivity extends AppCompatActivity {
 
     public VoiceItAPI2 myVoiceIt2;
-    public String userId = "USER_ID";
+    public String userId = "usr_047a6db16bc84150a8f367289df39061";
     public Activity mActivity;
 
     @Override
@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myVoiceIt2 = new VoiceItAPI2("API_KEY","API_TOK");
+        myVoiceIt2 = new VoiceItAPI2("key_f3a9fb29944a4e4180d4c98e7f03c713","tok_4f9df54f118c4fe19083456f95c84db5");
         mActivity = this;
     }
 
