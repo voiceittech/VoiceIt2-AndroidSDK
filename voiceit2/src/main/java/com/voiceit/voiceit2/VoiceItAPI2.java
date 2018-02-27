@@ -81,7 +81,7 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteUrl("/users/groups/" + userId), responseHandler);
+        client.get(getAbsoluteUrl("/users/" + userId + "/groups"), responseHandler);
     }
 
     public void getAllEnrollmentsForUser(String userId, AsyncHttpResponseHandler responseHandler) {
