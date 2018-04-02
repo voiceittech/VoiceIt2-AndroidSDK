@@ -1058,7 +1058,7 @@ public class VoiceItAPI2 {
     private boolean groupIdCheck(String arg) {
         String id = arg.substring(arg.lastIndexOf('_') + 1);
         if (!id.matches("[A-Za-z0-9]+")
-                || !arg.substring(0, 3).equals("usr")
+                || !arg.substring(0, 3).equals("grp")
                 || id.length() != 32) {
             System.out.println("GroupId is invalid!");
             return false;
