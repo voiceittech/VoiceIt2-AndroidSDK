@@ -5,7 +5,7 @@
     android:id="@+id/overlay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.voiceit.voiceit2.VideoEnrollmentView">
+    tools:context="com.voiceit.voiceit2.FaceEnrollmentView">
 
     <com.voiceit.voiceit2.CameraSourcePreview
         android:id="@+id/camera_preview"

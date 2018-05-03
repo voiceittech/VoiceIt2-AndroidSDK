@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     public VoiceItAPI2 myVoiceIt2;
     public String userId = "USER_ID";
     public Activity mActivity;
+    public boolean doLivenessCheck = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void encapsulatedVideoVerification(View view) {
-        myVoiceIt2.encapsulatedVideoVerification(this, userId, "en-US", "My face and voice identify me", new JsonHttpResponseHandler() {
+        myVoiceIt2.encapsulatedVideoVerification(this, userId, "en-US", "My face and voice identify me", doLivenessCheck, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedVideoVerification Result : " + response.toString());
@@ -54,6 +55,38 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 if (errorResponse != null) {
                     System.out.println("encapsulatedVideoVerification Result : " + errorResponse.toString());
+                }
+            }
+        });
+    }
+
+    public void encapsulatedFaceEnrollment(View view) {
+        myVoiceIt2.encapsulatedFaceEnrollment(this, userId, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                System.out.println("encapsulatedFaceEnrollment Result : " + response.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (errorResponse != null) {
+                    System.out.println("encapsulatedFaceEnrollment Result : " + errorResponse.toString());
+                }
+            }
+        });
+    }
+
+    public void encapsulatedFaceVerification(View view) {
+        myVoiceIt2.encapsulatedFaceVerification(this, userId, doLivenessCheck, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                System.out.println("encapsulatedFaceVerification Result : " + response.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (errorResponse != null) {
+                    System.out.println("encapsulatedFaceVerification Result : " + errorResponse.toString());
                 }
             }
         });

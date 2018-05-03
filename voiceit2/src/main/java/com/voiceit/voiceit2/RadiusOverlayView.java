@@ -21,16 +21,31 @@ import java.util.Vector;
 public class RadiusOverlayView extends LinearLayout {
     private Bitmap windowFrame;
     private String displayText = "";
-    private double progressCircleAngle = 270; // Start at the top and go clockwise
-    private int progressCircleColor;
+    private double progressCircleEndAngle; // Start at the top and go clockwise
+    private double progressCircleStartAngle = 270;
+    private int progressCircleColor = getResources().getColor(R.color.green);
+
+    public boolean mLockDisplay = false;
 
     private boolean drawingProgressCircle = false;
     double progressCircleDuration = 5000; // 5 seconds
     double startTime;
 
+    public void unlockDisplay() {
+        mLockDisplay = false;
+    }
+
     public void updateDisplayText(String str) {
+        if(!mLockDisplay) {
+            displayText = str;
+            this.invalidate();
+        }
+    }
+
+    public void updateDisplayTextAndLock(String str) {
         displayText = str;
         this.invalidate();
+        mLockDisplay = true;
     }
 
     public void startDrawingProgressCircle() {
@@ -38,8 +53,21 @@ public class RadiusOverlayView extends LinearLayout {
         this.startTime = System.currentTimeMillis();
     }
 
-    public void setProgressCircleAngle(double ang) {
-        progressCircleAngle = ang;
+    public void startDrawingProgressCircle(int duration) {
+        drawingProgressCircle = true;
+        progressCircleDuration = duration;
+        this.startTime = System.currentTimeMillis();
+    }
+
+    public void setProgressCircleAngle(double endAngle) {
+        progressCircleStartAngle = 270;
+        progressCircleEndAngle = endAngle;
+        this.invalidate();
+    }
+
+    public void setProgressCircleAngle(double startAngle, double endAngle) {
+        progressCircleStartAngle = startAngle;
+        progressCircleEndAngle = endAngle;
         this.invalidate();
     }
 
@@ -67,25 +95,14 @@ public class RadiusOverlayView extends LinearLayout {
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
 
-        if(drawingProgressCircle) {
-            double elapsedTime = System.currentTimeMillis() - startTime;
-            if(!(elapsedTime >= progressCircleDuration)) {
-                progressCircleAngle = 360 * (elapsedTime / progressCircleDuration);
-                this.invalidate();
-            } else {
-                progressCircleAngle = 359.999;
-                drawingProgressCircle = false;
-            }
-        }
+        super.dispatchDraw(canvas);
 
         createWindowFrame(); // Creation of the window frame
         canvas.drawBitmap(windowFrame, 0, 0, null);
     }
 
     protected void createWindowFrame() {
-
         windowFrame = Bitmap.createBitmap(Resources.getSystem().getDisplayMetrics().widthPixels, Resources.getSystem().getDisplayMetrics().heightPixels, Bitmap.Config.ARGB_8888); // Create a new image we will draw over the map
         Canvas osCanvas = new Canvas(windowFrame); // Create a canvas to draw onto the new image
 
@@ -113,11 +130,22 @@ public class RadiusOverlayView extends LinearLayout {
         progressCirclePaint.setStrokeWidth(30);
         progressCirclePaint.setColor(progressCircleColor);
 
+        if (drawingProgressCircle) {
+            double elapsedTime = System.currentTimeMillis() - startTime;
+            if (!(elapsedTime >= progressCircleDuration)) {
+                progressCircleEndAngle = 360 * (elapsedTime / progressCircleDuration);
+                this.invalidate();
+            } else {
+                progressCircleEndAngle = 359.999;
+                drawingProgressCircle = false;
+            }
+        }
+
         final RectF oval = new RectF();
         oval.set(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
         Path myPath = new Path();
         // Start at the top and go clockwise
-        myPath.arcTo(oval, 270, (float) progressCircleAngle, true);
+        myPath.arcTo(oval, (float) progressCircleStartAngle, (float) progressCircleEndAngle, true);
         osCanvas.drawPath(myPath, progressCirclePaint);
 
         // Draw lower board background for text
