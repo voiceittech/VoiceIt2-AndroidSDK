@@ -86,6 +86,10 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
+### Liveness Detection
+
+For each of our Encapsulated methods liveness detection can be enabled with a passed in boolean parameter. This enables a a pre-check before the verification api call to make sure the user is not trying to spoof with a photo of someone else.
+
 ### API calls
 
 For each API call, a JsonHttpResponseHandler is needed to receive the result of the call. You can Override the response handlers like so, and abbreviated with ellipses below:
@@ -271,25 +275,25 @@ myVoiceIt.createVideoEnrollmentByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "U
 
 #### Encapsulated Video Enrollment
 
-Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.) and a given phrase such as "my face and voice identify me". Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
+Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.), a given phrase such as "my face and voice identify me", and boolean to enable liveness detection. Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
 
 ```java
-myVoiceIt.encapsulatedVideoEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", new JsonHttpResponseHandler() {...});
+myVoiceIt.encapsulatedVideoEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", true, new JsonHttpResponseHandler() {...});
 ```
 #### Create Face Enrollment
 
 Create face enrollment for user with given userId(begins with 'usr_') Note: It is recommended that you send a 2.0 second mp4 video
 
 ```java
-myVoiceIt.createFaceEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File video, new JsonHttpResponseHandler() {...});
+myVoiceIt.createFaceEnrollment("USER_ID_HERE", File video, new JsonHttpResponseHandler() {...});
 ```
 
 #### Encapsulated Face Enrollment
 
-Create three face enrollments for user with given userId(begins with 'usr_') Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
+Create three face enrollments for user with given userId(begins with 'usr_') and boolean to enable liveness detection. Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
 
 ```java
-myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", new JsonHttpResponseHandler() {...});
+myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", true, new JsonHttpResponseHandler() {...});
 ```
 
 ### Verification API Calls
@@ -329,10 +333,10 @@ myVoiceIt.videoVerificationByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File v
 
 #### Encapsulated Video Verification
 
-Verify user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.). Note: Immediately upon calling this method it displays a verification view controller that verifies the user and provides relevant callbacks for whether the verification was successful or not with associated voice and face confidences.
+Verify user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.), and boolean to enable liveness detection. Note: Immediately upon calling this method it displays a verification view controller that verifies the user and provides relevant callbacks for whether the verification was successful or not with associated voice and face confidences.
 
 ```java
-myVoiceIt.encapsulatedVideoVerification(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "my face and voice identify me", new JsonHttpResponseHandler() {...});
+myVoiceIt.encapsulatedVideoVerification(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "my face and voice identify me", true, new JsonHttpResponseHandler() {...});
 ```
 
 #### Face Verification
@@ -341,15 +345,15 @@ Verify user's face with given userId(begins with 'usr_'). Note: Provide an about
 
 
 ```java
-myVoiceIt.faceVerification("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File video, new JsonHttpResponseHandler() {...});
+myVoiceIt.faceVerification("USER_ID_HERE", File video, new JsonHttpResponseHandler() {...});
 ```
 
 #### Encapsulated Face Verification
 
-Verify user with given userId(begins with 'usr_') Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the verification, including the UI and then provides relevant callbacks for whether the user cancelled their verification or successfully completed it.
+Verify user with given userId(begins with 'usr_') and boolean to enable liveness detection. Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the verification, including the UI and then provides relevant callbacks for whether the user cancelled their verification or successfully completed it.
 
 ```java
-myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", new JsonHttpResponseHandler() {...});
+myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", true, new JsonHttpResponseHandler() {...});
 ```
 
 ### Identification API Calls
