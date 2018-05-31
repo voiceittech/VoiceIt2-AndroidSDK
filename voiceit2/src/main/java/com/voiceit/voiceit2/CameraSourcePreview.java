@@ -30,6 +30,7 @@ import com.google.android.gms.vision.CameraSource;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class CameraSourcePreview extends ViewGroup {
     private static final String TAG = "CameraSourcePreview";
@@ -82,6 +83,26 @@ public class CameraSourcePreview extends ViewGroup {
             if (mStartRequested && mSurfaceAvailable) {
                 mCameraSource.start(mSurfaceView.getHolder());
                 mStartRequested = false;
+
+                Camera mCamera = getCamera(mCameraSource);
+                if(mCamera != null) {
+                    mCamera.enableShutterSound(false);
+                    Camera.Parameters params = mCamera.getParameters();
+                    // No need to send high resolution pictures
+                    int resolutionSizeCap = 1228800;
+                    List<Camera.Size> sizes = params.getSupportedPictureSizes();
+                    int max = 0, index = 0;
+                    for (int i = 0; i < sizes.size(); i++) {
+                        Camera.Size s = sizes.get(i);
+                        int size = s.height * s.width;
+                        if (size > max && size < resolutionSizeCap) {
+                            index = i;
+                            max = size;
+                        }
+                    }
+                    params.setPictureSize(sizes.get(index).width, sizes.get(index).height);
+                    mCamera.setParameters(params);
+                }
             }
         } catch(Exception e) {
             System.out.println("Exception when starting CameraSource with SurfaceView: " + e.getMessage());
@@ -151,15 +172,16 @@ public class CameraSourcePreview extends ViewGroup {
             height = tmp;
         }
 
-        final int layoutWidth = right - left;
-        final int layoutHeight = bottom - top;
+        //
+        final int layoutWidth = right - left-1;
+        final int layoutHeight = bottom - top-1;
 
         // Computes height and width for potentially doing fit width.
         int childWidth = layoutWidth;
         int childHeight = (int)(((float) layoutWidth / (float) width) * height);
 
         // If height is too tall using fit width, does fit height instead.
-        if (childHeight > layoutHeight) {
+        if (childHeight < layoutHeight) {
             childHeight = layoutHeight;
             childWidth = (int)(((float) layoutHeight / (float) height) * width);
         }

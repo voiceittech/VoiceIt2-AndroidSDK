@@ -11,13 +11,14 @@ import cz.msebera.android.httpclient.Header;
 
 import com.voiceit.voiceit2.VoiceItAPI2;
 
-
 public class MainActivity extends AppCompatActivity {
 
-    public VoiceItAPI2 myVoiceIt2;
-    public String userId = "USER_ID";
-    public Activity mActivity;
-    public boolean doLivenessCheck = true;
+    private VoiceItAPI2 myVoiceIt2;
+    private String userId = "USER_ID";
+    private String phrase = "Never forget tomorrow is a new day";
+    private String contentLanguage = "en-US";
+    private Activity mActivity;
+    public boolean doLivenessCheck = false; // Liveness detection not used for enrollment views
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +29,44 @@ public class MainActivity extends AppCompatActivity {
         mActivity = this;
     }
 
+    public void toggleLiveness(View view) {
+        doLivenessCheck = !doLivenessCheck;
+    }
+
+    public void encapsulatedVoiceEnrollment(View view) {
+        myVoiceIt2.encapsulatedVoiceEnrollment(this, userId, contentLanguage, phrase, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                System.out.println("encapsulatedVoiceEnrollment Result : " + response.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (errorResponse != null) {
+                    System.out.println("encapsulatedVoiceEnrollment Result : " + errorResponse.toString());
+                }
+            }
+        });
+    }
+
+    public void encapsulatedVoiceVerification(View view) {
+        myVoiceIt2.encapsulatedVoiceVerification(this, userId, contentLanguage, phrase, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                System.out.println("encapsulatedVoiceVerification Result : " + response.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if (errorResponse != null) {
+                    System.out.println("encapsulatedVoiceVerification Result : " + errorResponse.toString());
+                }
+            }
+        });
+    }
+
     public void encapsulatedVideoEnrollment(View view) {
-        myVoiceIt2.encapsulatedVideoEnrollment(mActivity, userId, "en-US", "My face and voice identify me", new JsonHttpResponseHandler() {
+        myVoiceIt2.encapsulatedVideoEnrollment(mActivity, userId, contentLanguage, phrase, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedVideoEnrollment Result : " + response.toString());
@@ -45,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void encapsulatedVideoVerification(View view) {
-        myVoiceIt2.encapsulatedVideoVerification(this, userId, "en-US", "My face and voice identify me", doLivenessCheck, new JsonHttpResponseHandler() {
+        myVoiceIt2.encapsulatedVideoVerification(this, userId, contentLanguage, phrase, doLivenessCheck, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedVideoVerification Result : " + response.toString());

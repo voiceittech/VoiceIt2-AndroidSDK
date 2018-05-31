@@ -51,6 +51,24 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".VoiceEnrollmentView">
+            android:label="@string/app_name"
+            android:screenOrientation="sensorPortrait"
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".VoiceVerificationView">
+            android:label="@string/app_name"
+            android:screenOrientation="sensorPortrait"
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <declare-styleable name="RadiusOverlayView">
+        <attr name="view_type" />
+    </declare-styleable>
+
 </resources>

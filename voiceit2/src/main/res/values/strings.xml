@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE resources [
-    <!ENTITY PASS_PHRASE "My face and voice identify me">
-    ]>
-
 <resources>
 
     <string name="app_name">API_2_SDK</string>
 
-    <string name="SAY_PASSPHRASE">Please say \"&PASS_PHRASE;\"</string>
-    <string name="INCORRECT_PASSPHRASE">Incorrect passphrase. Please say \"&PASS_PHRASE;\"</string>
+    <string name="SAY_PASSPHRASE">Please say \"%1$s\"</string>
+    <string name="INCORRECT_PASSPHRASE">Incorrect passphrase. Please say \"%1$s\"</string>
     <string name="LOOK_INTO_CAM">Please look into the camera</string>
     <string name="TOO_MANY_FACES">Found too many faces. Make sure only your face is visible.</string>
     <string name="WAIT">Please wait..</string>
-    <string name="ENROLL_1_PHRASE">Please say \"&PASS_PHRASE;\"</string>
-    <string name="ENROLL_2_PHRASE">Please say \"&PASS_PHRASE;\" again</string>
-    <string name="ENROLL_3_PHRASE">Please say \"&PASS_PHRASE;\" one more time</string>
+    <string name="ENROLL_1_PHRASE">Please say \"%1$s\"</string>
+    <string name="ENROLL_2_PHRASE">Please say \"%1$s\" again</string>
+    <string name="ENROLL_3_PHRASE">Please say \"%1$s\" one more time</string>
     <string name="ENROLL_SUCCESS">Enrollment successful!</string>
     <string name="ENROLL_FAIL">Enrollment unsuccessful</string>
     <string name="ALL_ENROLL_SUCCESS">All enrollments successful!</string>
@@ -29,21 +25,33 @@
     <string name="SMILE">Please smile</string>
     <string name="FAILED_LIVENESS">Failed liveness detection</string>
 
-
     <string name="FNFD">Sorry, we couldn\'t quite see your face. Please try again.</string>
     <string name="DDNE">Sorry, something went wrong.Please try again.</string>
     <string name="FAIL">Failed to verify due to low confidence. Please try again.</string>
     <string name="IFWD">Sorry, something went wrong.\nPlease try again.</string>
-    <string name="SRNR">Sorry, we couldn\'t quite hear you.\nPlease speak louder.</string>
     <string name="TVER">Sorry, no enrollments detected.\nPlease enroll before verifying.</string>
     <string name="NEHSD">Sorry, we couldn\'t quite catch that.\nPlease speak slower.</string>
-    <string name="STTF">Sorry, we couldn\'t understand you.\nPlease make sure you are saying \"&PASS_PHRASE;\"</string>
+    <string name="STTF">Sorry, we couldn\'t understand you.\nPlease speak more clearly or move to a more quiet environment."</string>
     <string name="RWPU">Please do not use recordings and try again.</string>
     <string name="FTMF">Make sure only your face is visible.\nPlease try again.</string>
-    <string name="PNTE">Sorry, something went wrong.\nPlease try again.</string>
-    <string name="GERR">Sorry, something went wrong.\nPlease try again.</string>
-    <string name="MISP">Sorry, something went wrong.\nPlease try again.</string>
+    <string name="SSTQ">Sorry, please speak louder and try again.</string>
+    <string name="SSTL">Sorry, please speak quieter and try again.</string>
+    <string name="NFEF">Sorry, no enrollments detected.\nPlease enroll before verifying.</string>
+    <string name="PNTE">Sorry, no enrollments with that phrase detected.\nPlease enroll before verifying.</string>
 
+    <string name="GERR">Sorry, something went wrong.\nPlease try again.</string>
+
+    <string name="SRNR">Sorry, something went wrong.\nPlease contact app developer.</string>
+    <string name="IFVD">Sorry, something went wrong.\nPlease contact app developer.</string>
+    <string name="UNFD">Sorry, something went wrong.\nPlease contact app developer.</string>
+    <string name="MISP">Sorry, something went wrong.\nPlease contact app developer.</string>
+    <string name="DAID">Sorry, something went wrong.\nPlease contact app developer.</string>
+    <string name="UNAC">Sorry, something went wrong.\nPlease contact app developer.</string>
+    <string name="CLNE">Sorry, something went wrong.\nPlease contact app developer.</string>
+    <string name="ACLR">Sorry, something went wrong.\nPlease contact app developer.</string>
+    <string name="IFAD">Sorry, something went wrong.\nPlease contact app developer.</string>
+
+    <string name="CHECK_INTERNET">Unable to contact server.\nPlease check your internet connection.</string>
     <string name="REQUEST_CAMERA">Please allow camera access</string>
     <string name="REQUEST_AUDIO">Please allow audio access</string>
 

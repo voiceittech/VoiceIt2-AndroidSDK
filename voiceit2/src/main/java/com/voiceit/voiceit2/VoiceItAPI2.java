@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -20,10 +20,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class VoiceItAPI2 {
-    private static final String BASE_URL = "https://api.voiceit.io";
+    private final String BASE_URL = "https://api.voiceit.io";
     private AsyncHttpClient client;
     private String apiKey;
     private String apiToken;
+
+    private final String mTAG = "VoiceItAPI2";
 
     public VoiceItAPI2(String apiKey, String apiToken){
         this.apiKey = apiKey;
@@ -44,13 +46,7 @@ public class VoiceItAPI2 {
 
     public void getUser(String userId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.get(getAbsoluteUrl("/users/" + userId), responseHandler);
@@ -58,13 +54,7 @@ public class VoiceItAPI2 {
 
     public void deleteUser(String userId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.delete(getAbsoluteUrl("/users/" + userId), responseHandler);
@@ -72,13 +62,7 @@ public class VoiceItAPI2 {
 
     public void getGroupsForUser(String userId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.get(getAbsoluteUrl("/users/" + userId + "/groups"), responseHandler);
@@ -86,13 +70,7 @@ public class VoiceItAPI2 {
 
     public void getAllEnrollmentsForUser(String userId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.get(getAbsoluteUrl("/enrollments/" + userId), responseHandler);
@@ -100,27 +78,15 @@ public class VoiceItAPI2 {
 
     public void deleteAllEnrollmentsForUser(String userId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.delete(getAbsoluteUrl("/enrollments/" + userId + "/all"), responseHandler);
     }
 
-    public void getFaceFaceEnrollmentsForUser(String userId, AsyncHttpResponseHandler responseHandler) {
+    public void getFaceEnrollmentsForUser(String userId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.get(getAbsoluteUrl("/enrollments/face/" + userId), responseHandler);
@@ -128,13 +94,7 @@ public class VoiceItAPI2 {
 
     public void createVoiceEnrollment(String userId, String contentLanguage, File recording, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -151,13 +111,7 @@ public class VoiceItAPI2 {
 
     public void createVoiceEnrollment(final String userId, final String contentLanguage, final AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         try{
@@ -172,36 +126,29 @@ public class VoiceItAPI2 {
             myRecorder.setOutputFile(recordingFile.getAbsolutePath());
             myRecorder.prepare();
             myRecorder.start();
-            CountDownTimer countDowntimer = new CountDownTimer(4800, 1000) {
-                public void onTick(long millisUntilFinished) {}
-                public void onFinish() {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
                     try{
                         myRecorder.stop();
                         myRecorder.reset();
                         myRecorder.release();
                         createVoiceEnrollment(userId, contentLanguage, recordingFile, responseHandler);
                     } catch(Exception ex){
-                        System.out.println("Exception Error:"+ex.getMessage());
+                         Log.d(mTAG,"Exception Error:"+ex.getMessage());
                     }
                 }
-            };
-            countDowntimer.start();
+            }, 4800);
         }
         catch(Exception ex)
         {
-            System.out.println("Recording Error:" + ex.getMessage());
+             Log.d(mTAG,"Recording Error:" + ex.getMessage());
         }
     }
 
     public void createVoiceEnrollmentByUrl(String userId, String contentLanguage, String fileUrl, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -213,36 +160,12 @@ public class VoiceItAPI2 {
     }
 
     public void createFaceEnrollment(String userId, File video, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        try {
-            params.put("video", video);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
+        createFaceEnrollment(userId, video, false, responseHandler);
     }
 
     public void createFaceEnrollment(String userId, File video, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -258,36 +181,12 @@ public class VoiceItAPI2 {
     }
 
     public void createFaceEnrollmentWithPhoto(String userId, File photo, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        try {
-            params.put("photo", photo);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
+        createFaceEnrollmentWithPhoto(userId, photo, false, responseHandler);
     }
 
     public void createFaceEnrollmentWithPhoto(String userId, File photo, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -303,38 +202,12 @@ public class VoiceItAPI2 {
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, File audio, File photo, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        params.put("contentLanguage", contentLanguage);
-        try {
-            params.put("audio", audio);
-            params.put("photo", photo);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/enrollments/video"), params, responseHandler);
+        createVideoEnrollment(userId, contentLanguage, audio, photo, false, responseHandler);
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, File audio, File photo, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -352,37 +225,12 @@ public class VoiceItAPI2 {
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        params.put("contentLanguage", contentLanguage);
-        try {
-            params.put("video", video);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/enrollments/video"), params, responseHandler);
+        createVideoEnrollment(userId, contentLanguage, video, false, responseHandler);
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, File video, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -399,33 +247,12 @@ public class VoiceItAPI2 {
     }
 
     public void createVideoEnrollmentByUrl(String userId, String contentLanguage, String fileUrl, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        params.put("contentLanguage", contentLanguage);
-        params.put("fileUrl", fileUrl);
-
-        client.post(getAbsoluteUrl("/enrollments/video/byUrl"), params, responseHandler);
+        createVideoEnrollmentByUrl(userId, contentLanguage, fileUrl, false, responseHandler);
     }
 
     public void createVideoEnrollmentByUrl(String userId, String contentLanguage, String fileUrl, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -435,17 +262,12 @@ public class VoiceItAPI2 {
         params.put("fileUrl", fileUrl);
 
         client.post(getAbsoluteUrl("/enrollments/video/byUrl"), params, responseHandler);
+
     }
 
     public void deleteFaceEnrollment(String userId, String faceEnrollmentId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.delete(getAbsoluteUrl("/enrollments/face/" + userId + "/" + faceEnrollmentId), responseHandler);
@@ -453,13 +275,7 @@ public class VoiceItAPI2 {
 
     public void deleteEnrollmentForUser(String userId, String enrollmentId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.delete(getAbsoluteUrl("/enrollments/" + userId + "/" + enrollmentId), responseHandler);
@@ -471,13 +287,7 @@ public class VoiceItAPI2 {
 
     public void getGroup(String groupId, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.get(getAbsoluteUrl("/groups/" + groupId), responseHandler);
@@ -485,13 +295,7 @@ public class VoiceItAPI2 {
 
     public void groupExists(String groupId, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.get(getAbsoluteUrl("/groups/" + groupId + "/exists"), responseHandler);
@@ -505,13 +309,7 @@ public class VoiceItAPI2 {
 
     public void addUserToGroup(String groupId, String userId, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId) || !userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -522,13 +320,7 @@ public class VoiceItAPI2 {
 
     public void removeUserFromGroup(String groupId, String userId, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId) || !userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -539,13 +331,7 @@ public class VoiceItAPI2 {
 
     public void deleteGroup(String groupId, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         client.delete(getAbsoluteUrl("/groups/" + groupId), responseHandler);
@@ -553,13 +339,7 @@ public class VoiceItAPI2 {
 
     public void voiceVerification(String userId, String contentLanguage, File recording, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -575,13 +355,7 @@ public class VoiceItAPI2 {
 
     public void voiceVerification(final String userId, final String contentLanguage, final AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         try{
@@ -596,36 +370,29 @@ public class VoiceItAPI2 {
             myRecorder.setOutputFile(recordingFile.getAbsolutePath());
             myRecorder.prepare();
             myRecorder.start();
-            CountDownTimer countDowntimer = new CountDownTimer(4800, 1000) {
-                public void onTick(long millisUntilFinished) {}
-                public void onFinish() {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
                     try{
                         myRecorder.stop();
                         myRecorder.reset();
                         myRecorder.release();
                         voiceVerification(userId, contentLanguage, recordingFile, responseHandler);
                     } catch(Exception ex){
-                        System.out.println("Exception Error:"+ex.getMessage());
+                         Log.d(mTAG,"Exception Error:"+ex.getMessage());
                     }
                 }
-            };
-            countDowntimer.start();
+            }, 4800);
         }
         catch(Exception ex)
         {
-            System.out.println("Recording Error:" + ex.getMessage());
+             Log.d(mTAG,"Recording Error:" + ex.getMessage());
         }
     }
 
     public void voiceVerificationByUrl(String userId, String contentLanguage, String fileUrl, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -636,15 +403,10 @@ public class VoiceItAPI2 {
         client.post(getAbsoluteUrl("/verification/byUrl"), params, responseHandler);
     }
 
+
     public void faceVerification(String userId, File video, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -660,36 +422,13 @@ public class VoiceItAPI2 {
     }
 
     public void faceVerification(String userId, File video, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        try {
-            params.put("video", video);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
+        faceVerification(userId, video, false, responseHandler);
     }
+
 
     public void faceVerificationWithPhoto(String userId, File photo, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -705,36 +444,13 @@ public class VoiceItAPI2 {
     }
 
     public void faceVerificationWithPhoto(String userId, File photo, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        try {
-            params.put("photo", photo);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
+        faceVerificationWithPhoto( userId, photo, false, responseHandler);
     }
+
 
     public void videoVerification(String userId, String contentLanguage, File video, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -751,37 +467,13 @@ public class VoiceItAPI2 {
     }
 
     public void videoVerification(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        params.put("contentLanguage", contentLanguage);
-        try {
-            params.put("video", video);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
+        videoVerification(userId, contentLanguage, video, false, responseHandler);
     }
+
 
     public void videoVerification(String userId, File audio, File photo, String contentLanguage, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -799,38 +491,13 @@ public class VoiceItAPI2 {
     }
 
     public void videoVerification(String userId, File audio, File photo, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        params.put("contentLanguage", contentLanguage);
-        try {
-            params.put("audio", audio);
-            params.put("photo", photo);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
+        videoVerification(userId, audio, photo, contentLanguage, false, responseHandler);
     }
+
 
     public void videoVerificationByUrl(String userId, String contentLanguage, String fileUrl, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -843,33 +510,12 @@ public class VoiceItAPI2 {
     }
 
     public void videoVerificationByUrl(String userId, String contentLanguage, String fileUrl, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("userId", userId);
-        params.put("contentLanguage", contentLanguage);
-        params.put("fileUrl", fileUrl);
-
-        client.post(getAbsoluteUrl("/verification/video/byUrl"), params, responseHandler);
+        videoVerificationByUrl(userId, contentLanguage, fileUrl, false, responseHandler);
     }
 
     public void voiceIdentification(String groupId, File recording, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -886,13 +532,7 @@ public class VoiceItAPI2 {
 
     public void voiceIdentification(final String groupId, final String contentLanguage, final AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         try{
@@ -907,36 +547,29 @@ public class VoiceItAPI2 {
             myRecorder.setOutputFile(recordingFile.getAbsolutePath());
             myRecorder.prepare();
             myRecorder.start();
-            CountDownTimer countDowntimer = new CountDownTimer(4800, 1000) {
-                public void onTick(long millisUntilFinished) {}
-                public void onFinish() {
-                    try{
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
                         myRecorder.stop();
                         myRecorder.reset();
                         myRecorder.release();
                         voiceIdentification(groupId, recordingFile, contentLanguage, responseHandler);
-                    } catch(Exception ex){
-                        System.out.println("Exception Error:"+ex.getMessage());
+                    } catch (Exception ex) {
+                         Log.d(mTAG,"Exception Error:" + ex.getMessage());
                     }
                 }
-            };
-            countDowntimer.start();
+            }, 4800);
         }
         catch(Exception ex)
         {
-            System.out.println("Recording Error:" + ex.getMessage());
+             Log.d(mTAG,"Recording Error:" + ex.getMessage());
         }
     }
 
     public void voiceIdentificationByUrl(String groupId, String fileUrl, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -949,13 +582,7 @@ public class VoiceItAPI2 {
 
     public void videoIdentification(String groupId, File video, String contentLanguage, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -972,37 +599,12 @@ public class VoiceItAPI2 {
     }
 
     public void videoIdentification(String groupId, File video, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
-        if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
-            return;
-        }
-        RequestParams params = new RequestParams();
-        params.put("groupId", groupId);
-        params.put("contentLanguage", contentLanguage);
-        try {
-            params.put("video", video);
-        } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
-        }
-
-        client.post(getAbsoluteUrl("/identification/video"), params, responseHandler);
+        videoIdentification(groupId, video, contentLanguage, false, responseHandler);
     }
 
     public void videoIdentificationByUrl(String groupId, String fileUrl, String contentLanguage, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
         if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
@@ -1015,33 +617,50 @@ public class VoiceItAPI2 {
     }
 
     public void videoIdentificationByUrl(String groupId, String fileUrl, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
-        if(!groupIdFormatted(groupId)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+        videoIdentificationByUrl(groupId, fileUrl, contentLanguage, false, responseHandler);
+    }
+
+    public void encapsulatedVoiceEnrollment(Activity activity, String userID, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
+        if (!userIdFormatted(userID)) {
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        RequestParams params = new RequestParams();
-        params.put("groupId", groupId);
-        params.put("contentLanguage", contentLanguage);
-        params.put("fileUrl", fileUrl);
 
-        client.post(getAbsoluteUrl("/identification/video/byUrl"), params, responseHandler);
+        Intent intent = new Intent(activity, VoiceEnrollmentView.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("apiKey", this.apiKey);
+        bundle.putString("apiToken", this.apiToken);
+        bundle.putString("userID", userID);
+        bundle.putString("contentLanguage", contentLanguage);
+        bundle.putString("phrase", phrase);
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+
+        broadcastMessageHandler(activity, responseHandler);
+    }
+
+    public void encapsulatedVoiceVerification(Activity activity, String userID, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
+        if (!userIdFormatted(userID)) {
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            return;
+        }
+
+        Intent intent = new Intent(activity, VoiceVerificationView.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("apiKey", this.apiKey);
+        bundle.putString("apiToken", this.apiToken);
+        bundle.putString("userID", userID);
+        bundle.putString("contentLanguage", contentLanguage);
+        bundle.putString("phrase", phrase);
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+
+        broadcastMessageHandler(activity, responseHandler);
     }
 
     public void encapsulatedVideoEnrollment(Activity activity, String userID, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userID)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
 
@@ -1052,47 +671,15 @@ public class VoiceItAPI2 {
         bundle.putString("userID", userID);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
-        bundle.putBoolean("doLivenessCheck", false);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
-        // Our handler for received Intents. This will be called whenever an Intent
-        // with an action named "verification-event" is broad-casted.
-        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-            boolean broadcastTriggered = false;
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (!broadcastTriggered) {
-                    broadcastTriggered = true;
-                    // Get extra data included in the Intent
-                    String Response = intent.getStringExtra("Response");
-
-                    if (intent.getAction().equals("voiceit-success")) {
-                        responseHandler.sendSuccessMessage(200, null, Response.getBytes());
-                    }
-                    if (intent.getAction().equals("voiceit-failure")) {
-                        responseHandler.sendFailureMessage(200, null, Response.getBytes(), new Throwable());
-                    }
-                }
-            }
-        };
-
-        // Register observers (mMessageReceiver) to receive Intents with named actions
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("voiceit-success");
-        intentFilter.addAction("voiceit-failure");
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, intentFilter);
+        broadcastMessageHandler(activity, responseHandler);
     }
 
     public void encapsulatedVideoVerification(Activity activity, String userID, String contentLanguage, String phrase, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userID)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
 
@@ -1107,44 +694,12 @@ public class VoiceItAPI2 {
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
-        // Our handler for received Intents. This will be called whenever an Intent
-        // with an action named "verification-event" is broad-casted.
-        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-            boolean broadcastTriggered = false;
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (!broadcastTriggered) {
-                    broadcastTriggered = true;
-                    // Get extra data included in the Intent
-                    String Response = intent.getStringExtra("Response");
-
-                    if (intent.getAction().equals("voiceit-success")) {
-                        responseHandler.sendSuccessMessage(200, null, Response.getBytes());
-                    }
-                    if (intent.getAction().equals("voiceit-failure")) {
-                        responseHandler.sendFailureMessage(200, null, Response.getBytes(), new Throwable());
-                    }
-                }
-            }
-        };
-
-        // Register observers (mMessageReceiver) to receive Intents with named actions
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("voiceit-success");
-        intentFilter.addAction("voiceit-failure");
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, intentFilter);
+        broadcastMessageHandler(activity, responseHandler);
     }
 
     public void encapsulatedFaceEnrollment(Activity activity, String userID, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userID)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
 
@@ -1153,48 +708,15 @@ public class VoiceItAPI2 {
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userID", userID);
-        bundle.putBoolean("doLivenessCheck", false);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
-        // Our handler for received Intents. This will be called whenever an Intent
-        // with an action named "verification-event" is broad-casted.
-        BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-            boolean broadcastTriggered = false;
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (!broadcastTriggered) {
-                    broadcastTriggered = true;
-                    // Get extra data included in the Intent
-                    String Response = intent.getStringExtra("Response");
-
-                    if (intent.getAction().equals("voiceit-success")) {
-                        responseHandler.sendSuccessMessage(200, null, Response.getBytes());
-                    }
-                    if (intent.getAction().equals("voiceit-failure")) {
-                        responseHandler.sendFailureMessage(200, null, Response.getBytes(), new Throwable());
-                    }
-                }
-            }
-        };
-
-        // Register observers (mMessageReceiver) to receive Intents with named actions
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("voiceit-success");
-        intentFilter.addAction("voiceit-failure");
-        LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, intentFilter);
+        broadcastMessageHandler(activity, responseHandler);
     }
 
     public void encapsulatedFaceVerification(Activity activity, String userID, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userID)) {
-            JSONObject json = new JSONObject();
-            try {
-                json.put("message", "Incorrectly formatted argument");
-            } catch(JSONException e) {
-                System.out.println("JSON Exception : " + e.getMessage());
-            }
-            responseHandler.sendFailureMessage(200, null, json.toString().getBytes(), new Throwable());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
 
@@ -1207,8 +729,12 @@ public class VoiceItAPI2 {
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
+        broadcastMessageHandler(activity, responseHandler);
+    }
+
+    private void broadcastMessageHandler(Activity activity, final JsonHttpResponseHandler responseHandler) {
         // Our handler for received Intents. This will be called whenever an Intent
-        // with an action named "verification-event" is broad-casted.
+        // with an action named "voiceit-event" is broad-casted.
         BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
             boolean broadcastTriggered = false;
 
@@ -1241,7 +767,8 @@ public class VoiceItAPI2 {
         if (!id.matches("[A-Za-z0-9]+")
                 || !arg.substring(0, 3).equals("usr")
                 || id.length() != 32) {
-            System.out.println("UserId is invalid!");
+             Log.d(mTAG,"UserId does not meet requirements, " +
+                     "please ensure it is an alphanumeric string between 5 - 36 characters");
             return false;
         }
         return true;
@@ -1252,13 +779,24 @@ public class VoiceItAPI2 {
         if (!id.matches("[A-Za-z0-9]+")
                 || !arg.substring(0, 3).equals("grp")
                 || id.length() != 32) {
-            System.out.println("GroupId is invalid!");
+             Log.d(mTAG,"GroupId does not meet requirements, " +
+                     "please ensure it is an alphanumeric string between 5 - 36 characters");
             return false;
         }
         return true;
     }
 
-    private static String getAbsoluteUrl(String relativeUrl) {
+    private JSONObject buildJSONFormatMessage() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("message", "Incorrectly formatted argument");
+        } catch(JSONException e) {
+            Log.d(mTAG,"JSON Exception : " + e.getMessage());
+        }
+        return json;
+    }
+
+    private String getAbsoluteUrl(String relativeUrl) {
         return BASE_URL + relativeUrl;
     }
 }
