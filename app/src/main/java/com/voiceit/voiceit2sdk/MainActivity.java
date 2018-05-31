@@ -1,6 +1,5 @@
 package com.voiceit.voiceit2sdk;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,8 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private String userId = "USER_ID";
     private String phrase = "Never forget tomorrow is a new day";
     private String contentLanguage = "en-US";
-    private Activity mActivity;
-    public boolean doLivenessCheck = false; // Liveness detection not used for enrollment views
+    private boolean doLivenessCheck = false; // Liveness detection not used for enrollment views
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         myVoiceIt2 = new VoiceItAPI2("API_KEY","API_TOK");
-        mActivity = this;
     }
 
     public void toggleLiveness(View view) {
@@ -66,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void encapsulatedVideoEnrollment(View view) {
-        myVoiceIt2.encapsulatedVideoEnrollment(mActivity, userId, contentLanguage, phrase, new JsonHttpResponseHandler() {
+        myVoiceIt2.encapsulatedVideoEnrollment(this, userId, contentLanguage, phrase, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedVideoEnrollment Result : " + response.toString());
