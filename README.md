@@ -72,8 +72,7 @@ import com.voiceit.voiceit2.VoiceItAPI2;
 
 public class MainActivity extends AppCompatActivity {
 
-    public VoiceItAPI2 myVoiceIt2;
-    public Activity mActivity;
+    private VoiceItAPI2 myVoiceIt2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         myVoiceIt2 = new VoiceItAPI2("API_KEY","API_TOK");
-        mActivity = this;
     }
 }
 ```

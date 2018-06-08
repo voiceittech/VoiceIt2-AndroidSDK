@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myVoiceIt2 = new VoiceItAPI2("key_f3a9fb29944a4e4180d4c98e7f03c713","tok_6f7eab83c5a64f459e14d427d76223e2");
+        myVoiceIt2 = new VoiceItAPI2("API_KEY","API_TOK");
     }
 
     public void toggleLiveness(View view) {
