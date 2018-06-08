@@ -20,10 +20,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class VoiceItAPI2 {
-    private final String BASE_URL = "https://api.voiceit.io";
-    private AsyncHttpClient client;
-    private String apiKey;
-    private String apiToken;
+    private final AsyncHttpClient client;
+    private final String apiKey;
+    private final String apiToken;
 
     private final String mTAG = "VoiceItAPI2";
 
@@ -34,6 +33,11 @@ public class VoiceItAPI2 {
         this.client.removeAllHeaders();
         this.client.setTimeout(15 * 1000);
         this.client.setBasicAuth(apiKey, apiToken);
+    }
+
+    private String getAbsoluteUrl(String relativeUrl) {
+        final String BASE_URL = "https://api.voiceit.io";
+        return BASE_URL + relativeUrl;
     }
 
     public void getAllUsers(AsyncHttpResponseHandler responseHandler) {
@@ -794,9 +798,5 @@ public class VoiceItAPI2 {
             Log.d(mTAG,"JSON Exception : " + e.getMessage());
         }
         return json;
-    }
-
-    private String getAbsoluteUrl(String relativeUrl) {
-        return BASE_URL + relativeUrl;
     }
 }

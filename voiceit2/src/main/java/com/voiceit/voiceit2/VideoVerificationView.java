@@ -6,12 +6,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -38,12 +38,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class VideoVerificationView extends AppCompatActivity {
-
-    final int PERMISSIONS_REQUEST_RECORD_AUDIO = 0;
-    final int PERMISSIONS_REQUEST_CAMERA = 1;
-    final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 2;
-
-    private final int RC_HANDLE_GMS = 9001;
 
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;
@@ -94,9 +88,6 @@ public class VideoVerificationView extends AppCompatActivity {
         // Set content view
         setContentView(R.layout.activity_video_verification_view);
         mPreview = findViewById(R.id.camera_preview);
-
-        // Orient screen
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Text output on mOverlay
         mOverlay = findViewById(R.id.overlay);
@@ -165,9 +156,7 @@ public class VideoVerificationView extends AppCompatActivity {
     }
 
     /**
-     * Creates and starts the camera.  Note that this uses a higher resolution in comparison
-     * to other detection examples to enable the barcode detector to detect small barcodes
-     * at long distances.
+     * Creates and starts the camera.
      */
     private void createCameraSource() {
 
@@ -222,6 +211,7 @@ public class VideoVerificationView extends AppCompatActivity {
         int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
                 getApplicationContext());
         if (code != ConnectionResult.SUCCESS) {
+            final int RC_HANDLE_GMS = 9001;
             Dialog dlg =
                     GoogleApiAvailability.getInstance().getErrorDialog(this, code, RC_HANDLE_GMS);
             dlg.show();
@@ -244,9 +234,9 @@ public class VideoVerificationView extends AppCompatActivity {
      */
     private class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
 
-        private Activity mActivity;
-        final int livenessChallengeTypesCount = 3;
-        int [] livenessChallengeOrder = {1, 2, 3};
+        private final Activity mActivity;
+        private final int livenessChallengeTypesCount = 3;
+        private final int [] livenessChallengeOrder = {1, 2, 3};
 
         private FaceTrackerFactory(VideoVerificationView activity) {
             mActivity = activity;
@@ -262,6 +252,9 @@ public class VideoVerificationView extends AppCompatActivity {
     }
 
     private void requestHardwarePermissions() {
+        final int PERMISSIONS_REQUEST_RECORD_AUDIO = 0;
+        final int PERMISSIONS_REQUEST_CAMERA = 1;
+        final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 2;
         // MY_PERMISSIONS_REQUEST_* is an app-defined int constant. The callback method gets the
         // result of the request.
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
@@ -293,7 +286,7 @@ public class VideoVerificationView extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
@@ -377,7 +370,7 @@ public class VideoVerificationView extends AppCompatActivity {
     }
 
     // Verify after taking picture
-    private CameraSource.PictureCallback mPicture = new CameraSource.PictureCallback() {
+    private final CameraSource.PictureCallback mPicture = new CameraSource.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data) {
             // Check file
@@ -459,7 +452,7 @@ public class VideoVerificationView extends AppCompatActivity {
                             if(FaceTracker.lookingAway) {
                                 mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
                             }
-                            // Reset livesness check and try again
+                            // Reset liveness check and try again
                             FaceTracker.continueDetecting = true;
                             FaceTracker.livenessChallengesPassed = 0;
                         }
@@ -479,6 +472,9 @@ public class VideoVerificationView extends AppCompatActivity {
                 try {
                     // Create file for audio
                     final File audioFile = Utils.getOutputMediaFile(".wav");
+                    if(audioFile == null) {
+                        exitViewWithMessage("voiceit-failure", "Creating audio file failed");
+                    }
 
                     // Setup device and capture audio
                     mMediaRecorder = new MediaRecorder();
@@ -533,7 +529,7 @@ public class VideoVerificationView extends AppCompatActivity {
                                                                     if(FaceTracker.lookingAway) {
                                                                         mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
                                                                     }
-                                                                    // Reset livesness check
+                                                                    // Reset liveness check
                                                                     FaceTracker.livenessChallengesPassed = 0;
                                                                     FaceTracker.continueDetecting = true;
                                                                 }

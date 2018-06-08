@@ -3,13 +3,12 @@ package com.voiceit.voiceit2;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -26,9 +25,6 @@ import org.json.JSONObject;
 
 public class VoiceVerificationView extends AppCompatActivity {
 
-    final int PERMISSIONS_REQUEST_RECORD_AUDIO = 0;
-    final int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 1;
-
     private final String mTAG = "VoiceVerificationView";
     private Context mContext;
 
@@ -44,6 +40,9 @@ public class VoiceVerificationView extends AppCompatActivity {
     private int mFailedAttempts = 0;
     private final int mMaxFailedAttempts = 3;
     private boolean mContinueVerifying = false;
+
+    private boolean displayWaveform = true;
+    private final long REFRESH_WAVEFORM_INTERVAL_MS = 30;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,14 +71,13 @@ public class VoiceVerificationView extends AppCompatActivity {
         // Set content view
         setContentView(R.layout.activity_voice_verification_view);
 
-        // Orient screen
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        // Text output on mOverlay
+        // Get overlay
         mOverlay = findViewById(R.id.overlay);
     }
 
     private void requestHardwarePermissions() {
+        int PERMISSIONS_REQUEST_RECORD_AUDIO = 0;
+        int ASK_MULTIPLE_PERMISSION_REQUEST_CODE = 1;
         // MY_PERMISSIONS_REQUEST_* is an app-defined int constant. The callback method gets the
         // result of the request.
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
@@ -101,7 +99,7 @@ public class VoiceVerificationView extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
@@ -145,17 +143,18 @@ public class VoiceVerificationView extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        // Confirm permissions and start verification flow
-        requestHardwarePermissions();
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         // Confirm permissions and start enrollment flow
         requestHardwarePermissions();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mContinueVerifying) {
+            exitViewWithMessage("voiceit-failure", "User Canceled");
+        }
     }
 
     private void stopRecording() {
@@ -168,6 +167,7 @@ public class VoiceVerificationView extends AppCompatActivity {
             mMediaRecorder.reset();
             mMediaRecorder.release();
             mMediaRecorder = null;
+            displayWaveform = false;
         }
     }
 
@@ -219,37 +219,64 @@ public class VoiceVerificationView extends AppCompatActivity {
         }, 1500);
     }
 
+    private long redrawWaveform(){
+        final long currentTime = System.currentTimeMillis();
+
+        runOnUiThread(new Runnable() {
+            public void run() {
+                if (mMediaRecorder != null) {
+                    mOverlay.setWaveformMaxAmplitude(mMediaRecorder.getMaxAmplitude());
+                }
+            }
+        });
+
+        return System.currentTimeMillis() - currentTime;
+    }
+
     // Verify after recording voice
     private void recordVoice() {
+
+        mOverlay.updateDisplayText(getString(R.string.SAY_PASSPHRASE, mPhrase));
         try {
             // Create file for audio
             final File audioFile = Utils.getOutputMediaFile(".wav");
+            if(audioFile == null) {
+                exitViewWithMessage("voiceit-failure", "Creating audio file failed");
+            }
 
             // Setup device and capture Audio
             mMediaRecorder = new MediaRecorder();
             Utils.startMediaRecorder(mMediaRecorder, audioFile);
 
-            // Refresh amplitude
-            mMediaRecorder.getMaxAmplitude();
-            // Make waveform move to show user recording has started
-            mOverlay.setSineWaveAmpGoal(5000);
-
-            mOverlay.updateDisplayText(getString(R.string.SAY_PASSPHRASE, mPhrase));
-            // Record and update amplitude display for ~5 seconds, then send data
-            // 4800 to make sure recording is not over 5 seconds
-            new CountDownTimer(4800, 10) {
-                public void onTick(long millisUntilFinished) {
-                    if(mMediaRecorder != null) {
-                        mOverlay.setSineWaveAmpGoal(mMediaRecorder.getMaxAmplitude());
+            // Start displaying waveform
+            displayWaveform = true;
+            new Thread(new Runnable() {
+                public void run() {
+                    while (displayWaveform) {
+                        try {
+                            Thread.sleep(Math.max(0, REFRESH_WAVEFORM_INTERVAL_MS - redrawWaveform()));
+                        } catch (Exception e) {
+                            Log.d(mTAG, "MediaRecorder getMaxAmplitude Exception: " + e.getMessage());
+                        }
                     }
                 }
+            }).start();
 
-                public void onFinish() {
+            // Record and update amplitude display for ~5 seconds, then send data
+            // 4800ms to make sure recording is not over 5 seconds
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    // Stop waveform
+                    displayWaveform = false;
+
                     if (mContinueVerifying) {
                         stopRecording();
 
                         // Reset sine wave
-                        mOverlay.setSineWaveAmpGoal(1);
+                        mOverlay.setWaveformMaxAmplitude(1);
+
                         mOverlay.updateDisplayText(getString(R.string.WAIT));
                         mVoiceIt2.voiceVerification(mUserID, mContentLanguage, audioFile, new JsonHttpResponseHandler() {
                             @Override
@@ -335,14 +362,15 @@ public class VoiceVerificationView extends AppCompatActivity {
                         });
                     }
                 }
-            }.start();
+            }, 4800);
+
         } catch (Exception ex) {
             Log.d(mTAG, "Recording Error: " + ex.getMessage());
             exitViewWithMessage("voiceit-failure", "Recording Error");
         }
     }
 
-    public void verifyUser() {
+    private void verifyUser() {
         mContinueVerifying = true;
         // Check enrollments then verify
         mVoiceIt2.getAllEnrollmentsForUser(mUserID, new JsonHttpResponseHandler() {

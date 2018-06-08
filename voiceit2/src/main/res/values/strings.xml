@@ -52,7 +52,5 @@
     <string name="IFAD">Sorry, something went wrong.\nPlease contact app developer.</string>
 
     <string name="CHECK_INTERNET">Unable to contact server.\nPlease check your internet connection.</string>
-    <string name="REQUEST_CAMERA">Please allow camera access</string>
-    <string name="REQUEST_AUDIO">Please allow audio access</string>
 
 </resources>

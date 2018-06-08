@@ -7,11 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-public class Utils {
+class Utils {
     private static final String mTAG = "Utils";
 
      /** Create a File for saving an image or audio file */
-    public static File getOutputMediaFile(String suffix){
+     public static File getOutputMediaFile(String suffix){
         try {
             return File.createTempFile("tempfile", suffix);
         } catch (IOException e) {

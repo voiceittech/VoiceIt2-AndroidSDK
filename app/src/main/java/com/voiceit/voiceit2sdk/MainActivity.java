@@ -1,9 +1,9 @@
 package com.voiceit.voiceit2sdk;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Switch;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONObject;
@@ -14,23 +14,22 @@ import com.voiceit.voiceit2.VoiceItAPI2;
 public class MainActivity extends AppCompatActivity {
 
     private VoiceItAPI2 myVoiceIt2;
-    private String userId = "USER_ID";
+    private String userId = "usr_c380c297a87a4b528ef5353e02d6b0ad";
     private String phrase = "Never forget tomorrow is a new day";
     private String contentLanguage = "en-US";
-    private Activity mActivity;
-    public boolean doLivenessCheck = false; // Liveness detection not used for enrollment views
+    private boolean doLivenessCheck = false; // Liveness detection is not used for enrollment views
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myVoiceIt2 = new VoiceItAPI2("API_KEY","API_TOK");
-        mActivity = this;
+        myVoiceIt2 = new VoiceItAPI2("key_f3a9fb29944a4e4180d4c98e7f03c713","tok_6f7eab83c5a64f459e14d427d76223e2");
     }
 
     public void toggleLiveness(View view) {
-        doLivenessCheck = !doLivenessCheck;
+        Switch s = findViewById(R.id.switch1);
+        doLivenessCheck = s.isChecked();
     }
 
     public void encapsulatedVoiceEnrollment(View view) {
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void encapsulatedVideoEnrollment(View view) {
-        myVoiceIt2.encapsulatedVideoEnrollment(mActivity, userId, contentLanguage, phrase, new JsonHttpResponseHandler() {
+        myVoiceIt2.encapsulatedVideoEnrollment(this, userId, contentLanguage, phrase, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedVideoEnrollment Result : " + response.toString());

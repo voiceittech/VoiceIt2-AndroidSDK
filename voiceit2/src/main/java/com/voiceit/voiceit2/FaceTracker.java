@@ -16,19 +16,18 @@ import org.json.JSONObject;
 /**
  * Face tracker for each detected individual.
  */
-public class FaceTracker extends Tracker<Face> {
+class FaceTracker extends Tracker<Face> {
 
-    private Activity mActivity;
-    private RadiusOverlayView mOverlay;
-    private viewCallBacks mCallbacks;
+    private final Activity mActivity;
+    private final RadiusOverlayView mOverlay;
+    private final viewCallBacks mCallbacks;
 
     private final String mTAG = "FaceTracker";
 
-    private int [] mLivenessChallengeOrder;
+    private final int [] mLivenessChallengeOrder;
 
-    private boolean mDoLivenessCheck;
+    private final boolean mDoLivenessCheck;
 
-    private final int mLivenessChallengesNeeded = 2;
     public static int livenessChallengesPassed = 0;
     private boolean mDisplayingChallenge = false;
     private boolean mDisplayingChallengeOutcome = false;
@@ -211,13 +210,13 @@ public class FaceTracker extends Tracker<Face> {
 //                            overlay.setProgressCircleColor(mActivity.getResources().getColor(R.color.green));
 //                            overlay.setProgressCircleAngle(359.999);
 //                            // Quick pause in-between challenges
-//                            new CountDownTimer(1000, 1000) {
-//                                public void onTick(long millisUntilFinished) {}
-//                                public void onFinish() {
+//                            new Handler().postDelayed(new Runnable() {
+//                                @Override
+//                                public void run() {
 //                                    completeLivenessChallenge();
 //                                    updateBlinkDisplay = true;
 //                                }
-//                            }.start();
+//                             }, 750);
 //                        }
 //                    });
 //                }
@@ -270,6 +269,7 @@ public class FaceTracker extends Tracker<Face> {
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, final Face face) {
         if (FaceTracker.continueDetecting) {
             final int numFaces = detectionResults.getDetectedItems().size();
+            final int mLivenessChallengesNeeded = 2;
 
             if (numFaces == 1) {
                 FaceTracker.lookingAway = false;
@@ -308,7 +308,7 @@ public class FaceTracker extends Tracker<Face> {
                     // Start a timer for current liveness challenge
                     if (!mTimingLiveness) {
                         mTimingLiveness = true;
-                        // Check if user failed livesness check
+                        // Check if user failed liveness check
                         // Store current liveness checks passed count to compare if progress was made later
                         final int cachedLivenessChallengesPassed = FaceTracker.livenessChallengesPassed;
                         mActivity.runOnUiThread(new Runnable() {

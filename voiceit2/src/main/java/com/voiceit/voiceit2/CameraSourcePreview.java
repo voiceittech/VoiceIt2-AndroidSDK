@@ -35,8 +35,8 @@ import java.util.List;
 public class CameraSourcePreview extends ViewGroup {
     private static final String TAG = "CameraSourcePreview";
 
-    private Context mContext;
-    private SurfaceView mSurfaceView;
+    private final Context mContext;
+    private final SurfaceView mSurfaceView;
     private boolean mStartRequested;
     private boolean mSurfaceAvailable;
     private CameraSource mCameraSource;
@@ -79,33 +79,29 @@ public class CameraSourcePreview extends ViewGroup {
     }
 
     private void startIfReady() throws IOException {
-        try {
-            if (mStartRequested && mSurfaceAvailable) {
-                mCameraSource.start(mSurfaceView.getHolder());
-                mStartRequested = false;
+        if (mStartRequested && mSurfaceAvailable) {
+            mCameraSource.start(mSurfaceView.getHolder());
+            mStartRequested = false;
 
-                Camera mCamera = getCamera(mCameraSource);
-                if(mCamera != null) {
-                    mCamera.enableShutterSound(false);
-                    Camera.Parameters params = mCamera.getParameters();
-                    // No need to send high resolution pictures
-                    int resolutionSizeCap = 1228800;
-                    List<Camera.Size> sizes = params.getSupportedPictureSizes();
-                    int max = 0, index = 0;
-                    for (int i = 0; i < sizes.size(); i++) {
-                        Camera.Size s = sizes.get(i);
-                        int size = s.height * s.width;
-                        if (size > max && size < resolutionSizeCap) {
-                            index = i;
-                            max = size;
-                        }
+            Camera mCamera = getCamera(mCameraSource);
+            if(mCamera != null) {
+                mCamera.enableShutterSound(false);
+                Camera.Parameters params = mCamera.getParameters();
+                // No need to send high resolution pictures
+                int resolutionSizeCap = 1228800;
+                List<Camera.Size> sizes = params.getSupportedPictureSizes();
+                int max = 0, index = 0;
+                for (int i = 0; i < sizes.size(); i++) {
+                    Camera.Size s = sizes.get(i);
+                    int size = s.height * s.width;
+                    if (size > max && size < resolutionSizeCap) {
+                        index = i;
+                        max = size;
                     }
-                    params.setPictureSize(sizes.get(index).width, sizes.get(index).height);
-                    mCamera.setParameters(params);
                 }
+                params.setPictureSize(sizes.get(index).width, sizes.get(index).height);
+                mCamera.setParameters(params);
             }
-        } catch(Exception e) {
-            System.out.println("Exception when starting CameraSource with SurfaceView: " + e.getMessage());
         }
     }
 
@@ -130,7 +126,7 @@ public class CameraSourcePreview extends ViewGroup {
         }
     }
 
-    public static Camera getCamera(@NonNull CameraSource cameraSource)  {
+    private static Camera getCamera(@NonNull CameraSource cameraSource)  {
         Field[] declaredFields = CameraSource.class.getDeclaredFields();
         for (Field field : declaredFields)
         {
