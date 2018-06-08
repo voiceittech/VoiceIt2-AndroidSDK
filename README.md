@@ -86,11 +86,11 @@ public class MainActivity extends AppCompatActivity {
 
 ### Liveness Detection
 
-For each of our Encapsulated methods liveness detection can be enabled with a passed in boolean parameter. This enables a a pre-check before the verification api call to make sure the user is not trying to spoof with a photo of someone else.
+For our Encapsulated Face and Video Verification methods, liveness detection can be enabled with a passed in boolean parameter. This enables a a pre-check before the verification api call to make sure the user is not trying to spoof with a photo of someone else.
 
 ### API calls
 
-For each API call, a JsonHttpResponseHandler is needed to receive the result of the call. You can Override the response handlers like so, and abbreviated with ellipses below:
+For each API call, a JsonHttpResponseHandler is needed to receive the result of the call. You can override the response handlers like so, and abbreviated with ellipses below:
 ```java
 new JsonHttpResponseHandler() {
     @Override
