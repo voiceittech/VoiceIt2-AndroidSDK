@@ -293,6 +293,7 @@ public class FaceVerificationView extends AppCompatActivity {
 
     private void exitViewWithMessage(String action, String message) {
         mContinueVerifying = false;
+        FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         JSONObject json = new JSONObject();
         try {
@@ -307,6 +308,7 @@ public class FaceVerificationView extends AppCompatActivity {
 
     private void exitViewWithJSON(String action, JSONObject json) {
         mContinueVerifying = false;
+        FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         intent.putExtra("Response", json.toString());
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
@@ -315,7 +317,6 @@ public class FaceVerificationView extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         exitViewWithMessage("voiceit-failure","User Canceled");
     }
 
@@ -385,7 +386,7 @@ public class FaceVerificationView extends AppCompatActivity {
     }
 
     private void failVerification(final JSONObject response) {
-        mOverlay.setProgressCircleColor(getResources().getColor(R.color.red));
+        mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
         // Wait for ~1.5 seconds
         new Handler().postDelayed(new Runnable() {
@@ -429,7 +430,7 @@ public class FaceVerificationView extends AppCompatActivity {
     }
 
     private  void verifyUserFace() {
-        mOverlay.setProgressCircleColor(getResources().getColor(R.color.yellow));
+        mOverlay.setProgressCircleColor(getResources().getColor(R.color.progressCircle));
         mOverlay.setProgressCircleAngle(270, 359);
 
         mVoiceIt2.faceVerificationWithPhoto(mUserID, mPictureFile, new JsonHttpResponseHandler() {
@@ -440,7 +441,7 @@ public class FaceVerificationView extends AppCompatActivity {
                     if (response.getString("responseCode").equals("SUCC")) {
                         FaceTracker.continueDetecting = false;
 
-                        mOverlay.setProgressCircleColor(getResources().getColor(R.color.green));
+                        mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
                         mOverlay.updateDisplayText(getString(R.string.VERIFY_SUCCESS));
 
                         // Wait for ~2 seconds

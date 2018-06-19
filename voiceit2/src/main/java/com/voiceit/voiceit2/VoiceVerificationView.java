@@ -146,7 +146,6 @@ public class VoiceVerificationView extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         exitViewWithMessage("voiceit-failure", "User Canceled");
     }
 
@@ -180,7 +179,7 @@ public class VoiceVerificationView extends AppCompatActivity {
     }
 
     private void failVerification(final JSONObject response) {
-        mOverlay.setProgressCircleColor(getResources().getColor(R.color.red));
+        mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
 
         // Wait for ~1.5 seconds
@@ -243,138 +242,140 @@ public class VoiceVerificationView extends AppCompatActivity {
 
     // Verify after recording voice
     private void recordVoice() {
+        if (mContinueVerifying) {
 
-        mOverlay.updateDisplayText(getString(R.string.SAY_PASSPHRASE, mPhrase));
-        try {
-            // Create file for audio
-            final File audioFile = Utils.getOutputMediaFile(".wav");
-            if(audioFile == null) {
-                exitViewWithMessage("voiceit-failure", "Creating audio file failed");
-            }
+            mOverlay.updateDisplayText(getString(R.string.SAY_PASSPHRASE, mPhrase));
+            try {
+                // Create file for audio
+                final File audioFile = Utils.getOutputMediaFile(".wav");
+                if (audioFile == null) {
+                    exitViewWithMessage("voiceit-failure", "Creating audio file failed");
+                }
 
-            // Setup device and capture Audio
-            mMediaRecorder = new MediaRecorder();
-            Utils.startMediaRecorder(mMediaRecorder, audioFile);
+                // Setup device and capture Audio
+                mMediaRecorder = new MediaRecorder();
+                Utils.startMediaRecorder(mMediaRecorder, audioFile);
 
-            // Start displaying waveform
-            displayWaveform = true;
-            new Thread(new Runnable() {
-                public void run() {
-                    while (displayWaveform) {
-                        try {
-                            Thread.sleep(Math.max(0, REFRESH_WAVEFORM_INTERVAL_MS - redrawWaveform()));
-                        } catch (Exception e) {
-                            Log.d(mTAG, "MediaRecorder getMaxAmplitude Exception: " + e.getMessage());
+                // Start displaying waveform
+                displayWaveform = true;
+                new Thread(new Runnable() {
+                    public void run() {
+                        while (displayWaveform) {
+                            try {
+                                Thread.sleep(Math.max(0, REFRESH_WAVEFORM_INTERVAL_MS - redrawWaveform()));
+                            } catch (Exception e) {
+                                Log.d(mTAG, "MediaRecorder getMaxAmplitude Exception: " + e.getMessage());
+                            }
                         }
                     }
-                }
-            }).start();
+                }).start();
 
-            // Record and update amplitude display for ~5 seconds, then send data
-            // 4800ms to make sure recording is not over 5 seconds
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
+                // Record and update amplitude display for ~5 seconds, then send data
+                // 4800ms to make sure recording is not over 5 seconds
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
 
-                    // Stop waveform
-                    displayWaveform = false;
+                        // Stop waveform
+                        displayWaveform = false;
 
-                    if (mContinueVerifying) {
-                        stopRecording();
+                        if (mContinueVerifying) {
+                            stopRecording();
 
-                        // Reset sine wave
-                        mOverlay.setWaveformMaxAmplitude(1);
+                            // Reset sine wave
+                            mOverlay.setWaveformMaxAmplitude(1);
 
-                        mOverlay.updateDisplayText(getString(R.string.WAIT));
-                        mVoiceIt2.voiceVerification(mUserID, mContentLanguage, audioFile, new JsonHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
-                                try {
-                                    // Wrong mPhrase
-                                    if (!response.getString("text").toLowerCase().equals(mPhrase.toLowerCase())) {
-                                        mOverlay.setProgressCircleColor(getResources().getColor(R.color.red));
-                                        mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
+                            mOverlay.updateDisplayText(getString(R.string.WAIT));
+                            mVoiceIt2.voiceVerification(mUserID, mContentLanguage, audioFile, new JsonHttpResponseHandler() {
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
+                                    try {
+                                        // Wrong mPhrase
+                                        if (!response.getString("text").toLowerCase().equals(mPhrase.toLowerCase())) {
+                                            mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
+                                            mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
 
-                                        // Wait for ~1.5 seconds
-                                        new Handler().postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mOverlay.updateDisplayText(getString(R.string.INCORRECT_PASSPHRASE, mPhrase));
-                                                // Wait for ~4.5 seconds
-                                                new Handler().postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        audioFile.deleteOnExit();
-                                                        mFailedAttempts++;
+                                            // Wait for ~1.5 seconds
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    mOverlay.updateDisplayText(getString(R.string.INCORRECT_PASSPHRASE, mPhrase));
+                                                    // Wait for ~4.5 seconds
+                                                    new Handler().postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            audioFile.deleteOnExit();
+                                                            mFailedAttempts++;
 
-                                                        // User failed too many times
-                                                        if (mFailedAttempts >= mMaxFailedAttempts) {
-                                                            mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
-                                                            // Wait for ~2 seconds
-                                                            new Handler().postDelayed(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-                                                                    exitViewWithMessage("voiceit-failure", "Too many attempts");
-                                                                }
-                                                            }, 2000);
-                                                        } else if (mContinueVerifying) {
-                                                            // Try again
-                                                            recordVoice();
+                                                            // User failed too many times
+                                                            if (mFailedAttempts >= mMaxFailedAttempts) {
+                                                                mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
+                                                                // Wait for ~2 seconds
+                                                                new Handler().postDelayed(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        exitViewWithMessage("voiceit-failure", "Too many attempts");
+                                                                    }
+                                                                }, 2000);
+                                                            } else if (mContinueVerifying) {
+                                                                // Try again
+                                                                recordVoice();
+                                                            }
                                                         }
-                                                    }
-                                                }, 4500);
-                                            }
-                                        }, 1500);
-                                        // Success
-                                    } else if (response.getString("responseCode").equals("SUCC")) {
-                                        mOverlay.setProgressCircleColor(getResources().getColor(R.color.green));
-                                        mOverlay.updateDisplayTextAndLock(getString(R.string.VERIFY_SUCCESS));
+                                                    }, 4500);
+                                                }
+                                            }, 1500);
+                                            // Success
+                                        } else if (response.getString("responseCode").equals("SUCC")) {
+                                            mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
+                                            mOverlay.updateDisplayTextAndLock(getString(R.string.VERIFY_SUCCESS));
 
-                                        // Wait for ~2 seconds then exit
+                                            // Wait for ~2 seconds then exit
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    audioFile.deleteOnExit();
+                                                    exitViewWithJSON("voiceit-success", response);
+                                                }
+                                            }, 2000);
+                                            // Fail
+                                        } else {
+                                            audioFile.deleteOnExit();
+                                            failVerification(response);
+                                        }
+                                    } catch (JSONException e) {
+                                        Log.d(mTAG, "JSON Exception: " + e.getMessage());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
+                                    if (errorResponse != null) {
+                                        Log.d(mTAG, "JSONResult : " + errorResponse.toString());
+
+                                        audioFile.deleteOnExit();
+                                        failVerification(errorResponse);
+                                    } else {
+                                        Log.e(mTAG, "No response from server");
+                                        mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                                        // Wait for 2.0 seconds
                                         new Handler().postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
-                                                audioFile.deleteOnExit();
-                                                exitViewWithJSON("voiceit-success", response);
+                                                exitViewWithMessage("voiceit-failure", "No response from server");
                                             }
                                         }, 2000);
-                                        // Fail
-                                    } else {
-                                        audioFile.deleteOnExit();
-                                        failVerification(response);
                                     }
-                                } catch (JSONException e) {
-                                    Log.d(mTAG, "JSON Exception: " + e.getMessage());
                                 }
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
-                                if (errorResponse != null) {
-                                    Log.d(mTAG, "JSONResult : " + errorResponse.toString());
-
-                                    audioFile.deleteOnExit();
-                                    failVerification(errorResponse);
-                                } else {
-                                    Log.e(mTAG, "No response from server");
-                                    mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
-                                    // Wait for 2.0 seconds
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            exitViewWithMessage("voiceit-failure", "No response from server");
-                                        }
-                                    }, 2000);
-                                }
-                            }
-                        });
+                            });
+                        }
                     }
-                }
-            }, 4800);
+                }, 4800);
 
-        } catch (Exception ex) {
-            Log.d(mTAG, "Recording Error: " + ex.getMessage());
-            exitViewWithMessage("voiceit-failure", "Recording Error");
+            } catch (Exception ex) {
+                Log.d(mTAG, "Recording Error: " + ex.getMessage());
+                exitViewWithMessage("voiceit-failure", "Recording Error");
+            }
         }
     }
 
@@ -401,9 +402,9 @@ public class VoiceVerificationView extends AppCompatActivity {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                        // Record Voice then verify
-                                        recordVoice();
-                                    }
+                                    // Record Voice then verify
+                                    recordVoice();
+                                }
                             }, 500);
                         } catch (Exception e) {
                             Log.d(mTAG,"MediaRecorder exception : " + e.getMessage());

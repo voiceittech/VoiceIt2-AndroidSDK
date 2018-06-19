@@ -59,7 +59,7 @@ public class RadiusOverlayView extends LinearLayout {
     private final ArrayList<Paint> mWaveformLinePaints = new ArrayList<>();
     private Path mWaveformPath;
     private float mWaveformPhase = 0.0f;
-    private final int mWaveColor = getResources().getColor(R.color.yellow);
+    private final int mWaveColor = getResources().getColor(R.color.waveform);
 
     public void unlockDisplay() {
         mLockTextDisplay = false;
@@ -144,7 +144,7 @@ public class RadiusOverlayView extends LinearLayout {
         portraitHeight = (int) (mViewHeight * .8);
 
         // rect inverted circle overlay
-        invertedCirclePaint.setColor(getResources().getColor(R.color.black));
+        invertedCirclePaint.setColor(getResources().getColor(R.color.portraitBackground));
         invertedCirclePaint.setAlpha(230);
 
         // inverted circle for portrait
@@ -159,7 +159,7 @@ public class RadiusOverlayView extends LinearLayout {
         progressCirclePaint.setStyle(Paint.Style.STROKE);
         progressCirclePaint.setStrokeCap(Paint.Cap.SQUARE);
         progressCirclePaint.setStrokeWidth(getContext().getResources().getDisplayMetrics().density * 10);
-        progressCirclePaint.setColor(getResources().getColor(R.color.yellow));
+        progressCirclePaint.setColor(getResources().getColor(R.color.progressCircle));
 
         // text color
         textPaint.setColor(Color.rgb(255, 255, 255));
@@ -203,7 +203,7 @@ public class RadiusOverlayView extends LinearLayout {
         // Draw waveform
         if (mDrawWaveform) {
 
-            canvas.drawColor(getResources().getColor(R.color.black));
+            canvas.drawColor(getResources().getColor(R.color.portraitBackground));
 
             final float mWaveformDensity = 1.0f;
             final float mWaveformFrequency = 1.2f;

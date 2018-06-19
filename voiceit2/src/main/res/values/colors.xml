@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <color name="black">#050002</color>
-
-    <color name="yellow">#cea017</color>
-    <color name="green">#379c15</color>
-    <color name="lightGreen">#94da7d</color>
-    <color name="red">#d70b23</color>
+    <color name="waveform">#cea017</color>
+    <color name="progressCircle">#cea017</color>
+    <color name="portraitBackground">#050002</color>
+    <color name="success">#379c15</color>
+    <color name="pendingLivenesSuccess">#94da7d</color>
+    <color name="failure">#d70b23</color>
 </resources>

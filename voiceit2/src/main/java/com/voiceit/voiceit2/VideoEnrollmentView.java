@@ -303,7 +303,6 @@ public class VideoEnrollmentView extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         exitViewWithMessage("voiceit-failure", "User Canceled");
     }
 
@@ -379,7 +378,7 @@ public class VideoEnrollmentView extends AppCompatActivity {
     }
 
     private void failEnrollment(final JSONObject response) {
-        mOverlay.setProgressCircleColor(getResources().getColor(R.color.red));
+        mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
 
         // Wait for ~1.5 seconds
@@ -423,147 +422,149 @@ public class VideoEnrollmentView extends AppCompatActivity {
     }
 
     private void enrollUser() {
-        // Display enrollment mPhrase to user
-        mOverlay.updateDisplayText(getString(getResources().getIdentifier("ENROLL_" + (mEnrollmentCount + 1) + "_PHRASE", "string", getPackageName()), mPhrase));
-        try {
-            // Create file for audio
-            final File audioFile = Utils.getOutputMediaFile(".wav");
-            if(audioFile == null) {
-                exitViewWithMessage("voiceit-failure", "Creating audio file failed");
-            }
+        if(mContinueEnrolling) {
+            // Display enrollment mPhrase to user
+            mOverlay.updateDisplayText(getString(getResources().getIdentifier("ENROLL_" + (mEnrollmentCount + 1) + "_PHRASE", "string", getPackageName()), mPhrase));
+            try {
+                // Create file for audio
+                final File audioFile = Utils.getOutputMediaFile(".wav");
+                if (audioFile == null) {
+                    exitViewWithMessage("voiceit-failure", "Creating audio file failed");
+                }
 
-            // Setup device and capture audio
-            mMediaRecorder = new MediaRecorder();
-            Utils.startMediaRecorder(mMediaRecorder, audioFile);
+                // Setup device and capture audio
+                mMediaRecorder = new MediaRecorder();
+                Utils.startMediaRecorder(mMediaRecorder, audioFile);
 
-            mOverlay.setProgressCircleColor(getResources().getColor(R.color.yellow));
-            mOverlay.startDrawingProgressCircle();
-            // Record for ~5 seconds, then send enrollment data
-            // 4800 to make sure recording is not over 5 seconds
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (mContinueEnrolling) {
-                        stopRecording();
+                mOverlay.setProgressCircleColor(getResources().getColor(R.color.progressCircle));
+                mOverlay.startDrawingProgressCircle();
+                // Record for ~5 seconds, then send enrollment data
+                // 4800 to make sure recording is not over 5 seconds
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mContinueEnrolling) {
+                            stopRecording();
 
-                        mOverlay.updateDisplayText(getString(R.string.WAIT));
-                        mVoiceIt2.createVideoEnrollment(mUserID, mContentLanguage, audioFile, mPictureFile, new JsonHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
-                                try {
-                                    // Wrong Phrase
-                                    if (!response.getString("text").toLowerCase().equals(mPhrase.toLowerCase())) {
-                                        mOverlay.setProgressCircleColor(getResources().getColor(R.color.red));
-                                        mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
+                            mOverlay.updateDisplayText(getString(R.string.WAIT));
+                            mVoiceIt2.createVideoEnrollment(mUserID, mContentLanguage, audioFile, mPictureFile, new JsonHttpResponseHandler() {
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
+                                    try {
+                                        // Wrong Phrase
+                                        if (!response.getString("text").toLowerCase().equals(mPhrase.toLowerCase())) {
+                                            mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
+                                            mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
 
-                                        // Wait for ~1.5 seconds
-                                        new Handler().postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
+                                            // Wait for ~1.5 seconds
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
 
-                                                mOverlay.updateDisplayText(getString(R.string.INCORRECT_PASSPHRASE, mPhrase));
+                                                    mOverlay.updateDisplayText(getString(R.string.INCORRECT_PASSPHRASE, mPhrase));
 
-                                                // Wait for ~4.5 seconds
-                                                new Handler().postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        audioFile.deleteOnExit();
-                                                        mPictureFile.deleteOnExit();
-                                                        mFailedAttempts++;
-
-                                                        // User failed too many times
-                                                        if (mFailedAttempts > mMaxFailedAttempts) {
-                                                            mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
-                                                            // Wait for ~2 seconds
-                                                            new Handler().postDelayed(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-                                                                    exitViewWithMessage("voiceit-failure", "Too many attempts");
-                                                                }
-                                                            }, 2000);
-                                                        } else if (mContinueEnrolling) {
-                                                            if(FaceTracker.lookingAway) {
-                                                                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
-                                                            }
-                                                            // Try again
-                                                            FaceTracker.continueDetecting = true;
-                                                        }
-                                                    }
-                                                }, 4800);
-                                            }
-                                        }, 1500);
-
-                                        // Success
-                                    } else if (response.getString("responseCode").equals("SUCC")) {
-                                        mOverlay.setProgressCircleColor(getResources().getColor(R.color.green));
-                                        mOverlay.updateDisplayText(getString(R.string.ENROLL_SUCCESS));
-
-                                        // Wait for ~2 seconds
-                                        new Handler().postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                audioFile.deleteOnExit();
-                                                mPictureFile.deleteOnExit();
-                                                mEnrollmentCount++;
-
-                                                if (mEnrollmentCount == mNeededEnrollments) {
-                                                    mOverlay.updateDisplayText(getString(R.string.ALL_ENROLL_SUCCESS));
-                                                    // Wait for ~2.5 seconds
+                                                    // Wait for ~4.5 seconds
                                                     new Handler().postDelayed(new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            exitViewWithJSON("voiceit-success", response);
-                                                        }
-                                                    }, 2500);
-                                                } else {
-                                                    if(FaceTracker.lookingAway) {
-                                                        mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
-                                                    }
-                                                    // Continue Enrolling
-                                                    FaceTracker.continueDetecting = true;
-                                                }
-                                            }
-                                        }, 2000);
+                                                            audioFile.deleteOnExit();
+                                                            mPictureFile.deleteOnExit();
+                                                            mFailedAttempts++;
 
-                                        // Fail
-                                    } else {
+                                                            // User failed too many times
+                                                            if (mFailedAttempts > mMaxFailedAttempts) {
+                                                                mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
+                                                                // Wait for ~2 seconds
+                                                                new Handler().postDelayed(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        exitViewWithMessage("voiceit-failure", "Too many attempts");
+                                                                    }
+                                                                }, 2000);
+                                                            } else if (mContinueEnrolling) {
+                                                                if (FaceTracker.lookingAway) {
+                                                                    mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                                                }
+                                                                // Try again
+                                                                FaceTracker.continueDetecting = true;
+                                                            }
+                                                        }
+                                                    }, 4800);
+                                                }
+                                            }, 1500);
+
+                                            // Success
+                                        } else if (response.getString("responseCode").equals("SUCC")) {
+                                            mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
+                                            mOverlay.updateDisplayText(getString(R.string.ENROLL_SUCCESS));
+
+                                            // Wait for ~2 seconds
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    audioFile.deleteOnExit();
+                                                    mPictureFile.deleteOnExit();
+                                                    mEnrollmentCount++;
+
+                                                    if (mEnrollmentCount == mNeededEnrollments) {
+                                                        mOverlay.updateDisplayText(getString(R.string.ALL_ENROLL_SUCCESS));
+                                                        // Wait for ~2.5 seconds
+                                                        new Handler().postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                exitViewWithJSON("voiceit-success", response);
+                                                            }
+                                                        }, 2500);
+                                                    } else {
+                                                        if (FaceTracker.lookingAway) {
+                                                            mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                                        }
+                                                        // Continue Enrolling
+                                                        FaceTracker.continueDetecting = true;
+                                                    }
+                                                }
+                                            }, 2000);
+
+                                            // Fail
+                                        } else {
+                                            audioFile.deleteOnExit();
+                                            mPictureFile.deleteOnExit();
+                                            failEnrollment(response);
+                                        }
+                                    } catch (JSONException e) {
+                                        Log.d(mTAG, "JSON Error: " + e.getMessage());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
+                                    if (errorResponse != null) {
+                                        Log.d(mTAG, "JSONResult : " + errorResponse.toString());
                                         audioFile.deleteOnExit();
                                         mPictureFile.deleteOnExit();
-                                        failEnrollment(response);
+                                        failEnrollment(errorResponse);
+                                    } else {
+                                        Log.e(mTAG, "No response from server");
+                                        mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                                        // Wait for 2.0 seconds
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                exitViewWithMessage("voiceit-failure", "No response from server");
+                                            }
+                                        }, 2000);
                                     }
-                                } catch (JSONException e) {
-                                    Log.d(mTAG, "JSON Error: " + e.getMessage());
                                 }
-                            }
+                            });
 
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
-                                if (errorResponse != null) {
-                                    Log.d(mTAG, "JSONResult : " + errorResponse.toString());
-                                    audioFile.deleteOnExit();
-                                    mPictureFile.deleteOnExit();
-                                    failEnrollment(errorResponse);
-                                } else {
-                                    Log.e(mTAG, "No response from server");
-                                    mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
-                                    // Wait for 2.0 seconds
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            exitViewWithMessage("voiceit-failure", "No response from server");
-                                        }
-                                    }, 2000);
-                                }
-                            }
-                        });
-
+                        }
                     }
-                }
-            }, 4800);
+                }, 4800);
 
-        } catch (Exception ex) {
-            Log.d(mTAG, "Recording Error:" + ex.getMessage());
-            exitViewWithMessage("voiceit-failure", "Recording Error");
+            } catch (Exception ex) {
+                Log.d(mTAG, "Recording Error:" + ex.getMessage());
+                exitViewWithMessage("voiceit-failure", "Recording Error");
+            }
         }
     }
 

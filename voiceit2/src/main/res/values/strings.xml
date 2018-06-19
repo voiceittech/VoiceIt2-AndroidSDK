@@ -20,8 +20,8 @@
     <string name="TOO_MANY_ATTEMPTS">Too many attempts were made. Please try again later.</string>
     <string name="BLINK_1_TIME">Please blink 1 more time</string>
     <string name="BLINK_2_TIME">Please blink 2 times</string>
-    <string name="TURN_RIGHT">Please turn your face right</string>
-    <string name="TURN_LEFT">Please turn your face left</string>
+    <string name="TURN_RIGHT">Please turn your face right, then back forward.</string>
+    <string name="TURN_LEFT">Please turn your face left, then back forward</string>
     <string name="SMILE">Please smile</string>
     <string name="FAILED_LIVENESS">Failed liveness detection</string>
 

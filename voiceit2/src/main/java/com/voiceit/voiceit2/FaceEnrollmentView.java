@@ -282,7 +282,6 @@ public class FaceEnrollmentView extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         exitViewWithMessage("voiceit-failure","User Canceled");
     }
 
@@ -346,7 +345,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
     }
 
     private void failEnrollment(final JSONObject response) {
-        mOverlay.setProgressCircleColor(getResources().getColor(R.color.red));
+        mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
         // Wait for ~1.5 seconds
         new Handler().postDelayed(new Runnable() {
@@ -389,7 +388,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
     }
 
     private void enrollUserFace() {
-        mOverlay.setProgressCircleColor(getResources().getColor(R.color.yellow));
+        mOverlay.setProgressCircleColor(getResources().getColor(R.color.progressCircle));
         mOverlay.setProgressCircleAngle(270, 359);
         mVoiceIt2.createFaceEnrollmentWithPhoto(mUserID, mPictureFile, new JsonHttpResponseHandler() {
             @Override
@@ -398,7 +397,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
                     // If successful enrollment
                     if (response.getString("responseCode").equals("SUCC")) {
 
-                        mOverlay.setProgressCircleColor(getResources().getColor(R.color.green));
+                        mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
                         mOverlay.updateDisplayText(getString(R.string.ENROLL_SUCCESS));
 
                         // Wait for ~2 seconds

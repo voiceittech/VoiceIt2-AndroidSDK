@@ -40,6 +40,7 @@ class FaceTracker extends Tracker<Face> {
     public static boolean continueDetecting = true;
     public static boolean lookingAway = false;
     private static boolean timingLookingAway = false;
+    public static final Handler livenessTimer = new Handler();
 
     FaceTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int [] livenessChallengeOrder, boolean doLivenessCheck) {
         mOverlay = overlay;
@@ -119,7 +120,7 @@ class FaceTracker extends Tracker<Face> {
 
                 } else if (face.getIsSmilingProbability() > .5 && !mDisplayingChallengeOutcome) {
                     mDisplayingChallengeOutcome = true;
-                    setProgressCircleColor(R.color.green);
+                    setProgressCircleColor(R.color.success);
                     setProgressCircleAngle(270.0,359.999);
                     completeLivenessChallenge();
                 }
@@ -130,13 +131,13 @@ class FaceTracker extends Tracker<Face> {
                 if (!mDisplayingChallenge) {
                     mDisplayingChallenge = true;
                     updateDisplayText(mActivity.getString(R.string.TURN_LEFT), false);
-                    setProgressCircleColor(R.color.lightGreen);
+                    setProgressCircleColor(R.color.pendingLivenesSuccess);
                     setProgressCircleAngle(135.0, 90.0);
 
                 } else if (!mDisplayingChallengeOutcome) {
                     if(face.getEulerY() > 18.0) {
                         mDisplayingChallengeOutcome = true;
-                        setProgressCircleColor(R.color.green);
+                        setProgressCircleColor(R.color.success);
                         completeLivenessChallenge();
 
                     } else if (face.getEulerY() < -22.0) {
@@ -151,13 +152,13 @@ class FaceTracker extends Tracker<Face> {
                 if (!mDisplayingChallenge) {
                     mDisplayingChallenge = true;
                     updateDisplayText(mActivity.getString(R.string.TURN_RIGHT), false);
-                    setProgressCircleColor(R.color.lightGreen);
+                    setProgressCircleColor(R.color.pendingLivenesSuccess);
                     setProgressCircleAngle(315.0, 90.0);
 
                 } else if (!mDisplayingChallengeOutcome) {
                     if(face.getEulerY() < -18.0) {
                         mDisplayingChallengeOutcome = true;
-                        setProgressCircleColor(R.color.green);
+                        setProgressCircleColor(R.color.success);
                         completeLivenessChallenge();
 
                     } else if (face.getEulerY() > 22.0) {
@@ -207,7 +208,7 @@ class FaceTracker extends Tracker<Face> {
 //                    mActivity.runOnUiThread(new Runnable() {
 //                        @Override
 //                        public void run() {
-//                            overlay.setProgressCircleColor(mActivity.getResources().getColor(R.color.green));
+//                            overlay.setProgressCircleColor(mActivity.getResources().getColor(R.color.success));
 //                            overlay.setProgressCircleAngle(359.999);
 //                            // Quick pause in-between challenges
 //                            new Handler().postDelayed(new Runnable() {
@@ -231,7 +232,7 @@ class FaceTracker extends Tracker<Face> {
 
         // Display fail to user
         setProgressCircleAngle(0.0, 0.0);
-        setProgressCircleColor(R.color.red);
+        setProgressCircleColor(R.color.failure);
         setProgressCircleAngle(270.0, 359.0);
         // Lock display so threaded liveness check displays don't interrupt failed message
         updateDisplayText(mActivity.getString(R.string.FAILED_LIVENESS), true);
@@ -288,7 +289,7 @@ class FaceTracker extends Tracker<Face> {
                                 public void run() {
                                     // Quick pause, 1 seconds, after all challenges are done
                                     setProgressCircleAngle(270.0, 0.0);
-                                    setProgressCircleColor(R.color.yellow);
+                                    setProgressCircleColor(R.color.progressCircle);
                                     if (!mDoLivenessCheck) {
                                         // Since picture was not taken during liveness check, take one now then auth
                                         mCallbacks.takePictureCallBack();
@@ -315,7 +316,7 @@ class FaceTracker extends Tracker<Face> {
                             @Override
                             public void run() {
                                 // Fail after 3 seconds
-                                new Handler().postDelayed(new Runnable() {
+                                livenessTimer.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
                                         // Fail if on the same liveness check as when the timer started
