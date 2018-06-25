@@ -77,14 +77,14 @@ import com.voiceit.voiceit2.VoiceItAPI2;
 
 public class MainActivity extends AppCompatActivity {
 
-    private VoiceItAPI2 myVoiceIt2;
+    private VoiceItAPI2 myVoiceIt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myVoiceIt2 = new VoiceItAPI2("API_KEY","API_TOK");
+        myVoiceIt = new VoiceItAPI2("API_KEY","API_TOK");
     }
 }
 ```
