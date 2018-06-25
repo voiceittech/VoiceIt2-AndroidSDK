@@ -3,6 +3,7 @@
 A fully comprehensive SDK that gives you access to the VoiceIt's New VoiceIt API 2.0 featuring Voice + Face Verification and Identification right in your Android app.
 
 * [Getting Started](#getting-started)
+* [Requirements](#requirements)
 * [Installation](#installation)
 * [API Calls](#api-calls)
   * [Initialization](#initialization)
@@ -52,6 +53,10 @@ A fully comprehensive SDK that gives you access to the VoiceIt's New VoiceIt API
 Sign up for a free Developer Account at <a href="https://voiceit.io/signup" target="_blank">VoiceIt.io</a> and activate API 2.0 from the settings page. Then you should be able view the API Key and Token (as shown below). You can also review the HTTP Documentation at <a href="https://api.voiceit.io" target="_blank">api.voiceit.io</a>.
 
 <img src="Graphics/devSettings.png" alt="API Key and Token" width="400px" />
+
+## Requirements
+
+minSdkVersion: 17
 
 ## Installation
 
