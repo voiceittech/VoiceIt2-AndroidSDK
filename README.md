@@ -132,7 +132,7 @@ myVoiceIt.createUser(new JsonHttpResponseHandler() {...});
 
 Check whether a user exists for the given userId(begins with 'usr_')
 ```java
-myVoiceIt.getUser("USER_ID_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.checkUserExists("USER_ID_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 #### Delete User
