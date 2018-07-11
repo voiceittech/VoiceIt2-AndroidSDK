@@ -3,6 +3,7 @@
 A fully comprehensive SDK that gives you access to the VoiceIt's New VoiceIt API 2.0 featuring Voice + Face Verification and Identification right in your Android app.
 
 * [Getting Started](#getting-started)
+* [Requirements](#requirements)
 * [Installation](#installation)
 * [API Calls](#api-calls)
   * [Initialization](#initialization)
@@ -49,9 +50,13 @@ A fully comprehensive SDK that gives you access to the VoiceIt's New VoiceIt API
 
 ## Getting Started
 
-Sign up for a free Developer Account at <a href="https://voiceit.io/signup" target="_blank">VoiceIt.io</a> and activate API 2.0 from the settings page. Then you should be able view the API Key and Token (as shown below). You can also review the HTTP Documentation at <a href="https://api.voiceit.io" target="_blank">api.voiceit.io</a>.
+Sign up for a free Developer Account at <a href="https://voiceit.io/signup" target="_blank">VoiceIt.io</a> and view your API Key and Token in the settings page(as shown below). You can also review the HTTP Documentation at <a href="https://api.voiceit.io" target="_blank">api.voiceit.io</a>.
 
 <img src="Graphics/devSettings.png" alt="API Key and Token" width="400px" />
+
+## Requirements
+
+minSdkVersion: 17
 
 ## Installation
 
@@ -72,14 +77,14 @@ import com.voiceit.voiceit2.VoiceItAPI2;
 
 public class MainActivity extends AppCompatActivity {
 
-    private VoiceItAPI2 myVoiceIt2;
+    private VoiceItAPI2 myVoiceIt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myVoiceIt2 = new VoiceItAPI2("API_KEY","API_TOK");
+        myVoiceIt = new VoiceItAPI2("API_KEY","API_TOK");
     }
 }
 ```
@@ -127,7 +132,7 @@ myVoiceIt.createUser(new JsonHttpResponseHandler() {...});
 
 Check whether a user exists for the given userId(begins with 'usr_')
 ```java
-myVoiceIt.getUser("USER_ID_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.checkUserExists("USER_ID_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 #### Delete User
@@ -273,10 +278,10 @@ myVoiceIt.createVideoEnrollmentByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "U
 
 #### Encapsulated Video Enrollment
 
-Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.), a given phrase such as "my face and voice identify me", and a boolean to enable liveness detection. Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
+Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.), a given phrase such as "my face and voice identify me". Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
 
 ```java
-myVoiceIt.encapsulatedVideoEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", true, new JsonHttpResponseHandler() {...});
+myVoiceIt.encapsulatedVideoEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", new JsonHttpResponseHandler() {...});
 ```
 #### Create Face Enrollment
 
@@ -288,10 +293,10 @@ myVoiceIt.createFaceEnrollment("USER_ID_HERE", File video, new JsonHttpResponseH
 
 #### Encapsulated Face Enrollment
 
-Create three face enrollments for user with given userId(begins with 'usr_') and boolean to enable liveness detection. Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
+Create three face enrollments for user with given userId(begins with 'usr_'). Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
 
 ```java
-myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", true, new JsonHttpResponseHandler() {...});
+myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 ### Verification API Calls
