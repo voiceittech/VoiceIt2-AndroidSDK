@@ -751,6 +751,10 @@ public class VoiceItAPI2 {
     }
 
     public void encapsulatedVideoVerification(Activity activity, String userID, String contentLanguage, String phrase, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
+        encapsulatedVideoVerification(activity, userID, contentLanguage, phrase, doLivenessCheck, 0, 2, responseHandler);
+    }
+
+        public void encapsulatedVideoVerification(Activity activity, String userID, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userID)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
@@ -764,6 +768,8 @@ public class VoiceItAPI2 {
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
+        bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
+        bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
@@ -788,6 +794,10 @@ public class VoiceItAPI2 {
     }
 
     public void encapsulatedFaceVerification(Activity activity, String userID, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
+        encapsulatedFaceVerification(activity, userID, doLivenessCheck, 0, 2, responseHandler);
+    }
+
+    public void encapsulatedFaceVerification(Activity activity, String userID, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userID)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
@@ -799,6 +809,8 @@ public class VoiceItAPI2 {
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userID", userID);
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
+        bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
+        bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
@@ -841,7 +853,8 @@ public class VoiceItAPI2 {
                 || !arg.substring(0, 3).equals("usr")
                 || id.length() != 32) {
              Log.d(mTAG,"UserId does not meet requirements, " +
-                     "please ensure it is your alphanumeric string of 32 characters");
+                     "please ensure it is your user's 36 character alphanumeric string generated " +
+                     "from the createUser API call");
             return false;
         }
         return true;
@@ -853,7 +866,8 @@ public class VoiceItAPI2 {
                 || !arg.substring(0, 3).equals("grp")
                 || id.length() != 32) {
              Log.d(mTAG,"GroupId does not meet requirements, " +
-                     "please ensure it is your alphanumeric string of 32 characters");
+                     "please ensure it is your group's 36 character alphanumeric string generated " +
+                     "from the createUser API call");
             return false;
         }
         return true;
