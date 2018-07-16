@@ -29,10 +29,11 @@ public class VoiceItAPI2 {
     public VoiceItAPI2(String apiKey, String apiToken){
         this.apiKey = apiKey;
         this.apiToken = apiToken;
-        client = new AsyncHttpClient();
+        this.client = new AsyncHttpClient();
         this.client.removeAllHeaders();
         this.client.setTimeout(15 * 1000);
         this.client.setBasicAuth(apiKey, apiToken);
+        this.client.addHeader("platformId", "40");
     }
 
     private String getAbsoluteUrl(String relativeUrl) {
