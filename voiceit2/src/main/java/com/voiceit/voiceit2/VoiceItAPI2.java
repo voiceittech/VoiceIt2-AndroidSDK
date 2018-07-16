@@ -97,8 +97,7 @@ public class VoiceItAPI2 {
     }
 
     public void createVoiceEnrollment(String userId, String contentLanguage, String recordingPath, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(recordingPath);
-        createVoiceEnrollment(userId, contentLanguage, file, responseHandler);
+        createVoiceEnrollment(userId, contentLanguage, new File(recordingPath), responseHandler);
     }
 
     public void createVoiceEnrollment(String userId, String contentLanguage, File recording, AsyncHttpResponseHandler responseHandler) {
@@ -169,13 +168,11 @@ public class VoiceItAPI2 {
     }
 
     public void createFaceEnrollment(String userId, String videoPath, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        createFaceEnrollment(userId, file, doBlinkDetection, responseHandler);
+        createFaceEnrollment(userId, new File(videoPath), doBlinkDetection, responseHandler);
     }
 
     public void createFaceEnrollment(String userId, String videoPath, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        createFaceEnrollment(userId, file, false, responseHandler);
+        createFaceEnrollment(userId, new File(videoPath), false, responseHandler);
     }
 
     public void createFaceEnrollment(String userId, File video, AsyncHttpResponseHandler responseHandler) {
@@ -200,13 +197,11 @@ public class VoiceItAPI2 {
     }
 
     public void createFaceEnrollmentWithPhoto(String userId, String photoPath, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(photoPath);
-        createFaceEnrollmentWithPhoto(userId, file, doBlinkDetection, responseHandler);
+        createFaceEnrollmentWithPhoto(userId, new File(photoPath), doBlinkDetection, responseHandler);
     }
 
     public void createFaceEnrollmentWithPhoto(String userId, String photoPath, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(photoPath);
-        createFaceEnrollmentWithPhoto(userId, file, false, responseHandler);
+        createFaceEnrollmentWithPhoto(userId, new File(photoPath), false, responseHandler);
     }
 
     public void createFaceEnrollmentWithPhoto(String userId, File photo, AsyncHttpResponseHandler responseHandler) {
@@ -254,13 +249,11 @@ public class VoiceItAPI2 {
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, String videoPath, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        createVideoEnrollment(userId, contentLanguage, file, doBlinkDetection, responseHandler);
+        createVideoEnrollment(userId, contentLanguage, new File(videoPath), doBlinkDetection, responseHandler);
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, String videoPath, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        createVideoEnrollment(userId, contentLanguage, file, false, responseHandler);
+        createVideoEnrollment(userId, contentLanguage, new File(videoPath), false, responseHandler);
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler) {
@@ -377,8 +370,7 @@ public class VoiceItAPI2 {
     }
 
     public void voiceVerification(String userId, String contentLanguage, String recordingPath, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(recordingPath);
-        voiceVerification(userId, contentLanguage, file, responseHandler);
+        voiceVerification(userId, contentLanguage, new File(recordingPath), responseHandler);
     }
 
     public void voiceVerification(String userId, String contentLanguage, File recording, AsyncHttpResponseHandler responseHandler) {
@@ -448,13 +440,11 @@ public class VoiceItAPI2 {
     }
 
     public void faceVerification(String userId, String videoPath, boolean doBlinkDetection,  AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        faceVerification(userId, file, doBlinkDetection, responseHandler);
+        faceVerification(userId, new File(videoPath), doBlinkDetection, responseHandler);
     }
 
     public void faceVerification(String userId, String videoPath, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        faceVerification(userId, file, false, responseHandler);
+        faceVerification(userId, new File(videoPath), false, responseHandler);
     }
 
     public void faceVerification(String userId, File video, AsyncHttpResponseHandler responseHandler) {
@@ -481,13 +471,11 @@ public class VoiceItAPI2 {
 
 
     public void faceVerificationWithPhoto(String userId, String photoPath, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(photoPath);
-        faceVerificationWithPhoto(userId, photoPath, doBlinkDetection, responseHandler);
+        faceVerificationWithPhoto(userId, new File(photoPath), doBlinkDetection, responseHandler);
     }
 
     public void faceVerificationWithPhoto(String userId, String photoPath, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(photoPath);
-        faceVerificationWithPhoto(userId, photoPath, false, responseHandler);
+        faceVerificationWithPhoto(userId, new File(photoPath), false, responseHandler);
     }
 
     public void faceVerificationWithPhoto(String userId, File photo, AsyncHttpResponseHandler responseHandler) {
@@ -512,13 +500,11 @@ public class VoiceItAPI2 {
     }
 
     public void videoVerification(String userId, String contentLanguage, String videoPath, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        videoVerification(userId, contentLanguage, file, doBlinkDetection, responseHandler);
+        videoVerification(userId, contentLanguage, new File(videoPath), doBlinkDetection, responseHandler);
     }
 
     public void videoVerification(String userId, String contentLanguage, String videoPath, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        videoVerification(userId, contentLanguage, file, false, responseHandler);
+        videoVerification(userId, contentLanguage, new File(videoPath), false, responseHandler);
     }
 
     public void videoVerification(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler) {
@@ -588,8 +574,7 @@ public class VoiceItAPI2 {
     }
 
     public void voiceIdentification(String groupId, String recordingPath, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(recordingPath);
-        voiceIdentification(groupId, file, contentLanguage, responseHandler);
+        voiceIdentification(groupId, new File(recordingPath), contentLanguage, responseHandler);
     }
 
     public void voiceIdentification(String groupId, File recording, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
@@ -660,13 +645,11 @@ public class VoiceItAPI2 {
     }
 
     public void videoIdentification(String groupId, String videoPath, String contentLanguage, boolean doBlinkDetection, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        videoIdentification(groupId, file, contentLanguage, doBlinkDetection, responseHandler);
+        videoIdentification(groupId, new File(videoPath), contentLanguage, doBlinkDetection, responseHandler);
     }
 
     public void videoIdentification(String groupId, String videoPath, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
-        File file = new File(videoPath);
-        videoIdentification(groupId, file, contentLanguage, false, responseHandler);
+        videoIdentification(groupId, new File(videoPath), contentLanguage, false, responseHandler);
     }
 
     public void videoIdentification(String groupId, File video, String contentLanguage, AsyncHttpResponseHandler responseHandler) {
