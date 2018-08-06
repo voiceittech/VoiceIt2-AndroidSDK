@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
 ### Liveness Detection
 
-For our Encapsulated Face and Video Verification methods, liveness detection can be enabled with a passed in boolean parameter. This enables a a pre-check before the verification api call to make sure the user is not trying to spoof with a photo of someone else.
+For our Encapsulated Face and Video Verification methods, liveness detection can be enabled with a passed in boolean parameter and number of checks to make(2 Recommended). This enables a a pre-check before the verification api call to make sure the user is not trying to spoof with a photo of someone else.
 
 ### API calls
 
@@ -336,7 +336,7 @@ myVoiceIt.videoVerificationByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File v
 
 #### Encapsulated Video Verification
 
-Verify user with given userId(begins with 'usr_'), contentLanguage('en-US','es-ES' etc.), a given phrase such as "my face and voice identify me", and a boolean to enable liveness detection. Note: Immediately upon calling this method it displays a verification view controller that verifies the user and provides relevant callbacks for whether the verification was successful or not with associated voice and face confidences.
+Verify user with given userId(begins with 'usr_'), contentLanguage('en-US','es-ES' etc.), a given phrase such as "my face and voice identify me", an optional boolean to enable liveness detection and number of liveness checks(2 Recommended). Note: Immediately upon calling this method it displays a verification view controller that verifies the user and provides relevant callbacks for whether the verification was successful or not with associated voice and face confidences.
 
 ```java
 myVoiceIt.encapsulatedVideoVerification(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "my face and voice identify me", true, new JsonHttpResponseHandler() {...});
@@ -353,10 +353,10 @@ myVoiceIt.faceVerification("USER_ID_HERE", File video, new JsonHttpResponseHandl
 
 #### Encapsulated Face Verification
 
-Verify user with given userId(begins with 'usr_') and boolean to enable liveness detection. Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the verification, including the UI and then provides relevant callbacks for whether the user cancelled their verification or successfully completed it.
+Verify user with given userId(begins with 'usr_'), an optional boolean to enable liveness detection and number of liveness checks(2 Recommended). Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the verification, including the UI and then provides relevant callbacks for whether the user cancelled their verification or successfully completed it.
 
 ```java
-myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", true, new JsonHttpResponseHandler() {...});
+myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", true, 2, new JsonHttpResponseHandler() {...});
 ```
 
 ### Identification API Calls
