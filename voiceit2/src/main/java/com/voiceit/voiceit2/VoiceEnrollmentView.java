@@ -218,8 +218,13 @@ public class VoiceEnrollmentView extends AppCompatActivity {
             public void run() {
                 try {
                     // Report error to user
-                    mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                            getString("responseCode"), "string", getPackageName()))));
+                    if (response.getString("responseCode").equals("PDNM")) {
+                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
+                                getString("responseCode"), "string", getPackageName())), mPhrase));
+                    } else {
+                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
+                                getString("responseCode"), "string", getPackageName()))));
+                    }
                 } catch (JSONException e) {
                     Log.d(mTAG, "JSON exception : " + e.toString());
                 }
@@ -309,47 +314,11 @@ public class VoiceEnrollmentView extends AppCompatActivity {
                             mOverlay.setWaveformMaxAmplitude(1);
 
                             mOverlay.updateDisplayText(getString(R.string.WAIT));
-                            mVoiceIt2.createVoiceEnrollment(mUserID, mContentLanguage, audioFile, new JsonHttpResponseHandler() {
+                            mVoiceIt2.createVoiceEnrollment(mUserID, mContentLanguage, mPhrase, audioFile, new JsonHttpResponseHandler() {
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                                     try {
-                                        // Wrong mPhrase
-                                        if (!response.getString("text").toLowerCase().equals(mPhrase.toLowerCase())) {
-                                            mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
-                                            mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
-
-                                            // Wait for ~1.5 seconds
-                                            new Handler().postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    mOverlay.updateDisplayText(getString(R.string.INCORRECT_PASSPHRASE, mPhrase));
-                                                    // Wait for ~4.5 seconds
-                                                    new Handler().postDelayed(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            audioFile.deleteOnExit();
-                                                            mFailedAttempts++;
-
-                                                            // User failed too many times
-                                                            if (mFailedAttempts >= mMaxFailedAttempts) {
-                                                                mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
-                                                                // Wait for ~2 seconds
-                                                                new Handler().postDelayed(new Runnable() {
-                                                                    @Override
-                                                                    public void run() {
-                                                                        exitViewWithMessage("voiceit-failure", "Too many attempts");
-                                                                    }
-                                                                }, 2000);
-                                                            } else if (mContinueEnrolling) {
-                                                                // Try again
-                                                                recordVoice();
-                                                            }
-                                                        }
-                                                    }, 4500);
-                                                }
-                                            }, 1500);
-                                            // Success
-                                        } else if (response.getString("responseCode").equals("SUCC")) {
+                                        if (response.getString("responseCode").equals("SUCC")) {
                                             mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
                                             mOverlay.updateDisplayText(getString(R.string.ENROLL_SUCCESS));
                                             // Wait for ~2 seconds

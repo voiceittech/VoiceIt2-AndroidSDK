@@ -434,8 +434,13 @@ public class VideoVerificationView extends AppCompatActivity {
             public void run() {
                 try {
                     // Report error to user
-                    mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                            getString("responseCode"), "string", getPackageName()))));
+                    if (response.getString("responseCode").equals("PDNM")) {
+                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
+                                getString("responseCode"), "string", getPackageName())), mPhrase));
+                    } else {
+                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
+                                getString("responseCode"), "string", getPackageName()))));
+                    }
                 } catch (JSONException e) {
                     Log.d(mTAG,"JSON exception : " + e.toString());
                 }
@@ -503,55 +508,11 @@ public class VideoVerificationView extends AppCompatActivity {
                             stopRecording();
 
                             mOverlay.updateDisplayText(getString(R.string.WAIT));
-                            mVoiceIt2.videoVerification(mUserID, audioFile, mPictureFile, mContentLanguage, new JsonHttpResponseHandler() {
+                            mVoiceIt2.videoVerification(mUserID, audioFile, mPictureFile, mContentLanguage, mPhrase, new JsonHttpResponseHandler() {
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                                     try {
-                                        // Wrong mPhrase
-                                        if (!response.getString("text").toLowerCase().equals(mPhrase.toLowerCase())) {
-                                            mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
-                                            mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
-
-                                            // Wait for ~1.5 seconds
-                                            new Handler().postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-
-                                                    mOverlay.updateDisplayText(getString(R.string.INCORRECT_PASSPHRASE, mPhrase));
-
-                                                    // Wait for ~4.5 seconds
-                                                    new Handler().postDelayed(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            audioFile.deleteOnExit();
-                                                            mPictureFile.deleteOnExit();
-                                                            mFailedAttempts++;
-
-                                                            // User failed too many times
-                                                            if (mFailedAttempts >= mMaxFailedAttempts) {
-                                                                mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
-                                                                // Wait for ~2 seconds
-                                                                new Handler().postDelayed(new Runnable() {
-                                                                    @Override
-                                                                    public void run() {
-                                                                        exitViewWithMessage("voiceit-failure", "Too many attempts");
-                                                                    }
-                                                                }, 2000);
-                                                            } else if (mContinueVerifying) {
-                                                                if (FaceTracker.lookingAway) {
-                                                                    mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
-                                                                }
-                                                                // Reset liveness check
-                                                                FaceTracker.livenessChallengesPassed = 0;
-                                                                FaceTracker.continueDetecting = true;
-                                                            }
-                                                        }
-                                                    }, 4500);
-                                                }
-                                            }, 1500);
-
-                                            // Success
-                                        } else if (response.getString("responseCode").equals("SUCC")) {
+                                         if (response.getString("responseCode").equals("SUCC")) {
                                             mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
                                             mOverlay.updateDisplayTextAndLock(getString(R.string.VERIFY_SUCCESS));
 

@@ -120,7 +120,7 @@ public class RadiusOverlayView extends LinearLayout {
                     mWaveformLinePaints.add(p);
                 } else {
                     p = new Paint(1);
-                    Log.v("Color", BuildConfig.FLAVOR + ((int) ((((double) (1.0f * multiplier)) * 0.7d) * 255.0d)));
+//                    Log.v("Color", BuildConfig.FLAVOR + ((int) ((((double) (1.0f * multiplier)) * 0.7d) * 255.0d)));
                     p.setColor(mWaveColor);
                     p.setAlpha((int) ((((double) (1.0f * multiplier)) * 0.8d) * 255.0d));
                     p.setStrokeWidth(3);

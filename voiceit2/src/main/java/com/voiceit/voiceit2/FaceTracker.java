@@ -29,6 +29,7 @@ class FaceTracker extends Tracker<Face> {
     private final boolean mDoLivenessCheck;
     private final int mLivenessChallengeFailsAllowed;
     private final int mLivenessChallengesNeeded;
+    private static int challengeIndex = 0;
 
     public static int livenessChallengesPassed = 0;
     public static int livenessChallengeFails = 0;
@@ -101,6 +102,11 @@ class FaceTracker extends Tracker<Face> {
                     public void run() {
                         setProgressCircleAngle(270.0, 0.0);
                         FaceTracker.livenessChallengesPassed++;
+                        if(challengeIndex >= mLivenessChallengeOrder.length-1) {
+                            challengeIndex = 0;
+                        } else {
+                            challengeIndex++;
+                        }
                         // Take picture in the middle of liveness checks
                         if (FaceTracker.livenessChallengesPassed == 1) {
                             mCallbacks.takePictureCallBack();
@@ -115,7 +121,7 @@ class FaceTracker extends Tracker<Face> {
 
     private void livenessCheck(Face face) {
 
-        switch (mLivenessChallengeOrder[FaceTracker.livenessChallengesPassed]) {
+        switch (mLivenessChallengeOrder[challengeIndex]) {
 
             // Smile
             case 1:
