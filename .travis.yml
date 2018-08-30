@@ -1,3 +1,4 @@
+if: branch = master
 language: android
 jdk: oraclejdk8
 
@@ -7,10 +8,19 @@ android:
     - tools
 
     # The BuildTools version
-    - build-tools-27.1.1
+    - build-tools-27.0.3
 
     # The SDK version
     - android-27
+
+    - extra-android-m2repository
+    - extra-google-m2repository
+    - extra-android-support
+    - extra-google-google_play_services
+
+  licenses:
+      - 'android-sdk-license-.+'
+      - 'google-gdk-license-.+'
 
 script:
     - ./gradlew test
