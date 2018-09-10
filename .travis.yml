@@ -1,9 +1,10 @@
 if: branch = master
 language: android
-jdk: oraclejdk8
+jdk: oraclejdk7
 
 android:
   components:
+    - tools
     - platform-tools
     - tools
 
@@ -23,6 +24,9 @@ android:
   licenses:
       - 'android-sdk-license-.+'
       - 'google-gdk-license-.+'
+
+before_install:
+- yes | sdkmanager "platforms;android-27"
 
 # Emulator Management: Create, Start and Wait
 before_script:
