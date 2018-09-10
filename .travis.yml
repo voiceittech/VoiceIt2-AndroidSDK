@@ -19,7 +19,7 @@ android:
     - extra-android-support
     - extra-google-google_play_services
 
-    - sys-img-armeabi-v7a-android-29
+    - sys-img-armeabi-v7a-android-19
 
   licenses:
       - 'android-sdk-license-.+'
