@@ -112,7 +112,7 @@ public class VideoVerificationView extends AppCompatActivity {
         // Try to start camera
         startCameraSource();
 
-        mVoiceIt2.getAllEnrollmentsForUser(mUserID, new JsonHttpResponseHandler() {
+        mVoiceIt2.getAllVideoEnrollments(mUserID, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, final JSONObject Response) {
                 try {
@@ -508,7 +508,7 @@ public class VideoVerificationView extends AppCompatActivity {
                             stopRecording();
 
                             mOverlay.updateDisplayText(getString(R.string.WAIT));
-                            mVoiceIt2.videoVerification(mUserID, audioFile, mPictureFile, mContentLanguage, mPhrase, new JsonHttpResponseHandler() {
+                            mVoiceIt2.videoVerification(mUserID, mContentLanguage, mPhrase, audioFile, mPictureFile, new JsonHttpResponseHandler() {
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                                     try {

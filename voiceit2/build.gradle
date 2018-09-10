@@ -29,5 +29,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.1'
     implementation 'com.android.support:support-v4:27.+'
     implementation 'com.google.android.gms:play-services-vision:11.4.0+'
+    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
 
-    api 'com.loopj.android:android-async-http:1.4.9' }
+    api 'com.loopj.android:android-async-http:1.4.9'
+}

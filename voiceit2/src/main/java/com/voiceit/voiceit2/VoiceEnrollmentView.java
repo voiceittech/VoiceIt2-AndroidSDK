@@ -88,7 +88,7 @@ public class VoiceEnrollmentView extends AppCompatActivity {
     private void startEnrollmentFlow() {
         mContinueEnrolling = true;
         // Delete enrollments and re-enroll
-        mVoiceIt2.deleteAllEnrollmentsForUser(mUserID, new JsonHttpResponseHandler() {
+        mVoiceIt2.deleteAllEnrollments(mUserID, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject Response) {
                 // Record voice and enroll

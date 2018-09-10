@@ -108,7 +108,7 @@ public class VideoEnrollmentView extends AppCompatActivity {
         startCameraSource();
 
         // Delete enrollments and re-enroll
-        mVoiceIt2.deleteAllEnrollmentsForUser(mUserID, new JsonHttpResponseHandler() {
+        mVoiceIt2.deleteAllEnrollments(mUserID, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject Response) {
                 mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));

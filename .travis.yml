@@ -23,10 +23,10 @@ android:
       - 'google-gdk-license-.+'
 
 script:
-    - ./gradlew test
+    - ./gradlew connectedAndroidTest
 
-#after_success:
-#  - ./update.sh
+after_success:
+  - ./update.sh
 
 notifications:
   slack:

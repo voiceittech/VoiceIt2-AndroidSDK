@@ -106,7 +106,7 @@ public class FaceVerificationView extends AppCompatActivity {
         // Try to start camera
         startCameraSource();
 
-        mVoiceIt2.getFaceEnrollmentsForUser(mUserID, new JsonHttpResponseHandler() {
+        mVoiceIt2.getAllFaceEnrollments(mUserID, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, final JSONObject Response) {
                 try {

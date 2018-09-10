@@ -351,7 +351,7 @@ public class VoiceVerificationView extends AppCompatActivity {
     private void verifyUser() {
         mContinueVerifying = true;
         // Check enrollments then verify
-        mVoiceIt2.getAllEnrollmentsForUser(mUserID, new JsonHttpResponseHandler() {
+        mVoiceIt2.getAllVoiceEnrollments(mUserID, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                 try {
