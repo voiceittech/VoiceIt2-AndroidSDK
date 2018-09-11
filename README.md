@@ -7,6 +7,14 @@ A fully comprehensive SDK that gives you access to the VoiceIt's New VoiceIt API
 * [Installation](#installation)
 * [API Calls](#api-calls)
   * [Initialization](#initialization)
+  * [Liveness Detection](#liveness-detection)
+  * [Encapsulated Methods](#encapsulated-methods)
+      * [Encapsulated Voice Enrollment](#encapsulated-voice-enrollment)
+      * [Encapsulated Voice Verification](#encapsulated-voice-verification)
+      * [Encapsulated Face Enrollment](#encapsulated-face-enrollment)
+      * [Encapsulated Face Verification](#encapsulated-face-verification)
+      * [Encapsulated Video Enrollment](#encapsulated-video-enrollment)
+      * [Encapsulated Video Verification](#encapsulated-video-verification)
   * [User API Calls](#user-api-calls)
       * [Get All Users](#get-all-users)
       * [Create User](#create-user)
@@ -25,7 +33,7 @@ A fully comprehensive SDK that gives you access to the VoiceIt's New VoiceIt API
       * [Get All Voice Enrollments](#get-all-voice-enrollments)
       * [Get All Face Enrollments](#get-all-face-enrollments)
       * [Get All Video Enrollments](#get-all-video-enrollments)
-      * [Delete All Enrollments for User](#delete-all-enrollments-for-user)
+      * [Delete All Enrollments](#delete-all-enrollments)
       * [Delete Voice Enrollment](#delete-voice-enrollment)
       * [Delete Face Enrollment](#delete-face-enrollment)
       * [Delete Video Enrollment](#delete-video-enrollment)
@@ -34,16 +42,14 @@ A fully comprehensive SDK that gives you access to the VoiceIt's New VoiceIt API
       * [Create Video Enrollment](#create-video-enrollment)
       * [Create Video Enrollment By URL](#create-video-enrollment-by-url)
       * [Create Face Enrollment](#create-face-enrollment)
-      * [Encapsulated Face Enrollment](#encapsulated-face-enrollment)
-      * [Encapsulated Video Enrollment](#encapsulated-video-enrollment)
+      * [Create Face Enrollment By URL](#create-face-enrollment-by-url)
   * [Verification API Calls](#verification-api-calls)
       * [Voice Verification](#voice-verification)
       * [Voice Verification By URL](#voice-verification-by-url)
       * [Video Verification](#video-verification)
       * [Video Verification By URL](#video-verification-by-url)
       * [Face Verification](#face-verification)
-      * [Encapsulated Face Verification](#encapsulated-face-verification)
-      * [Encapsulated Video Verification](#encapsulated-video-verification)
+      * [Face Verification By URL](#face-verification-by-url)
   * [Identification API Calls](#identification-api-calls)
       * [Voice Identification](#voice-identification)
       * [Voice Identification By URL](#voice-identification-by-url)
@@ -70,7 +76,7 @@ VoiceItApi2AndroidSDK is available through [JitPack](https://jitpack.io/#voiceit
 
 ### Initialization
 
-First import *VoiceItAPI2* and then initialize a reference to the SDK inside an Activity, passing in the API Credentials.
+First import *VoiceItAPI2* and then initialize a reference to the SDK inside an Activity, passing in your API Credentials.
 
 ```java
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -93,10 +99,6 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
-### Liveness Detection
-
-For our Encapsulated Face and Video Verification methods, liveness detection can be enabled with a passed in boolean parameter and number of checks to make(2 Recommended). This enables a a pre-check before the verification api call to make sure the user is not trying to spoof with a photo of someone else.
-
 ### API calls
 
 For each API call, a JsonHttpResponseHandler is needed to receive the result of the call. You can override the response handlers like so, and abbreviated with ellipses below:
@@ -114,6 +116,66 @@ new JsonHttpResponseHandler() {
         }
     }
 });
+```
+
+### Liveness Detection
+
+For our Encapsulated Face and Video Verification methods, liveness detection can be enabled with a passed in boolean parameter and number of checks to make(2 Recommended). 
+This enables a a pre-check(prompting to the user to turn their head or smile) before the verification API call to decrease the chance the user is able to spoof with a photo of someone else.
+
+### Encapsulated Methods
+
+Methods that take care of all the logic of enrollment and verification, and the UI in new Android Activities.
+Immediately upon calling a method it displays a enrollment/verification view controller that enrolls/verifies the user and 
+provides relevant callbacks for whether the API calls were successful or not with associated biometric confidence.
+Note: If less than the required enrollments exist for a user, enrollment methods delete them and re-enroll.
+
+#### Encapsulated Voice Enrollment
+
+Create three voice enrollments user with given userId(begins with 'usr_'), contentLanguage('en-US','es-ES' etc.), and a given phrase such as "Never forget tomorrow is a new day".
+
+```java
+myVoiceIt.encapsulatedVoiceEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", new JsonHttpResponseHandler() {...});
+```
+
+#### Encapsulated Voice Verification
+
+Verify user with given userId(begins with 'usr_'), contentLanguage('en-US','es-ES' etc.), a given phrase such as "Never forget tomorrow is a new day".
+
+```java
+myVoiceIt.encapsulatedVoiceVerification(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", new JsonHttpResponseHandler() {...});
+```
+
+#### Encapsulated Face Enrollment
+
+Create three face enrollments for user with given userId(begins with 'usr_').
+
+```java
+myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", new JsonHttpResponseHandler() {...});
+```
+
+#### Encapsulated Face Verification
+
+Verify user with given userId(begins with 'usr_'), an optional boolean to enable liveness detection and number of liveness checks(2 Recommended).
+
+```java
+myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", true, 2, new JsonHttpResponseHandler() {...});
+```
+
+#### Encapsulated Video Enrollment
+
+Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.), a given phrase such as "my face and voice identify me".
+
+```java
+myVoiceIt.encapsulatedVideoEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", new JsonHttpResponseHandler() {...});
+```
+
+#### Encapsulated Video Verification
+
+Verify user with given userId(begins with 'usr_'), contentLanguage('en-US','es-ES' etc.), a given phrase such as "my face and voice identify me", an optional boolean to enable liveness detection and number of liveness checks(2 Recommended).
+
+```java
+myVoiceIt.encapsulatedVideoVerification(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", true, 2, new JsonHttpResponseHandler() {...});
 ```
 
 ### User API Calls
@@ -208,52 +270,68 @@ myVoiceIt.deleteGroup("GROUP_ID_HERE", new JsonHttpResponseHandler() {...});
 
 ### Enrollment API Calls
 
-#### Get All Enrollments for User
+#### Get All Voice Enrollments
 
-Gets all enrollment for user with given userId(begins with 'usr_')
-
-```java
-myVoiceIt.getAllEnrollmentsForuser("USER_ID_HERE", new JsonHttpResponseHandler() {...});
-```
-
-#### Get Face Enrollments for User
-
-Gets all enrollment for user with given userId(begins with 'usr_')
+Gets all voice enrollments for user with given userId(begins with 'usr_')
 
 ```java
-myVoiceIt.getFaceEnrollmentsForuser("USER_ID_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.getAllVoiceEnrollments("USER_ID_HERE", new JsonHttpResponseHandler() {...});
 ```
 
-#### Delete All Enrollments for User
+#### Get All Face Enrollments
+
+Gets all face enrollments for user with given userId(begins with 'usr_')
+
+```java
+myVoiceIt.getFaceEnrollments("USER_ID_HERE", new JsonHttpResponseHandler() {...});
+```
+
+#### Get All Video Enrollments
+
+Gets all video enrollments for user with given userId(begins with 'usr_')
+
+```java
+myVoiceIt.getAllVideoEnrollments("USER_ID_HERE", new JsonHttpResponseHandler() {...});
+```
+
+#### Delete All Enrollments
 
 Delete enrollment for user with given userId(begins with 'usr_') and enrollmentId(integer)
 
 ```java
-myVoiceIt.deleteAllEnrollmentForUser( "USER_ID_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.deleteAllEnrollments( "USER_ID_HERE", new JsonHttpResponseHandler() {...});
 ```
 
-#### Delete Enrollment for User
+#### Delete Voice Enrollment
 
-Delete enrollment for user with given userId(begins with 'usr_') and enrollmentId(integer)
+Delete voice enrollment for user with given userId(begins with 'usr_') and enrollmentId(integer)
 
 ```java
-myVoiceIt.deleteEnrollmentForUser( "USER_ID_HERE", "ENROLLMENT_ID_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.deleteVoiceEnrollment( "USER_ID_HERE", "ENROLLMENT_ID_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 #### Delete Face Enrollment
 
-Delete enrollment for user with given userId(begins with 'usr_') and enrollmentId(integer)
+Delete face enrollment for user with given userId(begins with 'usr_') and faceEnrollmentId(integer)
 
 ```java
 myVoiceIt.deleteFaceEnrollment( "USER_ID_HERE", "FACE_ENROLLMENT_ID_HERE", new JsonHttpResponseHandler() {...});
 ```
 
-#### Create Voice Enrollment
+#### Delete Video Enrollment
 
-Create audio enrollment for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.). Note: Immediately upon calling this method it records the user saying their VoicePrint phrase for 5 seconds.
+Delete video enrollment for user with given userId(begins with 'usr_') and enrollmentId(integer)
 
 ```java
-myVoiceIt.createVoiceEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.deleteVideoEnrollment( "USER_ID_HERE", "ENROLLMENT_ID_HERE", new JsonHttpResponseHandler() {...});
+```
+
+#### Create Voice Enrollment
+
+Create audio enrollment for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds. If the recording argument is left out, the method immediately records the user saying their VoicePrint phrase for 5 seconds.
+
+```java
+myVoiceIt.createVoiceEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", File recording, new JsonHttpResponseHandler() {...});
 ```
 
 #### Create Voice Enrollment by URL
@@ -261,7 +339,7 @@ myVoiceIt.createVoiceEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", new Jso
 Create voice enrollment for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds
 
 ```java
-myVoiceIt.createVoiceEnrollmentByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "URL_TO_AUDIO_FILE_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.createVoiceEnrollmentByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", "URL_TO_AUDIO_FILE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 #### Create Video Enrollment
@@ -269,7 +347,7 @@ myVoiceIt.createVoiceEnrollmentByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "U
 Create video enrollment for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds
 
 ```java
-myVoiceIt.createVideoEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File video, new JsonHttpResponseHandler() {...});
+myVoiceIt.createVideoEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", File video, new JsonHttpResponseHandler() {...});
 ```
 
 #### Create Video Enrollment by URL
@@ -277,16 +355,9 @@ myVoiceIt.createVideoEnrollment("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File vi
 Create video enrollment for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds
 
 ```java
-myVoiceIt.createVideoEnrollmentByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.createVideoEnrollmentByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
-#### Encapsulated Video Enrollment
-
-Create three video enrollments for user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.), a given phrase such as "my face and voice identify me". Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
-
-```java
-myVoiceIt.encapsulatedVideoEnrollment(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE",  "my face and voice identify me", new JsonHttpResponseHandler() {...});
-```
 #### Create Face Enrollment
 
 Create face enrollment for user with given userId(begins with 'usr_') Note: It is recommended that you send a 2.0 second mp4 video
@@ -295,13 +366,14 @@ Create face enrollment for user with given userId(begins with 'usr_') Note: It i
 myVoiceIt.createFaceEnrollment("USER_ID_HERE", File video, new JsonHttpResponseHandler() {...});
 ```
 
-#### Encapsulated Face Enrollment
+#### Create Face Enrollment by URL
 
-Create three face enrollments for user with given userId(begins with 'usr_'). Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the three enrollments, including the UI and then provides relevant callbacks for whether the user cancelled their enrollments or successfully completed them. Also note, if less than the required enrollments exist for the user, it deletes them and reenrolls.
+Create face enrollment for user with given userId(begins with 'usr_') Note: It is recommended that you send a 2.0 second mp4 video
 
 ```java
-myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.createFaceEnrollmentByUrl("USER_ID_HERE", "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
 ```
+
 
 ### Verification API Calls
 
@@ -310,7 +382,7 @@ myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", new JsonHttpRespo
 Verify user with the given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.). Note: Immediately upon calling this method it records the user saying their VoicePrint phrase for 5 seconds.
 
 ```java
-myVoiceIt.voiceVerification("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.voiceVerification("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 
@@ -318,15 +390,15 @@ myVoiceIt.voiceVerification("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", new JsonHtt
 Verify user with the given userId(begins with 'usr_') and contentLanguage('en-US','es-ES', etc.). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds
 
 ```java
-myVoiceIt.voiceVerificationByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "URL_TO_AUDIO_FILE_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.voiceVerificationByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", "URL_TO_AUDIO_FILE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 #### Video Verification
 
-Verify user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.). Note: Immediately upon calling this method it displays the camera and starts recording a video of the user saying their VoicePrint phrase for 5 seconds calling the recordingFinished callback first, then it sends the recording to be added as an enrollment and returns the result in the callback
+Verify user with given userId(begins with 'usr_') and contentLanguage('en-US','es-ES' etc.). Note: Immediately upon calling this method it displays the camera and starts recording a video of the user saying their VoicePrint phrase for 5 seconds, then sends it to be added as an enrollment and returns the result in the callback
 
 ```java
-myVoiceIt.videoVerification("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File video, new JsonHttpResponseHandler() {...});
+myVoiceIt.videoVerification("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", File video, new JsonHttpResponseHandler() {...});
 ```
 
 #### Video Verification by URL
@@ -335,15 +407,7 @@ Verify user with given userId(begins with 'usr_'), contentLanguage('en-US','es-E
 
 
 ```java
-myVoiceIt.videoVerificationByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", File video, "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
-```
-
-#### Encapsulated Video Verification
-
-Verify user with given userId(begins with 'usr_'), contentLanguage('en-US','es-ES' etc.), a given phrase such as "my face and voice identify me", an optional boolean to enable liveness detection and number of liveness checks(2 Recommended). Note: Immediately upon calling this method it displays a verification view controller that verifies the user and provides relevant callbacks for whether the verification was successful or not with associated voice and face confidences.
-
-```java
-myVoiceIt.encapsulatedVideoVerification(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "my face and voice identify me", true, new JsonHttpResponseHandler() {...});
+myVoiceIt.videoVerificationByUrl("USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 #### Face Verification
@@ -355,12 +419,13 @@ Verify user's face with given userId(begins with 'usr_'). Note: Provide an about
 myVoiceIt.faceVerification("USER_ID_HERE", File video, new JsonHttpResponseHandler() {...});
 ```
 
-#### Encapsulated Face Verification
+#### Face Verification by URL
 
-Verify user with given userId(begins with 'usr_'), an optional boolean to enable liveness detection and number of liveness checks(2 Recommended). Note: Immediately upon calling this method it displays an enrollment view controller to the user that completely takes care of the verification, including the UI and then provides relevant callbacks for whether the user cancelled their verification or successfully completed it.
+Verify user's face with given userId(begins with 'usr_'). Note: Provide an about 2.0 seconds long video(mp4 codec is recommended) of the user's face
+
 
 ```java
-myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", true, 2, new JsonHttpResponseHandler() {...});
+myVoiceIt.faceVerificationByUrl("USER_ID_HERE", "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 ### Identification API Calls
@@ -370,7 +435,7 @@ myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", true, 2, new Json
 Identify user inside group with the given groupId(begins with 'grp_') and contentLanguage('en-US','es-ES' etc.). Note: Immediately upon calling this method it records the user saying their VoicePrint phrase for 5 seconds.
 
 ```java
-myVoiceIt.voiceIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.voiceIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 #### Voice Identification by URL
@@ -378,7 +443,23 @@ myVoiceIt.voiceIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", new Json
 Identify user inside group with the given groupId(begins with 'grp_') and contentLanguage('en-US','es-ES', etc.). Note: File recording needs to be no less than 1.2 seconds and no more than 5 seconds
 
 ```java
-myVoiceIt.voiceIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", "URL_TO_AUDIO_FILE_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.voiceIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", "URL_TO_AUDIO_FILE_HERE", new JsonHttpResponseHandler() {...});
+```
+
+#### Face Identification
+
+Identify user inside group with the given groupId(begins with 'grp_'). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds
+
+```java
+myVoiceIt.faceIdentification("GROUP_ID_HERE", File video, new JsonHttpResponseHandler() {...});
+```
+
+#### Face Identification by URL
+
+Identify user inside group with the given groupId(begins with 'grp_'). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds
+
+```java
+myVoiceIt.faceIdentificationByUrl("GROUP_ID_HERE", "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 #### Video Identification
@@ -386,7 +467,7 @@ myVoiceIt.voiceIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", "URL_TO_
 Identify user inside group with the given groupId(begins with 'grp_') and contentLanguage('en-US','es-ES' etc.). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds
 
 ```java
-myVoiceIt.videoIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", File video, new JsonHttpResponseHandler() {...});
+myVoiceIt.videoIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", File video, new JsonHttpResponseHandler() {...});
 ```
 
 #### Video Identification by URL
@@ -394,7 +475,7 @@ myVoiceIt.videoIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", File vid
 Identify user inside group with the given groupId(begins with 'grp_') and contentLanguage('en-US','es-ES' etc.). Note: File recording need to be no less than 1.2 seconds and no more than 5 seconds
 
 ```java
-myVoiceIt.videoIdentification("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", File video, "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
+myVoiceIt.videoIdentificationByUrl("GROUP_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", "URL_TO_VIDEO_FILE_HERE", new JsonHttpResponseHandler() {...});
 ```
 
 ## Author
