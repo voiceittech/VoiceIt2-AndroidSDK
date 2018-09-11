@@ -1,6 +1,7 @@
 package com.voiceit.voiceit2;
 
 import android.content.Context;
+import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -25,32 +26,25 @@ import cz.msebera.android.httpclient.Header;
 
 import static org.junit.Assert.*;
 
-/**
- * Instrumented test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
 @RunWith(AndroidJUnit4.class)
 public class VoiceItInstrumentedTest {
 
-    Context appContext = InstrumentationRegistry.getTargetContext();
-
-    final private String apiKey = "key_f3a9fb29944a4e4180d4c98e7f03c713";
-    final private String apiTok = "tok_be57cbfb92ae4e139f94843468095502";
+    final private String apiKey = System.getenv("VIAPIKEY");
+    final private String apiTok = System.getenv("VIAPITOKEN");
     final private VoiceItAPI2 myVoiceIt = new VoiceItAPI2(apiKey, apiTok);
 
-    private String phrase = "Never forget tomorrow is a new day";
+    final private String phrase = "Never forget tomorrow is a new day";
 
     private ArrayList<String> userIds = new ArrayList<>();
     private String groupId = "";
     private ArrayList<String> enrollmentIds = new ArrayList<>();
     private ArrayList<String> faceEnrollmentIds = new ArrayList<>();
 
-    private String dir = appContext.getExternalFilesDir(null).getAbsolutePath();
+    final private String dir = InstrumentationRegistry.getTargetContext().getFilesDir().getAbsolutePath();
 
     private CountDownLatch signal;
 
-    JsonHttpResponseHandler ResponseHandler(final int expectedStatusCode, final String expectedResponseCode, final CountDownLatch signal){
+    private JsonHttpResponseHandler ResponseHandler(final int expectedStatusCode, final String expectedResponseCode, final CountDownLatch signal){
 
         return new JsonHttpResponseHandler() {
             @Override
@@ -109,7 +103,7 @@ public class VoiceItInstrumentedTest {
         catch (InterruptedException e) { e.printStackTrace(); }
     }
 
-    void downloadFile(String source, String file) {
+    private void downloadFile(String source, String file) {
         try {
             FileUtils.copyURLToFile( new URL(source), new File(dir, file));
         } catch (MalformedURLException e) {
@@ -119,7 +113,7 @@ public class VoiceItInstrumentedTest {
         }
     }
 
-    void deleteFile(String path) {
+    private void deleteFile(String path) {
         File file = new File(dir, path);
         if(file.delete()) {
             System.out.println("File " + path + " deleted successfully");
@@ -667,6 +661,5 @@ public class VoiceItInstrumentedTest {
         deleteFile("faceEnrollmentStephen1.mp4");
         deleteFile("faceEnrollmentStephen2.mp4");
         deleteFile("faceEnrollmentStephen3.mp4");
-
     }
 }
