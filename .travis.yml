@@ -29,7 +29,6 @@ before_install:
 - echo y | android update sdk --no-ui --all --filter sys-img-armeabi-v7a-android-27,sys-img-x86_64-android-27,build-tools-27.0.3
 - yes | sdkmanager "platforms;android-27"
 
-# Emulator Management: Create, Start and Wait
 before_script:
   - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
   - emulator -avd test -no-audio -no-window &
@@ -37,7 +36,7 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-    - ./gradlew connectedAndroidTest
+    - ./gradlew -Pandroid.testInstrumentationRunnerArguments.key=$VIAPIKEY -Pandroid.testInstrumentationRunnerArguments.tok=$VIAPITOKEN connectedAndroidTest
 
 after_success:
   - ./update.sh

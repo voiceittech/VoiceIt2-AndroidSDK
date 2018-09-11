@@ -29,8 +29,9 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class VoiceItInstrumentedTest {
 
-    final private String apiKey = System.getenv("VIAPIKEY");
-    final private String apiTok = System.getenv("VIAPITOKEN");
+    final private String apiKey = InstrumentationRegistry.getArguments().getString("key");
+    final private String apiTok = InstrumentationRegistry.getArguments().getString("tok");
+
     final private VoiceItAPI2 myVoiceIt = new VoiceItAPI2(apiKey, apiTok);
 
     final private String phrase = "Never forget tomorrow is a new day";
@@ -96,7 +97,7 @@ public class VoiceItInstrumentedTest {
 
     private void after(String method) {
         try {
-            if(!signal.await(60, TimeUnit.SECONDS)){
+            if(!signal.await(30, TimeUnit.SECONDS)){
                 assertEquals(method, false);
             }
         }
