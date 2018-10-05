@@ -314,8 +314,14 @@ class FaceTracker extends Tracker<Face> {
                                     setProgressCircleAngle(270.0, 0.0);
                                     setProgressCircleColor(R.color.progressCircle);
                                     if (!mDoLivenessCheck) {
-                                        // Since picture was not taken during liveness check, take one now then auth
-                                        mCallbacks.takePictureCallBack();
+                                        // Since picture was not taken during any liveness checks,
+                                        // take one now then auth after short .5 sec wait
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mCallbacks.takePictureCallBack();
+                                            }
+                                        }, 500);
                                     } else {
                                         // verify or enroll callback
                                         mCallbacks.authMethodToCallBack();
@@ -349,7 +355,7 @@ class FaceTracker extends Tracker<Face> {
                 }
 
             } else if (numFaces > 1) {
-                Log.d("FaceDetection", "Too many faces present");
+                Log.d(mTAG, "Too many faces present");
                 updateDisplayText(mActivity.getString(R.string.TOO_MANY_FACES), false);
                 setProgressCircleAngle(270.0, 0.0);
             }
@@ -363,7 +369,7 @@ class FaceTracker extends Tracker<Face> {
     public void onDone() {
         FaceTracker.lookingAway = true;
         if(FaceTracker.continueDetecting) {
-            Log.d("FaceDetection", "No face present");
+            Log.d(mTAG, "No face present");
 
             setProgressCircleAngle(270.0, 0.0);
             updateDisplayText(mActivity.getString(R.string.LOOK_INTO_CAM), false);

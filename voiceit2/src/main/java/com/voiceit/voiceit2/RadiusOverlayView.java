@@ -149,7 +149,7 @@ public class RadiusOverlayView extends LinearLayout {
 
         // inverted circle for portrait
         invertedCirclePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)); // A out B http://en.wikipedia.org/wiki/File:Alpha_compositing.svg
-        circleRadius = Math.min(mViewWidth, portraitHeight) * 0.454f;
+        circleRadius = Math.min(mViewWidth, portraitHeight) * 0.475f;
         circleCenterX = mViewWidth / 2;
         circleCenterY = mViewHeight / 2.5f;
 
