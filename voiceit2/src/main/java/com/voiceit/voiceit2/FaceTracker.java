@@ -292,10 +292,11 @@ class FaceTracker extends Tracker<Face> {
      */
     @Override
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, final Face face) {
+
         if (FaceTracker.continueDetecting) {
             final int numFaces = detectionResults.getDetectedItems().size();
 
-            if (numFaces == 1) {
+            if (numFaces == 1 && mOverlay.insidePortraitCircle(face)) {
                 FaceTracker.lookingAway = false;
 
                 // Success or skip liveness detection
@@ -315,13 +316,8 @@ class FaceTracker extends Tracker<Face> {
                                     setProgressCircleColor(R.color.progressCircle);
                                     if (!mDoLivenessCheck) {
                                         // Since picture was not taken during any liveness checks,
-                                        // take one now then auth after short .5 sec wait
-                                        new Handler().postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mCallbacks.takePictureCallBack();
-                                            }
-                                        }, 500);
+                                        // take one now then auth
+                                        mCallbacks.takePictureCallBack();
                                     } else {
                                         // verify or enroll callback
                                         mCallbacks.authMethodToCallBack();

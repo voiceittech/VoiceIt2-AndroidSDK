@@ -33,13 +33,16 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class CameraSourcePreview extends ViewGroup {
-    private static final String TAG = "CameraSourcePreview";
+    private final String mTAG = "CameraSourcePreview";
 
     private final Context mContext;
     private final SurfaceView mSurfaceView;
     private boolean mStartRequested;
     private boolean mSurfaceAvailable;
     private CameraSource mCameraSource;
+
+    public static int previewWidth;
+    public static int previewHeight;
 
     public CameraSourcePreview(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -101,6 +104,13 @@ public class CameraSourcePreview extends ViewGroup {
                 }
                 params.setPictureSize(sizes.get(index).width, sizes.get(index).height);
                 mCamera.setParameters(params);
+
+                // On some devices the camera preview sizes
+                // were unavailable before in onLayout so retry now
+                if (previewWidth == -1 || previewHeight == -1) {
+                    requestLayout();
+                }
+
             }
         }
     }
@@ -112,7 +122,7 @@ public class CameraSourcePreview extends ViewGroup {
             try {
                 startIfReady();
             } catch (IOException e) {
-                Log.e(TAG, "Could not start camera source:", e);
+                Log.e(mTAG, "Could not start camera source:", e);
             }
         }
 
@@ -128,15 +138,12 @@ public class CameraSourcePreview extends ViewGroup {
 
     private static Camera getCamera(@NonNull CameraSource cameraSource)  {
         Field[] declaredFields = CameraSource.class.getDeclaredFields();
-        for (Field field : declaredFields)
-        {
-            if (field.getType() == Camera.class)
-            {
+        for (Field field : declaredFields) {
+            if (field.getType() == Camera.class) {
                 field.setAccessible(true);
                 try {
                     Camera camera = (Camera) field.get(cameraSource);
-                    if (camera != null)
-                    {
+                    if (camera != null) {
                         return camera;
                     }
                     return null;
@@ -151,45 +158,38 @@ public class CameraSourcePreview extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        int width = 320;
-        int height = 240;
+        previewWidth = -1;
+        previewHeight = -1;
         if (mCameraSource != null) {
             Size size = mCameraSource.getPreviewSize();
             if (size != null) {
-                width = size.getWidth();
-                height = size.getHeight();
+                previewWidth = size.getWidth();
+                previewHeight = size.getHeight();
             }
         }
 
         // Swap width and height sizes when in portrait, since it will be rotated 90 degrees
         if (isPortraitMode()) {
-            int tmp = width;
-            width = height;
-            height = tmp;
+            int tmp = previewWidth;
+            previewWidth = previewHeight;
+            previewHeight = tmp;
         }
 
-        //
         final int layoutWidth = right - left-1;
         final int layoutHeight = bottom - top-1;
 
         // Computes height and width for potentially doing fit width.
         int childWidth = layoutWidth;
-        int childHeight = (int)(((float) layoutWidth / (float) width) * height);
+        int childHeight = (int)(((float) layoutWidth / (float) previewWidth) * previewHeight);
 
         // If height is too tall using fit width, does fit height instead.
         if (childHeight < layoutHeight) {
             childHeight = layoutHeight;
-            childWidth = (int)(((float) layoutHeight / (float) height) * width);
+            childWidth = (int)(((float) layoutHeight / (float) previewHeight) * previewWidth);
         }
 
         for (int i = 0; i < getChildCount(); ++i) {
             getChildAt(i).layout(0, 0, childWidth, childHeight);
-        }
-
-        try {
-            startIfReady();
-        } catch (IOException e) {
-            Log.e(TAG, "Could not start camera source.", e);
         }
     }
 
@@ -202,7 +202,7 @@ public class CameraSourcePreview extends ViewGroup {
             return true;
         }
 
-        Log.d(TAG, "isPortraitMode returning false by default");
+        Log.d(mTAG, "isPortraitMode returning false by default");
         return false;
     }
 }

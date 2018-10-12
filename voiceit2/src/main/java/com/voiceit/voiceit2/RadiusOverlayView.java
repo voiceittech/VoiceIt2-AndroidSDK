@@ -15,8 +15,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.LinearLayout;
+
+import com.google.android.gms.vision.face.Face;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -152,7 +153,6 @@ public class RadiusOverlayView extends LinearLayout {
         circleRadius = Math.min(mViewWidth, portraitHeight) * 0.475f;
         circleCenterX = mViewWidth / 2;
         circleCenterY = mViewHeight / 2.5f;
-
 
         // progressCircle
         progressCirclePaint.setAntiAlias(true);
@@ -345,6 +345,21 @@ public class RadiusOverlayView extends LinearLayout {
             // Draw line of text to screen
             canvas.drawText(textLines.get(i), x.get(i), y.get(i), textPaint);
         }
+    }
+
+    public boolean insidePortraitCircle(Face face) {
+
+        final float faceX = (float)mViewWidth - (face.getPosition().x + face.getWidth() / 2)
+                * (float)mViewWidth / (float)CameraSourcePreview.previewWidth;
+        final float faceY = (face.getPosition().y + face.getHeight() / 2)
+                * (float)mViewHeight / (float)CameraSourcePreview.previewHeight;
+
+        final float radius = circleRadius * 0.7f;
+
+        return (faceX < circleCenterX + radius
+                && faceX > circleCenterX - radius
+                && faceY < circleCenterY + radius
+                && faceY > circleCenterY - radius);
     }
 
     @Override
