@@ -125,7 +125,7 @@ new JsonHttpResponseHandler() {
 
 ### Liveness Detection
 
-For our Encapsulated Face and Video Verification methods, liveness detection can be enabled with a passed in boolean parameter and number of checks to make(2 Recommended). 
+For our Encapsulated Face and Video Verification methods, liveness detection can be enabled with a passed in boolean parameter. 
 This enables a a pre-check(prompting to the user to turn their head or smile) before the verification API call to decrease the chance the user is able to spoof with a photo of someone else.
 
 ### Encapsulated Methods
@@ -169,7 +169,7 @@ myVoiceIt.encapsulatedFaceEnrollment(Activity, "USER_ID_HERE", new JsonHttpRespo
 
 #### Encapsulated Face Verification
 
-Verify user with given userId(begins with 'usr_'), and an optional boolean to enable liveness detection.
+Verify user with given userId(begins with 'usr_'), and a boolean to enable liveness detection.
 
 ```java
 myVoiceIt.encapsulatedFaceVerification(Activity, "USER_ID_HERE", true, new JsonHttpResponseHandler() {...});
