@@ -26,14 +26,13 @@ import android.view.SurfaceView;
 import android.view.ViewGroup;
 
 import com.google.android.gms.common.images.Size;
-import com.google.android.gms.vision.CameraSource;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
 public class CameraSourcePreview extends ViewGroup {
-    private final String mTAG = "CameraSourcePreview";
+    private static final String mTAG = "CameraSourcePreview";
 
     private final Context mContext;
     private final SurfaceView mSurfaceView;
@@ -43,6 +42,8 @@ public class CameraSourcePreview extends ViewGroup {
 
     public static int previewWidth;
     public static int previewHeight;
+    public static int childWidth;
+    public static int childHeight;
 
     public CameraSourcePreview(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -169,7 +170,7 @@ public class CameraSourcePreview extends ViewGroup {
         }
 
         // Swap width and height sizes when in portrait, since it will be rotated 90 degrees
-        if (isPortraitMode()) {
+        if (isPortraitMode(mContext)) {
             int tmp = previewWidth;
             previewWidth = previewHeight;
             previewHeight = tmp;
@@ -179,8 +180,8 @@ public class CameraSourcePreview extends ViewGroup {
         final int layoutHeight = bottom - top-1;
 
         // Computes height and width for potentially doing fit width.
-        int childWidth = layoutWidth;
-        int childHeight = (int)(((float) layoutWidth / (float) previewWidth) * previewHeight);
+        childWidth = layoutWidth;
+        childHeight = (int)(((float) layoutWidth / (float) previewWidth) * previewHeight);
 
         // If height is too tall using fit width, does fit height instead.
         if (childHeight < layoutHeight) {
@@ -191,10 +192,11 @@ public class CameraSourcePreview extends ViewGroup {
         for (int i = 0; i < getChildCount(); ++i) {
             getChildAt(i).layout(0, 0, childWidth, childHeight);
         }
+
     }
 
-    private boolean isPortraitMode() {
-        int orientation = mContext.getResources().getConfiguration().orientation;
+    public static boolean isPortraitMode(Context context) {
+        int orientation = context.getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             return false;
         }

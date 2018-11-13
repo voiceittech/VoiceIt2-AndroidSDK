@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -36,10 +35,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         myVoiceIt = new VoiceItAPI2("API_KEY","API_TOK");
+        myVoiceIt.mDisplayPreviewFrame = true;
 
         userIdSwitch = findViewById(R.id.switch_user);
         livenessSwitch = findViewById(R.id.switch_liveness);
-        userIdSwitch.setText("User 1");
+        userIdSwitch.setText("User 1 ");
     }
 
     public void toggleLiveness(View view) {

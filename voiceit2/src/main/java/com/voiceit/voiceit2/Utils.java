@@ -22,7 +22,7 @@ class Utils {
         }
     }
 
-    public static void randomizeArrayOrder(int size, int [] array) {
+    static void randomizeArrayOrder(int size, int [] array) {
         final Random rand = new Random();
         for(int i = 0; i < size; i++) {
             int j = rand.nextInt(size -1);
@@ -32,7 +32,7 @@ class Utils {
         }
     }
 
-    public static void startMediaRecorder(MediaRecorder mediaRecorder, File audioFile) {
+    static void startMediaRecorder(MediaRecorder mediaRecorder, File audioFile) {
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);

@@ -26,7 +26,6 @@ import java.io.IOException;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
@@ -73,6 +72,7 @@ public class FaceVerificationView extends AppCompatActivity {
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
             mLivenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
             mLivenessChallengesNeeded = bundle.getInt("livenessChallengesNeeded");
+            CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
         }
 
         // Hide action bar
@@ -90,6 +90,7 @@ public class FaceVerificationView extends AppCompatActivity {
 
         // Text output on mOverlay
         mOverlay = findViewById(R.id.overlay);
+        CameraSource.mOverlay = mOverlay;
 
         // Lock orientation
         if (Build.VERSION.SDK_INT >= 18) {
@@ -349,41 +350,42 @@ public class FaceVerificationView extends AppCompatActivity {
         }
     }
 
-    // Verify after taking picture
-    private final CameraSource.PictureCallback mPicture = new CameraSource.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data) {
-            // Check file
-            if (mPictureFile == null) {
-                Log.d(mTAG, "Error creating media file, check storage permissions");
-                return;
-            }
-            // Write picture to file
-            try {
-                FileOutputStream fos = new FileOutputStream(mPictureFile);
-                fos.write(data);
-                fos.close();
-            } catch (FileNotFoundException e) {
-                Log.d(mTAG, "File not found: " + e.getMessage());
-            } catch (IOException e) {
-                Log.d(mTAG, "Error accessing file: " + e.getMessage());
-            }
-
-            // With liveness checks enabled, a picture is taken before it is done
-            // and verify is called later
-            if(!mDoLivenessCheck) {
-                verifyUserFace();
-            } else {
-                // Continue liveness detection
-                FaceTracker.continueDetecting = true;
-            }
-        }
-    };
-
     private void takePicture() {
+
+        // Verify after taking picture
+        final CameraSource.PictureCallback mPictureCallback = new CameraSource.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] data) {
+                // Check file
+                if (mPictureFile == null) {
+                    Log.d(mTAG, "Error creating media file, check storage permissions");
+                    return;
+                }
+                // Write picture to file
+                try {
+                    FileOutputStream fos = new FileOutputStream(mPictureFile);
+                    fos.write(data);
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    Log.d(mTAG, "File not found: " + e.getMessage());
+                } catch (IOException e) {
+                    Log.d(mTAG, "Error accessing file: " + e.getMessage());
+                }
+
+                // With liveness checks enabled, a picture is taken before it is done
+                // and verify is called later
+                if(!mDoLivenessCheck) {
+                    verifyUserFace();
+                } else {
+                    // Continue liveness detection
+                    FaceTracker.continueDetecting = true;
+                }
+            }
+        };
+
         try {
             // Take picture of face
-            mCameraSource.takePicture(null, mPicture);
+            mCameraSource.takePicture(null, mPictureCallback);
         } catch (Exception e) {
             Log.d(mTAG, "Camera exception : " + e.getMessage());
             exitViewWithMessage("voiceit-failure","Camera Error");
@@ -391,6 +393,10 @@ public class FaceVerificationView extends AppCompatActivity {
     }
 
     private void failVerification(final JSONObject response) {
+
+        // Continue showing live camera preview
+        mOverlay.setPicture(null);
+
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
         // Wait for ~1.5 seconds
@@ -489,9 +495,7 @@ public class FaceVerificationView extends AppCompatActivity {
     }
 
     class FaceTrackerCallBackImpl implements FaceTracker.viewCallBacks { // Implements callback methods defined in FaceTracker interface
-        public void authMethodToCallBack() {
-            verifyUserFace();
-        }
+        public void authMethodToCallBack() { verifyUserFace(); }
         public void takePictureCallBack() { takePicture(); }
     }
 

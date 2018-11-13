@@ -48,13 +48,14 @@
 
     <string name="IFVD">Sorry, something went wrong.\nPlease try again.</string>
     <string name="IFAD">Sorry, something went wrong.\nPlease try again.</string>
-    <string name="SRNR">Sorry, something went wrong.\nPlease contact app developer.</string>
-    <string name="UNFD">Sorry, something went wrong.\nPlease contact app developer.</string>
-    <string name="MISP">Sorry, something went wrong.\nPlease contact app developer.</string>
-    <string name="DAID">Sorry, something went wrong.\nPlease contact app developer.</string>
-    <string name="UNAC">Sorry, something went wrong.\nPlease contact app developer.</string>
-    <string name="CLNE">Sorry, something went wrong.\nPlease contact app developer.</string>
-    <string name="ACLR">Sorry, something went wrong.\nPlease try again, or contact app developer.</string>
+    <string name="SRNR">Sorry, something went wrong.\nPlease contact app developer with error code: SRNR.</string>
+    <string name="UNFD">Sorry, something went wrong.\nPlease contact app developer with error code: UNFD.</string>
+    <string name="MISP">Sorry, something went wrong.\nPlease contact app developer with error code: MISP.</string>
+    <string name="DAID">Sorry, something went wrong.\nPlease contact app developer with error code: DAID.</string>
+    <string name="UNAC">Sorry, something went wrong.\nPlease contact app developer with error code: UNAC.</string>
+    <string name="CLNE">Sorry, something went wrong.\nPlease contact app developer with error code: CLNE.</string>
+    <string name="INCP">Sorry, something went wrong.\nPlease contact app developer with error code: INCP.</string>
+    <string name="ACLR">Sorry, something went wrong.\nPlease try again, or contact app developer with error code: ACLR.</string>
 
     <string name="GERR">Sorry, something went wrong.\nPlease try again.</string>
 

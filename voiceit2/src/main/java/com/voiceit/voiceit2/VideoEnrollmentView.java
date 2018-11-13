@@ -27,7 +27,6 @@ import java.io.IOException;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
@@ -74,6 +73,7 @@ public class VideoEnrollmentView extends AppCompatActivity {
             mUserId = bundle.getString("userId");
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
+            CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
         }
 
         // Hide action bar
@@ -91,6 +91,7 @@ public class VideoEnrollmentView extends AppCompatActivity {
 
         // Text output on mOverlay
         mOverlay = findViewById(R.id.overlay);
+        CameraSource.mOverlay = mOverlay;
 
         // Lock orientation
         if (Build.VERSION.SDK_INT >= 18) {
@@ -342,35 +343,37 @@ public class VideoEnrollmentView extends AppCompatActivity {
         }
     }
 
-    // Enroll after taking picture
-    private final CameraSource.PictureCallback mPicture = new CameraSource.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data) {
-            // Check file
-            if (mPictureFile == null) {
-                Log.d(mTAG, "Error creating media file, check storage permissions");
-                return;
-            }
-            // Write picture to file
-            try {
-                FileOutputStream fos = new FileOutputStream(mPictureFile);
-                fos.write(data);
-                fos.close();
-            } catch (FileNotFoundException e) {
-                Log.d(mTAG, "File not found: " + e.getMessage());
-            } catch (IOException e) {
-                Log.d(mTAG, "Error accessing file: " + e.getMessage());
-            }
-
-            // Enroll with picture taken
-            enrollUser();
-        }
-    };
-
     private void takePicture() {
+
+        // Enroll after taking picture
+        final CameraSource.PictureCallback mPictureCallback = new CameraSource.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] data) {
+                // Check file
+                if (mPictureFile == null) {
+                    Log.d(mTAG, "Error creating media file, check storage permissions");
+                    return;
+                }
+                // Write picture to file
+                try {
+                    FileOutputStream fos = new FileOutputStream(mPictureFile);
+                    fos.write(data);
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    Log.d(mTAG, "File not found: " + e.getMessage());
+                } catch (IOException e) {
+                    Log.d(mTAG, "Error accessing file: " + e.getMessage());
+                }
+
+
+                // Enroll with picture taken
+                enrollUser();
+            }
+        };
+
         try {
             // Take picture of face
-            mCameraSource.takePicture(null, mPicture);
+            mCameraSource.takePicture(null, mPictureCallback);
         } catch (Exception e) {
             Log.d(mTAG, "Camera exception : " + e.getMessage());
             exitViewWithMessage("voiceit-failure", "Camera Error");
@@ -378,6 +381,10 @@ public class VideoEnrollmentView extends AppCompatActivity {
     }
 
     private void failEnrollment(final JSONObject response) {
+
+        // Continue showing live camera preview
+        mOverlay.setPicture(null);
+
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
 
@@ -481,6 +488,8 @@ public class VideoEnrollmentView extends AppCompatActivity {
                                                         if (FaceTracker.lookingAway) {
                                                             mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
                                                         }
+                                                        // Continue showing live camera preview
+                                                        mOverlay.setPicture(null);
                                                         // Continue Enrolling
                                                         FaceTracker.continueDetecting = true;
                                                     }
