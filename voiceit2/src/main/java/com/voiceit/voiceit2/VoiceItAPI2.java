@@ -151,7 +151,7 @@ public class VoiceItAPI2 {
         try {
             params.put("recording", recording);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/voice"), params, responseHandler);
@@ -222,7 +222,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
@@ -242,7 +242,7 @@ public class VoiceItAPI2 {
         try {
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
@@ -273,7 +273,7 @@ public class VoiceItAPI2 {
             params.put("audio", audio);
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/video"), params, responseHandler);
@@ -295,7 +295,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/video"), params, responseHandler);
@@ -412,7 +412,7 @@ public class VoiceItAPI2 {
         try {
             params.put("recording", recording);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
         client.post(getAbsoluteUrl("/verification/voice"), params, responseHandler);
     }
@@ -482,7 +482,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
@@ -503,7 +503,7 @@ public class VoiceItAPI2 {
         try {
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
@@ -537,7 +537,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
@@ -556,7 +556,7 @@ public class VoiceItAPI2 {
             params.put("audio", audio);
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
@@ -592,7 +592,7 @@ public class VoiceItAPI2 {
         try {
             params.put("recording", recording);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/voice"), params, responseHandler);
@@ -665,7 +665,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/video"), params, responseHandler);
@@ -688,7 +688,7 @@ public class VoiceItAPI2 {
             params.put("audio", audio);
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/video"), params, responseHandler);
@@ -722,7 +722,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/face"), params, responseHandler);
@@ -742,7 +742,7 @@ public class VoiceItAPI2 {
         try {
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/face"), params, responseHandler);

@@ -43,12 +43,12 @@ public class VoiceItInstrumentedTest {
 
     private CountDownLatch signal;
 
-    private JsonHttpResponseHandler ResponseHandler(final int expectedStatusCode, final String expectedResponseCode, final CountDownLatch signal){
+    private JsonHttpResponseHandler ResponseHandler(final String method, final int expectedStatusCode, final String expectedResponseCode, final CountDownLatch signal){
 
         return new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                System.out.println("onSuccess Response:" + response.toString());
+                System.out.println(method + " onSuccess Response:" + response.toString());
                 assertEquals(expectedStatusCode, statusCode);
                 try {
                     assertEquals(expectedResponseCode, response.getString("responseCode"));
@@ -73,7 +73,7 @@ public class VoiceItInstrumentedTest {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 if (errorResponse != null) {
-                    System.out.println("onFailure Result : " + errorResponse.toString());
+                    System.out.println(method + " onFailure Result : " + errorResponse.toString());
                     assertEquals(expectedStatusCode, statusCode);
                     signal.countDown();
                 } else {
@@ -89,8 +89,8 @@ public class VoiceItInstrumentedTest {
         };
     }
 
-    private void before(int count) {
-        signal = new CountDownLatch(count);
+    private void before() {
+        signal = new CountDownLatch(1);
     }
 
     private void after(String method) {
@@ -98,17 +98,16 @@ public class VoiceItInstrumentedTest {
             if(!signal.await(30, TimeUnit.SECONDS)){
                 assertEquals(method, false);
             }
-        }
-        catch (InterruptedException e) { e.printStackTrace(); }
+        } catch (InterruptedException e) { e.printStackTrace(); }
     }
 
     private void downloadFile(String source, String file) {
         try {
             FileUtils.copyURLToFile( new URL(source), new File(dir, file));
         } catch (MalformedURLException e) {
-            System.err.println(e);
+            System.err.println("downloadFile MalformedURLException: " + e);
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("downloadFile IOException: " + e);
         }
     }
 
@@ -124,69 +123,65 @@ public class VoiceItInstrumentedTest {
     @Test
     public void TestBasics () {
 
-        before(1);
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
         after("createUser");
 
-        before(2);
-        myVoiceIt.getAllUsers(ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.getAllUsers(ResponseHandler("getAllUsers",200, "SUCC", signal));
+        after("getAllUsers");
 
-        myVoiceIt.checkUserExists(userIds.get(0), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.checkUserExists(userIds.get(0), ResponseHandler("checkUserExists",200, "SUCC", signal));
         after("checkUserExists");
 
-        before(1);
-        myVoiceIt.createGroup("Sample Group Description", ResponseHandler(201,
+        before();
+        myVoiceIt.createGroup("Sample Group Description", ResponseHandler("createGroup",201,
                 "SUCC", signal));
         after("createGroup");
 
-        before(2);
-        myVoiceIt.getGroupsForUser(userIds.get(0), ResponseHandler(200,
+        before();
+        myVoiceIt.getGroupsForUser(userIds.get(0), ResponseHandler("getGroupsForUser",200,
                 "SUCC", signal));
+        after("getGroupsForUser");
 
-        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler(200,
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler("addUserToGroup",200,
                 "SUCC", signal));
         after("addUserToGroup");
 
-        before(3);
-        myVoiceIt.getGroupsForUser(userIds.get(0), ResponseHandler(200,
+        before();
+        myVoiceIt.getGroupsForUser(userIds.get(0), ResponseHandler("getGroupsForUser",200,
                 "SUCC", signal));
+        after("getGroupsForUser");
 
-        myVoiceIt.getGroup(groupId, ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.getGroup(groupId, ResponseHandler("getGroup",200, "SUCC", signal));
+        after("getGroup");
 
-        myVoiceIt.groupExists(groupId, ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.groupExists(groupId, ResponseHandler("groupExists",200, "SUCC", signal));
         after("groupExists");
 
-        before(1);
-        myVoiceIt.removeUserFromGroup(groupId, userIds.get(0), ResponseHandler(200,
+        before();
+        myVoiceIt.removeUserFromGroup(groupId, userIds.get(0), ResponseHandler("removeUserFromGroup",200,
                 "SUCC", signal));
         after("removeUserFromGroup");
 
-        before(2);
-        myVoiceIt.deleteGroup(groupId, ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteGroup(groupId, ResponseHandler("deleteGroup",200, "SUCC", signal));
+        after("deleteGroup");
 
-        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler("deleteUser",200, "SUCC", signal));
         after("deleteUser");
         userIds.clear();
     }
 
-
     @Test
     public void TestVideo() {
 
-        before(3);
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createGroup("Sample Group Description", ResponseHandler(201,
-                "SUCC", signal));
-        after("createGroup");
-
-        before(2);
-        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        after("addUserToGroup");
-
-        // Create Video Enrollments
-
+        // Download Video Enrollments
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentArmaan1.mov", "videoEnrollmentArmaan1.mov");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentArmaan2.mov", "videoEnrollmentArmaan2.mov");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentArmaan3.mov", "videoEnrollmentArmaan3.mov");
@@ -195,160 +190,200 @@ public class VoiceItInstrumentedTest {
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen2.mov", "videoEnrollmentStephen2.mov");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen3.mov", "videoEnrollmentStephen3.mov");
 
-        before(1);
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser", 201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser", 201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createGroup("Sample Group Description", ResponseHandler("createGroup", 201,
+                "SUCC", signal));
+        after("createGroup");
+
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
         myVoiceIt.createVideoEnrollment(userIds.get(0), "en-US", phrase, dir+"/videoEnrollmentArmaan1.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollment",201, "SUCC", signal));
         after("createVideoEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollment(userIds.get(0), "en-US", phrase, dir+"/videoEnrollmentArmaan2.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollment",201, "SUCC", signal));
         after("createVideoEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollment(userIds.get(0), "en-US", phrase, dir+"/videoEnrollmentArmaan3.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollment", 201, "SUCC", signal));
         after("createVideoEnrollment");
 
-        before(1);
-        myVoiceIt.getAllVideoEnrollments(userIds.get(0), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.getAllVideoEnrollments(userIds.get(0), ResponseHandler("getAllVideoEnrollments",200, "SUCC", signal));
         after("getAllVideoEnrollments");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollment(userIds.get(1), "en-US", phrase, dir+"/videoEnrollmentStephen1.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollment",201, "SUCC", signal));
         after("createVideoEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollment(userIds.get(1), "en-US", phrase, dir+"/videoEnrollmentStephen2.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollment",201, "SUCC", signal));
         after("createVideoEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollment(userIds.get(1), "en-US", phrase, dir+"/videoEnrollmentStephen3.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollment",201, "SUCC", signal));
         after("createVideoEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.videoVerification(userIds.get(0), "en-US", phrase, dir+"/videoVerificationArmaan1.mov",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("videoVerification",200, "SUCC", signal));
         after("videoVerification");
 
-        before(1);
+        before();
         myVoiceIt.videoIdentification(groupId, "en-US", phrase, dir+"/videoVerificationArmaan1.mov",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("videoIdentification",200, "SUCC", signal));
         after("videoIdentification");
         assertEquals(userIds.get(0), userIds.get(2));
 
-        before(4);
-        myVoiceIt.deleteVideoEnrollment(userIds.get(0), enrollmentIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteVideoEnrollment(userIds.get(0), enrollmentIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteVideoEnrollment(userIds.get(0), enrollmentIds.get(2), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteAllVideoEnrollments(userIds.get(1), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteVideoEnrollment(userIds.get(0), enrollmentIds.get(0), ResponseHandler("deleteVideoEnrollment",200, "SUCC", signal));
+        after("deleteVideoEnrollment");
+
+        before();
+        myVoiceIt.deleteAllVideoEnrollments(userIds.get(0), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
+        after("deleteAllVideoEnrollments");
+
+        before();
+        myVoiceIt.deleteAllVideoEnrollments(userIds.get(1), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
         after("deleteAllVideoEnrollments");
 
         // Cleanup
-        before(3);
-        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteGroup(groupId, ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteGroup(groupId, ResponseHandler("deleteGroup",200, "SUCC", signal));
         after("deleteGroup");
+
         userIds.clear();
         enrollmentIds.clear();
+
+        deleteFile("videoEnrollmentArmaan1.mov");
+        deleteFile("videoEnrollmentArmaan2.mov");
+        deleteFile("videoEnrollmentArmaan3.mov");
+        deleteFile("videoVerificationArmaan1.mov");
+        deleteFile("videoEnrollmentStephen1.mov");
+        deleteFile("videoEnrollmentStephen2.mov");
+        deleteFile("videoEnrollmentStephen3.mov");
 
         // Video Enrollments By URL
 
-        before(3);
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createGroup("Sample Group Description", ResponseHandler(201, "SUCC", signal));
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createGroup("Sample Group Description", ResponseHandler("createGroup",201, "SUCC", signal));
         after("createGroup");
 
-        before(2);
-        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler("addUserToGroup",200, "SUCC", signal));
         after("addUserToGroup");
 
-        before(1);
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
         myVoiceIt.createVideoEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentArmaan1.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollmentByUrl",201, "SUCC", signal));
         after("createVideoEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentArmaan2.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollmentByUrl",201, "SUCC", signal));
         after("createVideoEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentArmaan3.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollmentByUrl",201, "SUCC", signal));
         after("createVideoEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollmentByUrl(userIds.get(1), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen1.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollmentByUrl",201, "SUCC", signal));
         after("createVideoEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollmentByUrl(userIds.get(1), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen2.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollmentByUrl",201, "SUCC", signal));
         after("createVideoEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVideoEnrollmentByUrl(userIds.get(1), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen3.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVideoEnrollmentByUrl",201, "SUCC", signal));
         after("createVideoEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.videoVerificationByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoVerificationArmaan1.mov",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("videoVerificationByUrl",200, "SUCC", signal));
         after("videoVerificationByUrl");
 
-        before(1);
+        before();
         myVoiceIt.videoIdentificationByUrl(groupId, "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoVerificationArmaan1.mov",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("videoIdentificationByUrl",200, "SUCC", signal));
         after("videoIdentificationByUrl");
         assertEquals(userIds.get(0), userIds.get(2));
 
-        before(2);
-        myVoiceIt.deleteAllVideoEnrollments(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteAllVideoEnrollments(userIds.get(1), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteAllVideoEnrollments(userIds.get(0), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
         after("deleteAllVideoEnrollments");
 
-        before(3);
-        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteGroup(groupId, ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteAllVideoEnrollments(userIds.get(1), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
+        after("deleteAllVideoEnrollments");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteGroup(groupId, ResponseHandler("deleteGroup",200, "SUCC", signal));
         after("deleteGroup");
+
         userIds.clear();
         enrollmentIds.clear();
-
-        deleteFile(dir+"/videoEnrollmentArmaan1.mov");
-        deleteFile(dir+"/videoEnrollmentArmaan2.mov");
-        deleteFile(dir+"/videoEnrollmentArmaan3.mov");
-        deleteFile(dir+"/videoVerificationArmaan1.mov");
-        deleteFile(dir+"/videoEnrollmentStephen1.mov");
-        deleteFile(dir+"/videoEnrollmentStephen2.mov");
-        deleteFile(dir+"/videoEnrollmentStephen3.mov");
 
     }
 
     @Test
     public void TestVoice() {
 
-        before(3);
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createGroup("Sample Group Description", ResponseHandler(201,
-                "SUCC", signal));
-        after("createGroup");
-
-        before(2);
-        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        after("addUserToGroup");
-
-        // Create Voice Enrollments
+        // Download Voice Enrollments
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan1.wav", "enrollmentArmaan1.wav");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan2.wav", "enrollmentArmaan2.wav");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan3.wav", "enrollmentArmaan3.wav");
@@ -357,160 +392,199 @@ public class VoiceItInstrumentedTest {
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentStephen2.wav", "enrollmentStephen2.wav");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentStephen3.wav", "enrollmentStephen3.wav");
 
-        before(1);
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createGroup("Sample Group Description", ResponseHandler("createGroup",201,
+                "SUCC", signal));
+        after("createGroup");
+
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
         myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentArmaan1.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentArmaan2.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentArmaan3.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
-        before(1);
-        myVoiceIt.getAllVoiceEnrollments(userIds.get(0),ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.getAllVoiceEnrollments(userIds.get(0),ResponseHandler("getAllVoiceEnrollments",200, "SUCC", signal));
         after("getAllVoiceEnrollments");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollment(userIds.get(1), "en-US", phrase, new File(dir+"/enrollmentStephen1.wav"),
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollment(userIds.get(1), "en-US", phrase, new File(dir+"/enrollmentStephen2.wav"),
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollment(userIds.get(1), "en-US", phrase, new File(dir+"/enrollmentStephen3.wav"),
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.voiceVerification(userIds.get(0), "en-US", phrase, dir+"/verificationArmaan1.wav",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("voiceVerification",200, "SUCC", signal));
         after("voiceVerification");
 
 
-        before(1);
+        before();
         myVoiceIt.voiceIdentification(groupId, "en-US", phrase, dir+"/verificationArmaan1.wav",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("voiceIdentification",200, "SUCC", signal));
         after("voiceIdentification");
         assertEquals(userIds.get(0), userIds.get(2));
 
         // Cleanup
-        before(2);
-        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(1), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(0), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
         after("deleteAllVoiceEnrollments");
 
-        before(3);
-        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteGroup(groupId, ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(1), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
+        after("deleteAllVoiceEnrollments");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteGroup(groupId, ResponseHandler("deleteGroup",200, "SUCC", signal));
         after("deleteGroup");
+
         userIds.clear();
         enrollmentIds.clear();
 
+        deleteFile("enrollmentArmaan1.wav");
+        deleteFile("enrollmentArmaan2.wav");
+        deleteFile("enrollmentArmaan3.wav");
+        deleteFile("verificationArmaan1.wav");
+        deleteFile("enrollmentStephen1.wav");
+        deleteFile("enrollmentStephen2.wav");
+        deleteFile("enrollmentStephen3.wav");
+
         // By URL
 
-        before(3);
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createGroup("Sample Group Description", ResponseHandler(201,
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createGroup("Sample Group Description", ResponseHandler("createGroup",201,
                 "SUCC", signal));
         after("createGroup");
 
-        before(2);
-        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler("addUserToGroup",200, "SUCC", signal));
         after("addUserToGroup");
 
-        before(1);
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
         myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan1.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan2.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan3.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(1), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentStephen1.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(1), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentStephen2.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(1), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentStephen3.wav",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
-        before(1);
+        before();
         myVoiceIt.voiceVerificationByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/verificationArmaan1.wav",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("voiceVerificationByUrl",200, "SUCC", signal));
         after("voiceVerificationByUrl");
 
-        before(1);
+        before();
         myVoiceIt.voiceIdentificationByUrl(groupId, "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/verificationArmaan1.wav",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("voiceIdentificationByUrl",200, "SUCC", signal));
         after("voiceIdentificationByUrl");
         assertEquals(userIds.get(0), userIds.get(2));
 
         // Cleanup
-        before(2);
-        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(1), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(0), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
         after("deleteAllVoiceEnrollments");
 
-        before(3);
-        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteGroup(groupId, ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(1), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
+        after("deleteAllVoiceEnrollments");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteGroup(groupId, ResponseHandler("deleteGroup",200, "SUCC", signal));
         after("deleteGroup");
+
         userIds.clear();
         enrollmentIds.clear();
 
-        deleteFile(dir+"/enrollmentArmaan1.wav");
-        deleteFile(dir+"/enrollmentArmaan2.wav");
-        deleteFile(dir+"/enrollmentArmaan3.wav");
-        deleteFile(dir+"/verificationArmaan1.wav");
-        deleteFile(dir+"/enrollmentStephen1.wav");
-        deleteFile(dir+"/enrollmentStephen2.wav");
-        deleteFile(dir+"/enrollmentStephen3.wav");
     }
 
     @Test
     public void TestFace() {
 
-        before(3);
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createGroup("Sample Group Description", ResponseHandler(201,
-                "SUCC", signal));
-        after("createGroup");
-
-        before(2);
-        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        after("addUserToGroup");
-
-        // Create Face Enrollments
+        // Download Face Enrollments
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan1.mp4", "faceEnrollmentArmaan1.mp4");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan2.mp4", "faceEnrollmentArmaan2.mp4");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan3.mp4", "faceEnrollmentArmaan3.mp4");
@@ -519,137 +593,98 @@ public class VoiceItInstrumentedTest {
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen2.mov", "faceEnrollmentStephen2.mov");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen3.mov", "faceEnrollmentStephen3.mov");
 
-        before(1);
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createGroup("Sample Group Description", ResponseHandler("createGroup",201,
+                "SUCC", signal));
+        after("createGroup");
+
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
         myVoiceIt.createFaceEnrollment(userIds.get(0), dir+"/faceEnrollmentArmaan1.mp4",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createFaceEnrollment",201, "SUCC", signal));
         after("createFaceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createFaceEnrollment(userIds.get(0), dir+"/faceEnrollmentArmaan2.mp4",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createFaceEnrollment",201, "SUCC", signal));
         after("createFaceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createFaceEnrollment(userIds.get(0), dir+"/faceEnrollmentArmaan3.mp4",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createFaceEnrollment",201, "SUCC", signal));
         after("createFaceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.getAllFaceEnrollments(userIds.get(0),
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("getAllFaceEnrollments",200, "SUCC", signal));
         after("getAllFaceEnrollments");
 
-        before(1);
+        before();
         myVoiceIt.createFaceEnrollment(userIds.get(1), dir+"/faceEnrollmentStephen1.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createFaceEnrollment",201, "SUCC", signal));
         after("createFaceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createFaceEnrollment(userIds.get(1), dir+"/faceEnrollmentStephen2.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createFaceEnrollment",201, "SUCC", signal));
         after("createFaceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.createFaceEnrollment(userIds.get(1), dir+"/faceEnrollmentStephen3.mov",
-                ResponseHandler(201, "SUCC", signal));
+                ResponseHandler("createFaceEnrollment",201, "SUCC", signal));
         after("createFaceEnrollment");
 
-        before(1);
+        before();
         myVoiceIt.faceVerification(userIds.get(0), dir+"/faceVerificationArmaan1.mp4",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("faceVerification",200, "SUCC", signal));
         after("faceVerification");
 
-        before(1);
+        before();
         myVoiceIt.faceIdentification(groupId, dir+"/faceVerificationArmaan1.mp4",
-                ResponseHandler(200, "SUCC", signal));
+                ResponseHandler("faceIdentification",200, "SUCC", signal));
         after("faceIdentification");
         assertEquals(userIds.get(0), userIds.get(2));
 
         // Cleanup
-        before(4);
-        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(2), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteAllFaceEnrollments(userIds.get(1), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(0), ResponseHandler("deleteFaceEnrollment",200, "SUCC", signal));
+        after("deleteFaceEnrollment");
+
+        before();
+        myVoiceIt.deleteAllFaceEnrollments(userIds.get(0), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
         after("deleteAllFaceEnrollments");
 
-        before(3);
-        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteGroup(groupId, ResponseHandler(200, "SUCC", signal));
-        after("deleteGroup");
-        userIds.clear();
-        faceEnrollmentIds.clear();
-
-        // By Url
-
-        before(3);
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createUser(ResponseHandler(201, "SUCC", signal));
-        myVoiceIt.createGroup("Sample Group Description", ResponseHandler(201,
-                "SUCC", signal));
-        after("createGroup");
-
-        before(2);
-        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        after("addUserToGroup");
-
-        before(1);
-        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(0), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan1.mp4",
-                ResponseHandler(201, "SUCC", signal));
-        after("createFaceEnrollmentByUrl");
-
-        before(1);
-        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(0), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan2.mp4",
-                ResponseHandler(201, "SUCC", signal));
-        after("createFaceEnrollmentByUrl");
-
-        before(1);
-        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(0), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan3.mp4",
-                ResponseHandler(201, "SUCC", signal));
-        after("createFaceEnrollmentByUrl");
-
-        before(1);
-        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(1), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen1.mov",
-                ResponseHandler(201, "SUCC", signal));
-        after("createFaceEnrollmentByUrl");
-
-        before(1);
-        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(1), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen2.mov",
-                ResponseHandler(201, "SUCC", signal));
-        after("createFaceEnrollmentByUrl");
-
-        before(1);
-        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(1), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen3.mov",
-                ResponseHandler(201, "SUCC", signal));
-        after("createFaceEnrollmentByUrl");
-
-
-        before(1);
-        myVoiceIt.faceVerificationByUrl(userIds.get(0), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceVerificationArmaan1.mp4",
-                ResponseHandler(200, "SUCC", signal));
-        after("faceVerificationByUrl");
-
-        before(1);
-        myVoiceIt.faceIdentificationByUrl(groupId, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceVerificationArmaan1.mp4",
-                ResponseHandler(200, "SUCC", signal));
-        after("faceIdentificationByUrl");
-        assertEquals(userIds.get(0), userIds.get(2));
-
-        // Cleanup
-        before(4);
-        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(2), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteAllFaceEnrollments(userIds.get(1), ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteAllFaceEnrollments(userIds.get(1), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
         after("deleteAllFaceEnrollments");
 
-        before(3);
-        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler(200, "SUCC", signal));
-        myVoiceIt.deleteGroup(groupId, ResponseHandler(200, "SUCC", signal));
+        before();
+        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteGroup(groupId, ResponseHandler("deleteGroup",200, "SUCC", signal));
         after("deleteGroup");
+
         userIds.clear();
         faceEnrollmentIds.clear();
 
@@ -657,8 +692,97 @@ public class VoiceItInstrumentedTest {
         deleteFile("faceEnrollmentArmaan2.mp4");
         deleteFile("faceEnrollmentArmaan3.mp4");
         deleteFile("faceVerificationArmaan1.mp4");
-        deleteFile("faceEnrollmentStephen1.mp4");
-        deleteFile("faceEnrollmentStephen2.mp4");
-        deleteFile("faceEnrollmentStephen3.mp4");
+        deleteFile("faceEnrollmentStephen1.mov");
+        deleteFile("faceEnrollmentStephen2.mov");
+        deleteFile("faceEnrollmentStephen3.mov");
+
+        // By Url
+
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createUser(ResponseHandler("createUser",201, "SUCC", signal));
+        after("createUser");
+
+        before();
+        myVoiceIt.createGroup("Sample Group Description", ResponseHandler("createGroup",201,
+                "SUCC", signal));
+        after("createGroup");
+
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(0), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
+        myVoiceIt.addUserToGroup(groupId, userIds.get(1), ResponseHandler("addUserToGroup",200, "SUCC", signal));
+        after("addUserToGroup");
+
+        before();
+        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(0), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan1.mp4",
+                ResponseHandler("createFaceEnrollmentByUrl",201, "SUCC", signal));
+        after("createFaceEnrollmentByUrl");
+
+        before();
+        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(0), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan2.mp4",
+                ResponseHandler("createFaceEnrollmentByUrl",201, "SUCC", signal));
+        after("createFaceEnrollmentByUrl");
+
+        before();
+        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(0), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceEnrollmentArmaan3.mp4",
+                ResponseHandler("createFaceEnrollmentByUrl",201, "SUCC", signal));
+        after("createFaceEnrollmentByUrl");
+
+        before();
+        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(1), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen1.mov",
+                ResponseHandler("createFaceEnrollmentByUrl",201, "SUCC", signal));
+        after("createFaceEnrollmentByUrl");
+
+        before();
+        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(1), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen2.mov",
+                ResponseHandler("createFaceEnrollmentByUrl",201, "SUCC", signal));
+        after("createFaceEnrollmentByUrl");
+
+        before();
+        myVoiceIt.createFaceEnrollmentByUrl(userIds.get(1), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/videoEnrollmentStephen3.mov",
+                ResponseHandler("createFaceEnrollmentByUrl",201, "SUCC", signal));
+        after("createFaceEnrollmentByUrl");
+
+
+        before();
+        myVoiceIt.faceVerificationByUrl(userIds.get(0), "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceVerificationArmaan1.mp4",
+                ResponseHandler("faceVerificationByUrl",200, "SUCC", signal));
+        after("faceVerificationByUrl");
+
+        before();
+        myVoiceIt.faceIdentificationByUrl(groupId, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/faceVerificationArmaan1.mp4",
+                ResponseHandler("faceIdentificationByUrl",200, "SUCC", signal));
+        after("faceIdentificationByUrl");
+        assertEquals(userIds.get(0), userIds.get(2));
+
+        // Cleanup
+        before();
+        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(0), ResponseHandler("deleteFaceEnrollment",200, "SUCC", signal));
+        after("deleteFaceEnrollment");
+
+        before();
+        myVoiceIt.deleteAllFaceEnrollments(userIds.get(1), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
+        after("deleteAllFaceEnrollments");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(0), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteUser(userIds.get(1), ResponseHandler("deleteUser",200, "SUCC", signal));
+        after("deleteUser");
+
+        before();
+        myVoiceIt.deleteGroup(groupId, ResponseHandler("deleteGroup",200, "SUCC", signal));
+        after("deleteGroup");
+
+        userIds.clear();
+        faceEnrollmentIds.clear();
     }
 }
