@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -61,6 +63,9 @@ public class RadiusOverlayView extends LinearLayout {
     private Path mWaveformPath;
     private float mWaveformPhase = 0.0f;
     private final int mWaveColor = getResources().getColor(R.color.waveform);
+
+    private Bitmap mPicture = null;
+    public boolean displayPicture = false;
 
     public void unlockDisplay() {
         mLockTextDisplay = false;
@@ -165,6 +170,37 @@ public class RadiusOverlayView extends LinearLayout {
         textPaint.setColor(Color.rgb(255, 255, 255));
     }
 
+    public void setPicture(byte[] data) {
+
+        if(data == null) {
+            mPicture = null;
+            return;
+        }
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+        Matrix matrix = new Matrix();
+
+        // Flip over X axis
+        matrix.postScale(-1, 1, bitmap.getWidth() / 2f, bitmap.getHeight() / 2f);
+
+        // Scale to preview size based off orientation
+        if (CameraSourcePreview.isPortraitMode(getContext())) {
+            matrix.postScale( ((float) CameraSourcePreview.childHeight) / bitmap.getWidth(),
+                    ((float) CameraSourcePreview.childWidth) / bitmap.getHeight());
+            matrix.postRotate(90);
+        } else {
+            matrix.postScale( ((float) CameraSourcePreview.childWidth) / bitmap.getWidth(),
+                    ((float) CameraSourcePreview.childHeight) / bitmap.getHeight());
+        }
+
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        mPicture = bitmap;
+
+        this.invalidate();
+    }
+
     public RadiusOverlayView(Context context) {
         super(context);
     }
@@ -189,11 +225,16 @@ public class RadiusOverlayView extends LinearLayout {
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
 
-        createWindowFrame(); // Creation of the window frame
+        // Draw captured picture of user
+        if(mPicture != null && displayPicture) {
+            canvas.drawBitmap(mPicture, 0, 0, new Paint());
+        }
+
+        createPortraitFrame(); // Creation of the window frame
         canvas.drawBitmap(mWindowFrame, 0, 0, null);
     }
 
-    private void createWindowFrame() {
+    private void createPortraitFrame() {
         // Reset bitmap for redraw
         mWindowFrame.eraseColor(Color.TRANSPARENT);
 
@@ -345,6 +386,7 @@ public class RadiusOverlayView extends LinearLayout {
             // Draw line of text to screen
             canvas.drawText(textLines.get(i), x.get(i), y.get(i), textPaint);
         }
+
     }
 
     public boolean insidePortraitCircle(Face face) {

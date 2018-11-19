@@ -24,6 +24,8 @@ public class VoiceItAPI2 {
     private final String apiKey;
     private final String apiToken;
 
+    public boolean mDisplayPreviewFrame = false;
+
     private final String mTAG = "VoiceItAPI2";
 
     public VoiceItAPI2(String apiKey, String apiToken){
@@ -149,7 +151,7 @@ public class VoiceItAPI2 {
         try {
             params.put("recording", recording);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/voice"), params, responseHandler);
@@ -220,7 +222,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
@@ -240,7 +242,7 @@ public class VoiceItAPI2 {
         try {
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
@@ -271,7 +273,7 @@ public class VoiceItAPI2 {
             params.put("audio", audio);
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/video"), params, responseHandler);
@@ -293,7 +295,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/enrollments/video"), params, responseHandler);
@@ -410,7 +412,7 @@ public class VoiceItAPI2 {
         try {
             params.put("recording", recording);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
         client.post(getAbsoluteUrl("/verification/voice"), params, responseHandler);
     }
@@ -480,7 +482,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
@@ -501,7 +503,7 @@ public class VoiceItAPI2 {
         try {
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
@@ -535,7 +537,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
@@ -554,7 +556,7 @@ public class VoiceItAPI2 {
             params.put("audio", audio);
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
@@ -590,7 +592,7 @@ public class VoiceItAPI2 {
         try {
             params.put("recording", recording);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/voice"), params, responseHandler);
@@ -663,7 +665,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/video"), params, responseHandler);
@@ -686,7 +688,7 @@ public class VoiceItAPI2 {
             params.put("audio", audio);
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/video"), params, responseHandler);
@@ -720,7 +722,7 @@ public class VoiceItAPI2 {
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/face"), params, responseHandler);
@@ -740,7 +742,7 @@ public class VoiceItAPI2 {
         try {
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
-            Log.d("error: ", e.getMessage());
+            Log.d("error: ", "FileNotFoundException: " + e.getMessage());
         }
 
         client.post(getAbsoluteUrl("/identification/face"), params, responseHandler);
@@ -828,6 +830,7 @@ public class VoiceItAPI2 {
         bundle.putString("userId", userId);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
+        bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
@@ -838,7 +841,7 @@ public class VoiceItAPI2 {
         encapsulatedVideoVerification(activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2, responseHandler);
     }
 
-        public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
@@ -854,6 +857,7 @@ public class VoiceItAPI2 {
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
+        bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
@@ -880,6 +884,7 @@ public class VoiceItAPI2 {
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
+        bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
@@ -897,6 +902,7 @@ public class VoiceItAPI2 {
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userId", userId);
+        bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
@@ -921,6 +927,7 @@ public class VoiceItAPI2 {
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
+        bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
@@ -945,6 +952,7 @@ public class VoiceItAPI2 {
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
+        bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         intent.putExtras(bundle);
         activity.startActivity(intent);
 
@@ -1001,7 +1009,7 @@ public class VoiceItAPI2 {
                 || id.length() != 32) {
              Log.d(mTAG,"GroupId does not meet requirements, " +
                      "please ensure it is your group's 36 character alphanumeric string generated " +
-                     "from the createUser API call");
+                     "from the createGroup API call");
             return false;
         }
         return true;
@@ -1010,7 +1018,7 @@ public class VoiceItAPI2 {
     private JSONObject buildJSONFormatMessage() {
         JSONObject json = new JSONObject();
         try {
-            json.put("message", "Incorrectly formatted argument");
+            json.put("message", "Incorrectly formatted id argument. Check log output for more information");
         } catch(JSONException e) {
             Log.d(mTAG,"JSON Exception : " + e.getMessage());
         }

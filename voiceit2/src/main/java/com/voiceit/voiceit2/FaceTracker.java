@@ -109,6 +109,9 @@ class FaceTracker extends Tracker<Face> {
                         }
                         // Take picture in the middle of liveness checks
                         if (FaceTracker.livenessChallengesPassed == 1) {
+                            // Capture preview picture to show to the user later
+                            CameraSource.captureNextPreviewFrame = true;
+
                             mCallbacks.takePictureCallBack();
                         } else {
                             FaceTracker.continueDetecting = true;
@@ -314,7 +317,13 @@ class FaceTracker extends Tracker<Face> {
                                     // Quick pause, 1 seconds, after all challenges are done
                                     setProgressCircleAngle(270.0, 0.0);
                                     setProgressCircleColor(R.color.progressCircle);
+                                    // Display picture of user at the end of process
+                                    mOverlay.displayPicture = true;
+
                                     if (!mDoLivenessCheck) {
+                                        // Take picture of user in preview to show
+                                        CameraSource.captureNextPreviewFrame = true;
+
                                         // Since picture was not taken during any liveness checks,
                                         // take one now then auth
                                         mCallbacks.takePictureCallBack();
