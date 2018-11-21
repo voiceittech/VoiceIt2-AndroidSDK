@@ -96,7 +96,7 @@ public class VoiceItInstrumentedTest {
     private void after(String method) {
         try {
             if(!signal.await(30, TimeUnit.SECONDS)){
-                assertEquals(method, false);
+                assertEquals(method, "Timeout");
             }
         } catch (InterruptedException e) { e.printStackTrace(); }
     }
@@ -460,6 +460,11 @@ public class VoiceItInstrumentedTest {
         assertEquals(userIds.get(0), userIds.get(2));
 
         // Cleanup
+
+        before();
+        myVoiceIt.deleteVoiceEnrollment(userIds.get(0), enrollmentIds.get(0), ResponseHandler("deleteVoiceEnrollment",200, "SUCC", signal));
+        after("deleteVideoEnrollment");
+
         before();
         myVoiceIt.deleteAllVoiceEnrollments(userIds.get(0), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
         after("deleteAllVoiceEnrollments");
