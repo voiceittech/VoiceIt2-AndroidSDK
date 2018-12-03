@@ -81,7 +81,7 @@ VoiceItApi2AndroidSDK is available through [JitPack](https://jitpack.io/#voiceit
 
 ### Initialization
 
-First import *VoiceItAPI2* and then initialize a reference to the SDK inside an Activity, passing in your API Credentials.
+First import *VoiceItAPI2* and then initialize a reference to the SDK inside an Activity, passing in your API Credentials or user token.
 
 ```java
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // If using user tokens, replace API_KEY below with the user token,
+        // and leave the second argument as an empty string
         myVoiceIt = new VoiceItAPI2("API_KEY","API_TOK");
     }
 }
