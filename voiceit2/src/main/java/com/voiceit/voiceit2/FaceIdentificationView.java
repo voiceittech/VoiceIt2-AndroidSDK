@@ -32,7 +32,7 @@ import java.io.IOException;
 
 import cz.msebera.android.httpclient.Header;
 
-public class FaceIdentificationView extends AppCompatActivity {
+class FaceIdentificationView extends AppCompatActivity {
 
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;
@@ -165,7 +165,6 @@ public class FaceIdentificationView extends AppCompatActivity {
     private class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
 
         private final Activity mActivity;
-        private final int livenessChallengeTypesCount = 3;
         private final int [] livenessChallengeOrder = {1, 2, 3};
 
         private FaceTrackerFactory(FaceIdentificationView activity) {
@@ -173,7 +172,7 @@ public class FaceIdentificationView extends AppCompatActivity {
             FaceTracker.continueDetecting = false;
             FaceTracker.livenessChallengesPassed = 0;
             FaceTracker.livenessChallengeFails = 0;
-            Utils.randomizeArrayOrder(livenessChallengeTypesCount, livenessChallengeOrder);
+            Utils.randomizeArrayOrder(livenessChallengeOrder);
         }
 
         @Override

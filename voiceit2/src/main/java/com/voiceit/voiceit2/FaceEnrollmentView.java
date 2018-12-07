@@ -30,7 +30,7 @@ import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class FaceEnrollmentView extends AppCompatActivity {
+class FaceEnrollmentView extends AppCompatActivity {
 
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;

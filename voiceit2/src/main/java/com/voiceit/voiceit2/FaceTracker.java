@@ -31,19 +31,15 @@ class FaceTracker extends Tracker<Face> {
     private final int mLivenessChallengesNeeded;
     private static int challengeIndex = 0;
 
-    public static int livenessChallengesPassed = 0;
-    public static int livenessChallengeFails = 0;
+    static int livenessChallengesPassed = 0;
+    static int livenessChallengeFails = 0;
     private boolean mDisplayingChallenge = false;
     private boolean mDisplayingChallengeOutcome = false;
     private boolean mTimingLiveness = false;
-//    private boolean updateBlinkDisplay = true;
-//    private boolean blinking = false;
-//    private int blinks = 0;
-//    private int neededBlinks = 2;
 
-    public static boolean continueDetecting = true;
-    public static boolean lookingAway = false;
-    public static final Handler livenessTimer = new Handler();
+    static boolean continueDetecting = true;
+    static boolean lookingAway = false;
+    static final Handler livenessTimer = new Handler();
 
     FaceTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int [] livenessChallengeOrder, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded) {
         mOverlay = overlay;
@@ -130,12 +126,19 @@ class FaceTracker extends Tracker<Face> {
             case 1:
                 if (!mDisplayingChallenge) {
                     mDisplayingChallenge = true;
-                    updateDisplayText(mActivity.getString(R.string.SMILE), false);
+
+                    // Smiling before prompt
+                    if (face.getIsSmilingProbability() > .5) {
+                        mDisplayingChallengeOutcome = true;
+                        failLiveness(true);
+                    } else {
+                        updateDisplayText(mActivity.getString(R.string.SMILE), false);
+                    }
 
                 } else if (face.getIsSmilingProbability() > .5 && !mDisplayingChallengeOutcome) {
                     mDisplayingChallengeOutcome = true;
                     setProgressCircleColor(R.color.success);
-                    setProgressCircleAngle(270.0,359.999);
+                    setProgressCircleAngle(270.0, 359.999);
                     completeLivenessChallenge();
                 }
                 break;
@@ -144,9 +147,16 @@ class FaceTracker extends Tracker<Face> {
             case 2:
                 if (!mDisplayingChallenge) {
                     mDisplayingChallenge = true;
-                    updateDisplayText(mActivity.getString(R.string.TURN_LEFT), false);
-                    setProgressCircleColor(R.color.pendingLivenesSuccess);
-                    setProgressCircleAngle(135.0, 90.0);
+
+                    // Turned before prompt
+                    if (face.getEulerY() > 18.0) {
+                        mDisplayingChallengeOutcome = true;
+                        failLiveness(true);
+                    } else {
+                        updateDisplayText(mActivity.getString(R.string.TURN_LEFT), false);
+                        setProgressCircleColor(R.color.pendingLivenessSuccess);
+                        setProgressCircleAngle(135.0, 90.0);
+                    }
 
                 } else if (!mDisplayingChallengeOutcome) {
                     if(face.getEulerY() > 18.0) {
@@ -155,8 +165,9 @@ class FaceTracker extends Tracker<Face> {
                         completeLivenessChallenge();
 
                     } else if (face.getEulerY() < -22.0) {
+                        mDisplayingChallengeOutcome = true;
                         // Turned wrong direction so fail
-                        failLiveness();
+                        failLiveness(false);
                     }
                 }
                 break;
@@ -165,9 +176,16 @@ class FaceTracker extends Tracker<Face> {
             case 3:
                 if (!mDisplayingChallenge) {
                     mDisplayingChallenge = true;
-                    updateDisplayText(mActivity.getString(R.string.TURN_RIGHT), false);
-                    setProgressCircleColor(R.color.pendingLivenesSuccess);
-                    setProgressCircleAngle(315.0, 90.0);
+
+                    // Turned before prompt
+                    if(face.getEulerY() < -18.0) {
+                        mDisplayingChallengeOutcome = true;
+                        failLiveness(true);
+                    } else {
+                        updateDisplayText(mActivity.getString(R.string.TURN_RIGHT), false);
+                        setProgressCircleColor(R.color.pendingLivenessSuccess);
+                        setProgressCircleAngle(315.0, 90.0);
+                    }
 
                 } else if (!mDisplayingChallengeOutcome) {
                     if(face.getEulerY() < -18.0) {
@@ -176,72 +194,19 @@ class FaceTracker extends Tracker<Face> {
                         completeLivenessChallenge();
 
                     } else if (face.getEulerY() > 22.0) {
+                        mDisplayingChallengeOutcome = true;
                         // Turned wrong direction so fail
-                        failLiveness();
+                        failLiveness(false);
                     }
                 }
                 break;
 
-                /* The current Android FaceDetector does not catch blinks fast/well in
-                    enough environments for liveness detection  */
-
-                // Blink
-//            case 4:
-//                if(!mDisplayingChallenge && updateBlinkDisplay) {
-//                    mActivity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            updateDisplayText(mActivity.getString(mActivity.getResources()
-//                                    .getIdentifier("BLINK_"+ (neededBlinks - blinks) +"_TIME" ,
-//                                            "string", mActivity.getPackageName())));
-//                            updateBlinkDisplay = false;
-//                        }
-//                    });
-//                }
-//
-//                double rightProb = face.getIsRightEyeOpenProbability();
-//                double leftProb = face.getIsLeftEyeOpenProbability();
-//                double eyeOpenThreshold = .45;
-//
-//                if(!blinking) {
-//                    if (rightProb < eyeOpenThreshold
-//                            && leftProb < eyeOpenThreshold) {
-//                        blinking = true;
-//                    }
-//                } else {
-//                    if (rightProb > eyeOpenThreshold
-//                            && leftProb > eyeOpenThreshold) {
-//                        blinking = false;
-//                        blinks++;
-//                        updateBlinkDisplay = true;
-//                    }
-//                }
-//
-//                if(blinks == neededBlinks && !mDisplayingChallengeOutcome) {
-//                    mDisplayingChallengeOutcome = true;
-//                    mActivity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            overlay.setProgressCircleColor(mActivity.getResources().getColor(R.color.success));
-//                            overlay.setProgressCircleAngle(359.999);
-//                            // Quick pause in-between challenges
-//                            new Handler().postDelayed(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    completeLivenessChallenge();
-//                                    updateBlinkDisplay = true;
-//                                }
-//                             }, 750);
-//                        }
-//                    });
-//                }
-//                break;
             default:
                 break;
         }
     }
 
-    private void failLiveness() {
+    private void failLiveness(boolean failedPrecheck) {
         // Cleanup
         FaceTracker.continueDetecting = false;
         FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
@@ -256,15 +221,21 @@ class FaceTracker extends Tracker<Face> {
 
         FaceTracker.livenessChallengeFails++;
         if(FaceTracker.livenessChallengeFails > mLivenessChallengeFailsAllowed) {
-            updateDisplayText(mActivity.getString(R.string.FAILED_LIVENESS), false);
+            updateDisplayText((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
+                    + mActivity.getString(R.string.FAILED_LIVENESS), false);
+            Log.d(mTAG, "display : " + ((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
+                    + mActivity.getString(R.string.FAILED_LIVENESS)));
         } else {
-            updateDisplayText(mActivity.getString(R.string.FAILED_LIVENESS_CHALLENGE), false);
+            updateDisplayText((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
+                    + mActivity.getString(R.string.FAILED_LIVENESS_CHALLENGE), false);
+            Log.d(mTAG, "display : " + ((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
+                    + mActivity.getString(R.string.FAILED_LIVENESS)));
         }
 
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                // Wait for 2.0 seconds
+                // Wait for 2.5 seconds
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -285,7 +256,7 @@ class FaceTracker extends Tracker<Face> {
                             FaceTracker.continueDetecting = true;
                         }
                     }
-                }, 2000);
+                }, 2500);
             }
         });
     }
@@ -351,7 +322,7 @@ class FaceTracker extends Tracker<Face> {
                                     @Override
                                     public void run() {
                                         // Fail if user didn't pass a liveness check in time
-                                        failLiveness();
+                                        failLiveness(false);
                                     }
                                 }, 3000);
                             }

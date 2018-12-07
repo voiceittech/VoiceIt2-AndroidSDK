@@ -31,7 +31,7 @@ import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class FaceVerificationView extends AppCompatActivity {
+class FaceVerificationView extends AppCompatActivity {
 
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;
@@ -164,7 +164,6 @@ public class FaceVerificationView extends AppCompatActivity {
     private class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
 
         private final Activity mActivity;
-        private final int livenessChallengeTypesCount = 3;
         private final int [] livenessChallengeOrder = {1, 2, 3};
 
         private FaceTrackerFactory(FaceVerificationView activity) {
@@ -172,7 +171,7 @@ public class FaceVerificationView extends AppCompatActivity {
             FaceTracker.continueDetecting = false;
             FaceTracker.livenessChallengesPassed = 0;
             FaceTracker.livenessChallengeFails = 0;
-            Utils.randomizeArrayOrder(livenessChallengeTypesCount, livenessChallengeOrder);
+            Utils.randomizeArrayOrder(livenessChallengeOrder);
         }
 
         @Override

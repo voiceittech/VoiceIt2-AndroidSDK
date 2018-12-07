@@ -24,7 +24,7 @@ import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VoiceVerificationView extends AppCompatActivity {
+class VoiceVerificationView extends AppCompatActivity {
 
     private final String mTAG = "VoiceVerificationView";
     private Context mContext;

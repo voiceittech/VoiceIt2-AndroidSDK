@@ -24,7 +24,7 @@ import com.google.android.gms.vision.face.Face;
 import java.util.ArrayList;
 import java.util.Vector;
 
-public class RadiusOverlayView extends LinearLayout {
+class RadiusOverlayView extends LinearLayout {
     private Bitmap mWindowFrame;
 
     private final String mTAG = "RadiusOverlayView";

@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class CameraSourcePreview extends ViewGroup {
+class CameraSourcePreview extends ViewGroup {
     private static final String mTAG = "CameraSourcePreview";
 
     private final Context mContext;

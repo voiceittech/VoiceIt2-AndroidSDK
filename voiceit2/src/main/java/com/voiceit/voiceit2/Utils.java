@@ -33,10 +33,10 @@ class Utils {
         }
     }
 
-    static void randomizeArrayOrder(int size, int [] array) {
+    static void randomizeArrayOrder(int [] array) {
         final Random rand = new Random();
-        for(int i = 0; i < size; i++) {
-            int j = rand.nextInt(size -1);
+        for(int i = 0; i < array.length; i++) {
+            int j = rand.nextInt(array.length -1);
             int temp = array[i];
             array[i] = array[j];
             array[j] = temp;
