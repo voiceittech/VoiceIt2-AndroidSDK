@@ -8,7 +8,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName "1.6.6"
+        versionName "1.6.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -30,6 +30,6 @@ dependencies {
     implementation 'com.android.support:support-v4:28.0.0'
     implementation 'com.google.android.gms:play-services-vision:17.0.2'
     implementation group: 'commons-io', name: 'commons-io', version: '2.5'
-
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.16'
     api 'com.loopj.android:android-async-http:1.4.9'
 }

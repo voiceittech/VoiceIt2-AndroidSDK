@@ -62,4 +62,6 @@
 
     <string name="CHECK_INTERNET">Unable to contact server.\nPlease check your internet connection.</string>
 
+    <string name="CONTINUE">Continue</string>
+
 </resources>

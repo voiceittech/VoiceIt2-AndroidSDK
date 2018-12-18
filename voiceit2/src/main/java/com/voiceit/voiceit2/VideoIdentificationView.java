@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
@@ -43,6 +44,8 @@ public class VideoIdentificationView extends AppCompatActivity {
     private Context mContext;
 
     private RadiusOverlayView mOverlay;
+
+    private boolean playInstructionalVideo;
 
     private VoiceItAPI2 mVoiceIt2;
     private String mGroupId = "";
@@ -98,6 +101,17 @@ public class VideoIdentificationView extends AppCompatActivity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         } else {
             setRequestedOrientation(Utils.lockOrientationCode(getWindowManager().getDefaultDisplay().getRotation()));
+        }
+
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sharedPref.edit();
+        playInstructionalVideo = sharedPref.getBoolean("playInstructionalVideo", true);
+        if(playInstructionalVideo) {
+            prefEditor.putBoolean("playInstructionalVideo", false);
+            prefEditor.apply();
+
+            Intent intent = new Intent(this, InstructionalVideoView.class);
+            this.startActivityForResult(intent, 0);
         }
     }
 
@@ -267,6 +281,13 @@ public class VideoIdentificationView extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Confirm permissions and start enrollment flow
+        requestHardwarePermissions();
+    }
+
+    @Override
     public void onBackPressed() {
         exitViewWithMessage("voiceit-failure", "User Canceled");
     }
@@ -274,8 +295,10 @@ public class VideoIdentificationView extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Confirm permissions and start enrollment flow
-        requestHardwarePermissions();
+        if(!playInstructionalVideo) {
+            // Confirm permissions and start enrollment flow
+            requestHardwarePermissions();
+        }
     }
 
     @Override
