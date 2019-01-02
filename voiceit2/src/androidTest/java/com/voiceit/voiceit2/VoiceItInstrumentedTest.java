@@ -384,10 +384,10 @@ public class VoiceItInstrumentedTest {
     public void TestVoice() {
 
         // Download Voice Enrollments
-        downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan1.wav", "enrollmentArmaan1.wav");
-        downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan2.wav", "enrollmentArmaan2.wav");
-        downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan3.wav", "enrollmentArmaan3.wav");
-        downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/verificationArmaan1.wav", "verificationArmaan1.wav");
+        downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentNoel1.wav", "enrollmentNoel1.wav");
+        downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentNoel2.wav", "enrollmentNoel2.wav");
+        downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentNoel3.wav", "enrollmentNoel3.wav");
+        downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/verificationNoel1.wav", "verificationNoel1.wav");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentStephen1.wav", "enrollmentStephen1.wav");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentStephen2.wav", "enrollmentStephen2.wav");
         downloadFile("https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentStephen3.wav", "enrollmentStephen3.wav");
@@ -414,17 +414,17 @@ public class VoiceItInstrumentedTest {
         after("addUserToGroup");
 
         before();
-        myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentArmaan1.wav",
+        myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentNoel1.wav",
                 ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
         before();
-        myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentArmaan2.wav",
+        myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentNoel2.wav",
                 ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
         before();
-        myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentArmaan3.wav",
+        myVoiceIt.createVoiceEnrollment(userIds.get(0), "en-US", phrase, dir+"/enrollmentNoel3.wav",
                 ResponseHandler("createVoiceEnrollment",201, "SUCC", signal));
         after("createVoiceEnrollment");
 
@@ -448,13 +448,13 @@ public class VoiceItInstrumentedTest {
         after("createVoiceEnrollment");
 
         before();
-        myVoiceIt.voiceVerification(userIds.get(0), "en-US", phrase, dir+"/verificationArmaan1.wav",
+        myVoiceIt.voiceVerification(userIds.get(0), "en-US", phrase, dir+"/verificationNoel1.wav",
                 ResponseHandler("voiceVerification",200, "SUCC", signal));
         after("voiceVerification");
 
 
         before();
-        myVoiceIt.voiceIdentification(groupId, "en-US", phrase, dir+"/verificationArmaan1.wav",
+        myVoiceIt.voiceIdentification(groupId, "en-US", phrase, dir+"/verificationNoel1.wav",
                 ResponseHandler("voiceIdentification",200, "SUCC", signal));
         after("voiceIdentification");
         assertEquals(userIds.get(0), userIds.get(2));
@@ -488,10 +488,10 @@ public class VoiceItInstrumentedTest {
         userIds.clear();
         enrollmentIds.clear();
 
-        deleteFile("enrollmentArmaan1.wav");
-        deleteFile("enrollmentArmaan2.wav");
-        deleteFile("enrollmentArmaan3.wav");
-        deleteFile("verificationArmaan1.wav");
+        deleteFile("enrollmentNoel1.wav");
+        deleteFile("enrollmentNoel2.wav");
+        deleteFile("enrollmentNoel3.wav");
+        deleteFile("verificationNoel1.wav");
         deleteFile("enrollmentStephen1.wav");
         deleteFile("enrollmentStephen2.wav");
         deleteFile("enrollmentStephen3.wav");
@@ -520,17 +520,17 @@ public class VoiceItInstrumentedTest {
         after("addUserToGroup");
 
         before();
-        myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan1.wav",
+        myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentNoel1.wav",
                 ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
         before();
-        myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan2.wav",
+        myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentNoel2.wav",
                 ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
         before();
-        myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentArmaan3.wav",
+        myVoiceIt.createVoiceEnrollmentByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/enrollmentNoel3.wav",
                 ResponseHandler("createVoiceEnrollmentByUrl",201, "SUCC", signal));
         after("createVoiceEnrollmentByUrl");
 
@@ -550,12 +550,12 @@ public class VoiceItInstrumentedTest {
         after("createVoiceEnrollmentByUrl");
 
         before();
-        myVoiceIt.voiceVerificationByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/verificationArmaan1.wav",
+        myVoiceIt.voiceVerificationByUrl(userIds.get(0), "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/verificationNoel1.wav",
                 ResponseHandler("voiceVerificationByUrl",200, "SUCC", signal));
         after("voiceVerificationByUrl");
 
         before();
-        myVoiceIt.voiceIdentificationByUrl(groupId, "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/verificationArmaan1.wav",
+        myVoiceIt.voiceIdentificationByUrl(groupId, "en-US", phrase, "https://s3.amazonaws.com/voiceit-api2-testing-files/test-data/verificationNoel1.wav",
                 ResponseHandler("voiceIdentificationByUrl",200, "SUCC", signal));
         after("voiceIdentificationByUrl");
         assertEquals(userIds.get(0), userIds.get(2));
