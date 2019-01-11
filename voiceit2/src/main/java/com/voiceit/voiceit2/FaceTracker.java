@@ -33,6 +33,7 @@ class FaceTracker extends Tracker<Face> {
 
     static int livenessChallengesPassed = 0;
     static int livenessChallengeFails = 0;
+    private static double faceTurnedValue = 18.0;
     private boolean mDisplayingChallenge = false;
     private boolean mDisplayingChallengeOutcome = false;
     private boolean mTimingLiveness = false;
@@ -149,7 +150,7 @@ class FaceTracker extends Tracker<Face> {
                     mDisplayingChallenge = true;
 
                     // Turned before prompt
-                    if (face.getEulerY() > 18.0) {
+                    if (face.getEulerY() > faceTurnedValue) {
                         mDisplayingChallengeOutcome = true;
                         failLiveness(true);
                     } else {
@@ -159,7 +160,7 @@ class FaceTracker extends Tracker<Face> {
                     }
 
                 } else if (!mDisplayingChallengeOutcome) {
-                    if(face.getEulerY() > 18.0) {
+                    if(face.getEulerY() > faceTurnedValue) {
                         mDisplayingChallengeOutcome = true;
                         setProgressCircleColor(R.color.success);
                         completeLivenessChallenge();
@@ -178,7 +179,7 @@ class FaceTracker extends Tracker<Face> {
                     mDisplayingChallenge = true;
 
                     // Turned before prompt
-                    if(face.getEulerY() < -18.0) {
+                    if(face.getEulerY() < -faceTurnedValue) {
                         mDisplayingChallengeOutcome = true;
                         failLiveness(true);
                     } else {
@@ -188,7 +189,7 @@ class FaceTracker extends Tracker<Face> {
                     }
 
                 } else if (!mDisplayingChallengeOutcome) {
-                    if(face.getEulerY() < -18.0) {
+                    if(face.getEulerY() < -faceTurnedValue) {
                         mDisplayingChallengeOutcome = true;
                         setProgressCircleColor(R.color.success);
                         completeLivenessChallenge();
@@ -285,7 +286,7 @@ class FaceTracker extends Tracker<Face> {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    // Quick pause, 1 seconds, after all challenges are done
+                                    // Quick pause, .75 seconds, after all challenges are done
                                     setProgressCircleAngle(270.0, 0.0);
                                     setProgressCircleColor(R.color.progressCircle);
                                     // Display picture of user at the end of process
@@ -303,11 +304,12 @@ class FaceTracker extends Tracker<Face> {
                                         mCallbacks.authMethodToCallBack();
                                     }
                                 }
-                            }, 1000);
+                            }, 750);
                         }
                     });
 
                 } else if (FaceTracker.livenessChallengesPassed < mLivenessChallengesNeeded) {
+
                     // Display a liveness challenge to the user
                     livenessCheck(face);
 
