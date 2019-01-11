@@ -106,7 +106,7 @@ public class VideoIdentificationView extends AppCompatActivity {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = sharedPref.edit();
         playInstructionalVideo = sharedPref.getBoolean("playInstructionalVideo", true);
-        if(playInstructionalVideo) {
+        if(playInstructionalVideo && mDoLivenessCheck) {
             prefEditor.putBoolean("playInstructionalVideo", false);
             prefEditor.apply();
 
