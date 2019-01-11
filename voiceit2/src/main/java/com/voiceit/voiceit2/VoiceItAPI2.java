@@ -36,6 +36,7 @@ public class VoiceItAPI2 {
         this.client.setTimeout(30 * 1000);
         this.client.setBasicAuth(apiKey, apiToken);
         this.client.addHeader("platformId", "40");
+        this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
     }
 
     private String getAbsoluteUrl(String relativeUrl) {
