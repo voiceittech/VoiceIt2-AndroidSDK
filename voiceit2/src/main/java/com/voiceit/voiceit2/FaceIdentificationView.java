@@ -106,6 +106,9 @@ public class FaceIdentificationView extends AppCompatActivity {
             prefEditor.apply();
 
             Intent intent = new Intent(this, InstructionalVideoView.class);
+            bundle = new Bundle();
+            bundle.putBoolean("isVideo", false);
+            intent.putExtras(bundle);
             this.startActivityForResult(intent, 0);
         }
     }
@@ -276,7 +279,7 @@ public class FaceIdentificationView extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(!playInstructionalVideo) {
+        if(!playInstructionalVideo || !mDoLivenessCheck) {
             // Confirm permissions and start enrollment flow
             requestHardwarePermissions();
         }

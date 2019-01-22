@@ -23,6 +23,12 @@ public class InstructionalVideoView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_instructional_video_view);
 
+        boolean isVideo = false;
+        Bundle bundle = getIntent().getExtras();
+        if(bundle != null) {
+            isVideo = bundle.getBoolean("isVideo");
+        }
+
         final ImageButton replayButton = findViewById(R.id.replayButton);
         replayButton.setVisibility(View.INVISIBLE);
         final Button continueButton = findViewById(R.id.continueButton);
@@ -30,7 +36,7 @@ public class InstructionalVideoView extends AppCompatActivity {
 
         GifImageView mGifImageView = findViewById(R.id.instruction_gif);
         try {
-            final GifDrawable gifDrawable = new GifDrawable(getResources(), R.raw.android_video_verification);
+            final GifDrawable gifDrawable = new GifDrawable(getResources(), isVideo ? R.raw.android_video_verification : R.raw.android_face_verification);
             gifDrawable.setLoopCount(1);
             gifDrawable.addAnimationListener(new AnimationListener() {
                 @Override

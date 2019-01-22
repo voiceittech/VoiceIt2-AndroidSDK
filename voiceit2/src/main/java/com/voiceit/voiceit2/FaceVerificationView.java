@@ -47,7 +47,7 @@ public class FaceVerificationView extends AppCompatActivity {
 
     private VoiceItAPI2 mVoiceIt2;
     private String mUserId = "";
-    private boolean mDoLivenessCheck;
+    private boolean mDoLivenessCheck = false;
     private int mLivenessChallengeFailsAllowed;
     private int mLivenessChallengesNeeded;
 
@@ -105,6 +105,9 @@ public class FaceVerificationView extends AppCompatActivity {
             prefEditor.apply();
 
             Intent intent = new Intent(this, InstructionalVideoView.class);
+            bundle = new Bundle();
+            bundle.putBoolean("isVideo", false);
+            intent.putExtras(bundle);
             this.startActivityForResult(intent, 0);
         }
     }
@@ -274,7 +277,7 @@ public class FaceVerificationView extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(!playInstructionalVideo) {
+        if(!playInstructionalVideo || !mDoLivenessCheck) {
             // Confirm permissions and start enrollment flow
             requestHardwarePermissions();
         }

@@ -50,7 +50,7 @@ public class VideoVerificationView extends AppCompatActivity {
     private String mUserId = "";
     private String mContentLanguage = "";
     private String mPhrase = "";
-    private boolean mDoLivenessCheck;
+    private boolean mDoLivenessCheck = false;
     private int livenessChallengeFailsAllowed;
     private int mLivenessChallengesNeeded;
 
@@ -110,6 +110,9 @@ public class VideoVerificationView extends AppCompatActivity {
             prefEditor.apply();
 
             Intent intent = new Intent(this, InstructionalVideoView.class);
+            bundle = new Bundle();
+            bundle.putBoolean("isVideo", true);
+            intent.putExtras(bundle);
             this.startActivityForResult(intent, 0);
         }
     }
@@ -294,7 +297,7 @@ public class VideoVerificationView extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(!playInstructionalVideo) {
+        if(!playInstructionalVideo || !mDoLivenessCheck) {
             // Confirm permissions and start enrollment flow
             requestHardwarePermissions();
         }
