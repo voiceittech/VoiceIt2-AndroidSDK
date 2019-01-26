@@ -39,6 +39,7 @@ public class VideoIdentificationView extends AppCompatActivity {
     private CameraSourcePreview mPreview;
     private final File mPictureFile = Utils.getOutputMediaFile(".jpeg");
     private MediaRecorder mMediaRecorder = null;
+    private final Handler handler = new Handler();
 
     private final String mTAG = "VideoIdentificationView";
     private Context mContext;
@@ -84,6 +85,11 @@ public class VideoIdentificationView extends AppCompatActivity {
             this.getSupportActionBar().hide();
         } catch (NullPointerException e) {
             Log.d(mTAG,"Cannot hide action bar");
+        }
+
+        // Set screen brightness to full
+        if(!Utils.setBrightness(this, 255)){
+            exitViewWithMessage("voiceit-failure","Hardware Permissions not granted");
         }
 
         // Set context
@@ -134,7 +140,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                         if (Response.getJSONArray("users").length() < mNeededUsers) {
                             mOverlay.updateDisplayText(getString(R.string.NOT_ENOUGH_ENROLLMENTS));
                             // Wait for ~2.5 seconds
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     exitViewWithMessage("voiceit-failure", "Not enough users in group");
@@ -161,7 +167,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                             Log.d(mTAG, "JSON exception : " + e.toString());
                         }
                         // Wait for 2.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithJSON("voiceit-failure", errorResponse);
@@ -171,7 +177,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                         Log.e(mTAG, "No response from server");
                         mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                         // Wait for 2.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithMessage("voiceit-failure", "No response from server");
@@ -258,7 +264,9 @@ public class VideoIdentificationView extends AppCompatActivity {
     }
 
     private void exitViewWithMessage(String action, String message) {
+        Utils.setBrightness(this, Utils.oldBrightness);
         mContinueIdentifying = false;
+        handler.removeCallbacksAndMessages(null);
         FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
         stopRecording();
         Intent intent = new Intent(action);
@@ -274,7 +282,9 @@ public class VideoIdentificationView extends AppCompatActivity {
     }
 
     private void exitViewWithJSON(String action, JSONObject json) {
+        Utils.setBrightness(this, Utils.oldBrightness);
         mContinueIdentifying = false;
+        handler.removeCallbacksAndMessages(null);
         FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
         stopRecording();
         Intent intent = new Intent(action);
@@ -385,7 +395,7 @@ public class VideoIdentificationView extends AppCompatActivity {
         mOverlay.updateDisplayText(getString(R.string.IDENTIFY_FAIL));
 
         // Wait for ~1.5 seconds
-        new Handler().postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -401,7 +411,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                     Log.d(mTAG,"JSON exception : " + e.toString());
                 }
                 // Wait for ~4.5 seconds
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -417,7 +427,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                         if(mFailedAttempts >= mMaxFailedAttempts) {
                             mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
                             // Wait for ~2 seconds
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     exitViewWithJSON("voiceit-failure", response);
@@ -457,7 +467,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                 mOverlay.startDrawingProgressCircle();
                 // Record for ~5 seconds, then send data
                 // 4800 to make sure recording is not over 5 seconds
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         if (mContinueIdentifying) {
@@ -473,7 +483,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                                             mOverlay.updateDisplayTextAndLock(getString(R.string.IDENTIFY_SUCCESS));
 
                                             // Wait for ~2 seconds
-                                            new Handler().postDelayed(new Runnable() {
+                                            handler.postDelayed(new Runnable() {
                                                 @Override
                                                 public void run() {
                                                     audioFile.deleteOnExit();
@@ -505,7 +515,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                                         try {
                                             if (errorResponse.getString("responseCode").equals("TVER")) {
                                                 // Wait for ~2 seconds
-                                                new Handler().postDelayed(new Runnable() {
+                                                handler.postDelayed(new Runnable() {
                                                     @Override
                                                     public void run() {
                                                         exitViewWithJSON("voiceit-failure", errorResponse);
@@ -521,7 +531,7 @@ public class VideoIdentificationView extends AppCompatActivity {
                                         Log.e(mTAG, "No response from server");
                                         mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                                         // Wait for 2.0 seconds
-                                        new Handler().postDelayed(new Runnable() {
+                                        handler.postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
                                                 exitViewWithMessage("voiceit-failure", "No response from server");
@@ -542,9 +552,7 @@ public class VideoIdentificationView extends AppCompatActivity {
     }
 
     class FaceTrackerCallBackImpl implements FaceTracker.viewCallBacks { // Implements callback methods defined in FaceTracker interface
-        public void authMethodToCallBack() {
-            identifyUser();
-        }
+        public void authMethodToCallBack() { identifyUser(); }
         public void takePictureCallBack() { takePicture(); }
     }
 }

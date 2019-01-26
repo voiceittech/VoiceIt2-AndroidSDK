@@ -176,6 +176,10 @@ public class VoiceItInstrumentedTest {
         myVoiceIt.deleteUser(userIds.get(0), ResponseHandler("deleteUser",200, "SUCC", signal));
         after("deleteUser");
         userIds.clear();
+
+        before();
+        myVoiceIt.getPhrases("en-US", ResponseHandler("getPhrases",200, "SUCC", signal));
+        after("getPhrases");
     }
 
     @Test

@@ -2,12 +2,17 @@ package com.voiceit.voiceit2;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.media.MediaRecorder;
+import android.os.Build;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Surface;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -22,6 +27,7 @@ import java.util.Random;
 
 class Utils {
     private static final String mTAG = "Utils";
+    static int oldBrightness;
 
      /** Create a File for saving an image or audio file */
      static File getOutputMediaFile(String suffix){
@@ -144,5 +150,41 @@ class Utils {
                 .setFacing(CameraSource.CAMERA_FACING_FRONT)
                 .setRequestedFps(30.0f)
                 .build();
+    }
+
+    static boolean setBrightness(Activity activity, int brightness) {
+
+        if(Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.System.canWrite(activity)) {
+                return false;
+            }
+        }
+
+        // Content resolver used as a handle to the system's settings
+        ContentResolver cResolver = activity.getContentResolver();
+
+        try {
+            // To handle the auto
+            Settings.System.putInt(cResolver,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+            // Get the current system brightness
+            Utils.oldBrightness = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS);
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e("Error", "SettingNotFoundException: " + e.getMessage());
+            return false;
+        }
+
+        // Set the system brightness using the brightness variable value
+        Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
+
+        Window window = activity.getWindow();
+        // Get the current window attributes
+        WindowManager.LayoutParams layoutparams = window.getAttributes();
+        // Set the brightness of this window
+        layoutparams.screenBrightness = 1;
+        // Apply attribute changes to this window
+        window.setAttributes(layoutparams);
+
+        return true;
     }
 }

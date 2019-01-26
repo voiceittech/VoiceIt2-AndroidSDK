@@ -354,7 +354,7 @@ class FaceTracker extends Tracker<Face> {
         }
     }
 
-    public interface viewCallBacks { // interface with callback methods for the views
+    interface viewCallBacks { // interface with callback methods for the views
         void authMethodToCallBack();
         void takePictureCallBack();
     }

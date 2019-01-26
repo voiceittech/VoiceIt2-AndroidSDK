@@ -37,6 +37,7 @@ public class FaceVerificationView extends AppCompatActivity {
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;
     private final File mPictureFile = Utils.getOutputMediaFile(".jpeg");
+    private final Handler handler = new Handler();
 
     private final String mTAG = "FaceVerificationView";
     private Context mContext;
@@ -64,7 +65,7 @@ public class FaceVerificationView extends AppCompatActivity {
 
         // Grab data from parent activity
         Bundle bundle = getIntent().getExtras();
-        if(bundle != null) {
+        if (bundle != null) {
             mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
             mUserId = bundle.getString("userId");
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
@@ -77,7 +78,12 @@ public class FaceVerificationView extends AppCompatActivity {
         try {
             this.getSupportActionBar().hide();
         } catch (NullPointerException e) {
-            Log.d(mTAG,"Cannot hide action bar");
+            Log.d(mTAG, "Cannot hide action bar");
+        }
+
+        // Set screen brightness to full
+        if(!Utils.setBrightness(this, 255)){
+            exitViewWithMessage("voiceit-failure","Hardware Permissions not granted");
         }
 
         // Set context
@@ -100,7 +106,7 @@ public class FaceVerificationView extends AppCompatActivity {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = sharedPref.edit();
         playInstructionalVideo = sharedPref.getBoolean("playInstructionalVideo", true);
-        if(playInstructionalVideo && mDoLivenessCheck) {
+        if (playInstructionalVideo && mDoLivenessCheck) {
             prefEditor.putBoolean("playInstructionalVideo", false);
             prefEditor.apply();
 
@@ -128,7 +134,7 @@ public class FaceVerificationView extends AppCompatActivity {
                         if (Response.getInt("count") < mNeededEnrollments) {
                             mOverlay.updateDisplayText(getString(R.string.NOT_ENOUGH_ENROLLMENTS));
                             // Wait for ~2.5 seconds
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     exitViewWithMessage("voiceit-failure", "Not enough enrollments");
@@ -155,7 +161,7 @@ public class FaceVerificationView extends AppCompatActivity {
                             Log.d(mTAG, "JSON exception : " + e.toString());
                         }
                         // Wait for 2.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithJSON("voiceit-failure", errorResponse);
@@ -165,7 +171,7 @@ public class FaceVerificationView extends AppCompatActivity {
                         Log.e(mTAG, "No response from server");
                         mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                         // Wait for 2.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithMessage("voiceit-failure", "No response from server");
@@ -239,7 +245,9 @@ public class FaceVerificationView extends AppCompatActivity {
     }
 
     private void exitViewWithMessage(String action, String message) {
+        Utils.setBrightness(this, Utils.oldBrightness);
         mContinueVerifying = false;
+        handler.removeCallbacksAndMessages(null);
         FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         JSONObject json = new JSONObject();
@@ -254,7 +262,9 @@ public class FaceVerificationView extends AppCompatActivity {
     }
 
     private void exitViewWithJSON(String action, JSONObject json) {
+        Utils.setBrightness(this, Utils.oldBrightness);
         mContinueVerifying = false;
+        handler.removeCallbacksAndMessages(null);
         FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         intent.putExtra("Response", json.toString());
@@ -300,44 +310,43 @@ public class FaceVerificationView extends AppCompatActivity {
         }
     }
 
-    private void takePicture() {
-
-        // Verify after taking picture
-        final CameraSource.PictureCallback mPictureCallback = new CameraSource.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] data) {
-                // Check file
-                if (mPictureFile == null) {
-                    Log.d(mTAG, "Error creating media file, check storage permissions");
-                    return;
-                }
-                // Write picture to file
-                try {
-                    FileOutputStream fos = new FileOutputStream(mPictureFile);
-                    fos.write(data);
-                    fos.close();
-                } catch (FileNotFoundException e) {
-                    Log.d(mTAG, "File not found: " + e.getMessage());
-                } catch (IOException e) {
-                    Log.d(mTAG, "Error accessing file: " + e.getMessage());
-                }
-
-                // With liveness checks enabled, a picture is taken before it is done
-                // and verify is called later
-                if(!mDoLivenessCheck) {
-                    verifyUserFace();
-                } else {
-                    // Continue liveness detection
-                    FaceTracker.continueDetecting = true;
-                }
+    // Verify after taking picture
+    final CameraSource.PictureCallback mPictureCallback = new CameraSource.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] data) {
+            // Check file
+            if (mPictureFile == null) {
+                Log.d(mTAG, "Error creating media file, check storage permissions");
+                return;
             }
-        };
+            // Write picture to file
+            try {
+                FileOutputStream fos = new FileOutputStream(mPictureFile);
+                fos.write(data);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                Log.d(mTAG, "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d(mTAG, "Error accessing file: " + e.getMessage());
+            }
 
+            // With liveness checks enabled, a picture is taken before it is done
+            // and verify is called later
+            if(!mDoLivenessCheck) {
+                verifyUserFace();
+            } else {
+                // Continue liveness detection
+                FaceTracker.continueDetecting = true;
+            }
+        }
+    };
+
+    private void takePicture() {
         try {
             // Take picture of face
             mCameraSource.takePicture(null, mPictureCallback);
         } catch (Exception e) {
-            Log.d(mTAG, "Camera exception : " + e.getMessage());
+            Log.e(mTAG, "Camera exception : " + e.getMessage());
             exitViewWithMessage("voiceit-failure","Camera Error");
         }
     }
@@ -350,7 +359,7 @@ public class FaceVerificationView extends AppCompatActivity {
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
         // Wait for ~1.5 seconds
-        new Handler().postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -361,7 +370,7 @@ public class FaceVerificationView extends AppCompatActivity {
                     Log.d(mTAG,"JSON exception : " + e.toString());
                 }
                 // Wait for ~4.5 seconds
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mFailedAttempts++;
@@ -370,7 +379,7 @@ public class FaceVerificationView extends AppCompatActivity {
                         if (mFailedAttempts >= mMaxFailedAttempts) {
                             mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
                             // Wait for ~2 seconds
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     exitViewWithJSON("voiceit-failure", response);
@@ -407,7 +416,7 @@ public class FaceVerificationView extends AppCompatActivity {
                         mOverlay.updateDisplayText(getString(R.string.VERIFY_SUCCESS));
 
                         // Wait for ~2 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 mPictureFile.deleteOnExit();
@@ -433,7 +442,7 @@ public class FaceVerificationView extends AppCompatActivity {
                     Log.e(mTAG, "No response from server");
                     mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                     // Wait for 2.0 seconds
-                    new Handler().postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             exitViewWithMessage("voiceit-failure", "No response from server");

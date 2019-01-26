@@ -6,10 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaRecorder;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.loopj.android.http.*;
 
@@ -24,9 +28,9 @@ public class VoiceItAPI2 {
     private final String apiKey;
     private final String apiToken;
 
-    public boolean mDisplayPreviewFrame = false;
-
     private final String mTAG = "VoiceItAPI2";
+
+    public boolean mDisplayPreviewFrame = false;
 
     public VoiceItAPI2(String apiKey, String apiToken){
         this.apiKey = apiKey;
@@ -44,8 +48,8 @@ public class VoiceItAPI2 {
         return BASE_URL + relativeUrl;
     }
 
-    public void getPhrases(AsyncHttpResponseHandler responseHandler) {
-        client.get(getAbsoluteUrl("/phrases"), responseHandler);
+    public void getPhrases(String contentLanguage, AsyncHttpResponseHandler responseHandler) {
+        client.get(getAbsoluteUrl("/phrases/" + contentLanguage), responseHandler);
     }
 
     public void getAllUsers(AsyncHttpResponseHandler responseHandler) {
@@ -830,6 +834,8 @@ public class VoiceItAPI2 {
         activity.startActivity(intent);
 
         broadcastMessageHandler(activity, responseHandler);
+
+        requestWritePermission(activity);
     }
 
     public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
@@ -857,6 +863,8 @@ public class VoiceItAPI2 {
         activity.startActivity(intent);
 
         broadcastMessageHandler(activity, responseHandler);
+
+        requestWritePermission(activity);
     }
 
     public void encapsulatedVideoIdentification(Activity activity, String groupId, String contentLanguage, String phrase, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
@@ -884,6 +892,8 @@ public class VoiceItAPI2 {
         activity.startActivity(intent);
 
         broadcastMessageHandler(activity, responseHandler);
+
+        requestWritePermission(activity);
     }
 
     public void encapsulatedFaceEnrollment(Activity activity, String userId, final JsonHttpResponseHandler responseHandler) {
@@ -902,6 +912,8 @@ public class VoiceItAPI2 {
         activity.startActivity(intent);
 
         broadcastMessageHandler(activity, responseHandler);
+
+        requestWritePermission(activity);
     }
 
     public void encapsulatedFaceVerification(Activity activity, String userId, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
@@ -927,6 +939,8 @@ public class VoiceItAPI2 {
         activity.startActivity(intent);
 
         broadcastMessageHandler(activity, responseHandler);
+
+        requestWritePermission(activity);
     }
 
     public void encapsulatedFaceIdentification(Activity activity, String groupId, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
@@ -952,9 +966,11 @@ public class VoiceItAPI2 {
         activity.startActivity(intent);
 
         broadcastMessageHandler(activity, responseHandler);
+
+        requestWritePermission(activity);
     }
 
-    private void broadcastMessageHandler(Activity activity, final JsonHttpResponseHandler responseHandler) {
+    private void broadcastMessageHandler(final Activity activity, final JsonHttpResponseHandler responseHandler) {
         // Our handler for received Intents. This will be called whenever an Intent
         // with an action named "voiceit-event" is broad-casted.
         BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -982,6 +998,17 @@ public class VoiceItAPI2 {
         intentFilter.addAction("voiceit-success");
         intentFilter.addAction("voiceit-failure");
         LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, intentFilter);
+    }
+
+    private void requestWritePermission(Activity activity) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.System.canWrite(activity)) {
+                Toast.makeText(activity, activity.getString(R.string.GRANT_WRITE_PERMISSON), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                intent.setData(Uri.parse("package:" + activity.getPackageName()));
+                activity.startActivity(intent);
+            }
+        }
     }
 
     private boolean userIdFormatted(String arg) {

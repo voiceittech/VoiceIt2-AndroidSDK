@@ -35,6 +35,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;
     private final File mPictureFile = Utils.getOutputMediaFile(".jpeg");
+    private final Handler handler = new Handler();
 
     private final String mTAG = "FaceEnrollmentView";
     private Context mContext;
@@ -67,6 +68,11 @@ public class FaceEnrollmentView extends AppCompatActivity {
             this.getSupportActionBar().hide();
         } catch (NullPointerException e) {
             Log.d(mTAG,"Cannot hide action bar");
+        }
+
+        // Set screen brightness to full
+        if(!Utils.setBrightness(this, 255)){
+            exitViewWithMessage("voiceit-failure","Hardware Permissions not granted");
         }
 
         // Set context
@@ -115,7 +121,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
                             Log.d(mTAG, "JSON exception : " + e.toString());
                         }
                         // Wait for 2.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithJSON("voiceit-failure", errorResponse);
@@ -125,7 +131,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
                         Log.e(mTAG, "No response from server");
                         mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                         // Wait for 2.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithMessage("voiceit-failure", "No response from server");
@@ -196,7 +202,9 @@ public class FaceEnrollmentView extends AppCompatActivity {
     }
 
     private void exitViewWithMessage(String action, String message) {
+        Utils.setBrightness(this, Utils.oldBrightness);
         mContinueEnrolling = false;
+        handler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         JSONObject json = new JSONObject();
         try {
@@ -210,7 +218,9 @@ public class FaceEnrollmentView extends AppCompatActivity {
     }
 
     private void exitViewWithJSON(String action, JSONObject json) {
+        Utils.setBrightness(this, Utils.oldBrightness);
         mContinueEnrolling = false;
+        handler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         intent.putExtra("Response", json.toString());
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
@@ -290,7 +300,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
         // Wait for ~1.5 seconds
-        new Handler().postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -301,7 +311,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
                     Log.d(mTAG,"JSON exception : " + e.toString());
                 }
                 // Wait for ~4.5 seconds
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mFailedAttempts++;
@@ -310,7 +320,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
                         if (mFailedAttempts >= mMaxFailedAttempts) {
                             mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
                             // Wait for ~2 seconds
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     exitViewWithJSON("voiceit-failure",response);
@@ -344,7 +354,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
                         mOverlay.updateDisplayText(getString(R.string.ENROLL_SUCCESS));
 
                         // Wait for ~2 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 mPictureFile.deleteOnExit();
@@ -372,7 +382,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
                     Log.e(mTAG, "No response from server");
                     mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                     // Wait for 2.0 seconds
-                    new Handler().postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             exitViewWithMessage("voiceit-failure","No response from server");
@@ -384,9 +394,7 @@ public class FaceEnrollmentView extends AppCompatActivity {
     }
 
     class FaceTrackerCallBackImpl implements FaceTracker.viewCallBacks { // Implements callback methods defined in FaceTracker interface
-        public void authMethodToCallBack() {
-            enrollUserFace();
-        }
+        public void authMethodToCallBack() { enrollUserFace(); }
         public void takePictureCallBack() { takePicture(); }
     }
 

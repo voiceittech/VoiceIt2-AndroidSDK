@@ -156,7 +156,7 @@ class RadiusOverlayView extends LinearLayout {
         // inverted circle for portrait
         invertedCirclePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT)); // A out B http://en.wikipedia.org/wiki/File:Alpha_compositing.svg
         circleRadius = Math.min(mViewWidth, portraitHeight) * 0.475f;
-        circleCenterX = mViewWidth / 2;
+        circleCenterX = mViewWidth / 2f;
         circleCenterY = mViewHeight / 2.5f;
 
         // progressCircle
@@ -167,7 +167,7 @@ class RadiusOverlayView extends LinearLayout {
         progressCirclePaint.setColor(getResources().getColor(R.color.progressCircle));
 
         // text color
-        textPaint.setColor(Color.rgb(255, 255, 255));
+        textPaint.setColor(getResources().getColor(R.color.instructionalText));
     }
 
     public void setPicture(byte[] data) {
@@ -307,12 +307,12 @@ class RadiusOverlayView extends LinearLayout {
         }
 
         // Skip processing and displaying text if empty
-        if(mDisplayText.isEmpty()){
+        if (mDisplayText.isEmpty()) {
             return;
         }
 
         // No need to re-calculate text cycle
-        if(mUpdateText) {
+        if (mUpdateText) {
             mUpdateText = false;
 
             int textSize = 1;
@@ -375,7 +375,7 @@ class RadiusOverlayView extends LinearLayout {
         Vector<Integer> x = new Vector<>();
         Vector<Integer> y = new Vector<>();
         for (int i = 0; i < textLines.size(); i++) {
-            int verticalOffset = (int)((textBounds.get(0).height() * 1.2) * i);
+            int verticalOffset = (int) ((textBounds.get(0).height() * 1.2) * i);
             // Center width of screen
             x.add((mViewWidth - textBounds.get(i).width()) / 2);
             // Center height adjusted for portrait and other lines
@@ -386,7 +386,6 @@ class RadiusOverlayView extends LinearLayout {
             // Draw line of text to screen
             canvas.drawText(textLines.get(i), x.get(i), y.get(i), textPaint);
         }
-
     }
 
     public boolean insidePortraitCircle(Face face) {

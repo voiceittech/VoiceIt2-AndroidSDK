@@ -38,6 +38,7 @@ public class FaceIdentificationView extends AppCompatActivity {
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;
     private final File mPictureFile = Utils.getOutputMediaFile(".jpeg");
+    private final Handler handler = new Handler();
 
     private final String mTAG = "FaceIdentificationView";
     private Context mContext;
@@ -79,6 +80,11 @@ public class FaceIdentificationView extends AppCompatActivity {
             this.getSupportActionBar().hide();
         } catch (NullPointerException e) {
             Log.d(mTAG,"Cannot hide action bar");
+        }
+
+        // Set screen brightness to full
+        if(!Utils.setBrightness(this, 255)){
+            exitViewWithMessage("voiceit-failure","Hardware Permissions not granted");
         }
 
         // Set context
@@ -130,7 +136,7 @@ public class FaceIdentificationView extends AppCompatActivity {
                         if (Response.getJSONArray("users").length() < mNeededUsers) {
                             mOverlay.updateDisplayText(getString(R.string.MISU));
                             // Wait for ~2.5 seconds
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     exitViewWithMessage("voiceit-failure", "Not enough users in group");
@@ -157,7 +163,7 @@ public class FaceIdentificationView extends AppCompatActivity {
                             Log.d(mTAG, "JSON exception : " + e.toString());
                         }
                         // Wait for 2.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithJSON("voiceit-failure", errorResponse);
@@ -167,7 +173,7 @@ public class FaceIdentificationView extends AppCompatActivity {
                         Log.e(mTAG, "No response from server");
                         mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                         // Wait for 2.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithMessage("voiceit-failure", "No response from server");
@@ -241,7 +247,9 @@ public class FaceIdentificationView extends AppCompatActivity {
     }
 
     private void exitViewWithMessage(String action, String message) {
+        Utils.setBrightness(this, Utils.oldBrightness);
         mContinueIdentifying = false;
+        handler.removeCallbacksAndMessages(null);
         FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         JSONObject json = new JSONObject();
@@ -256,7 +264,9 @@ public class FaceIdentificationView extends AppCompatActivity {
     }
 
     private void exitViewWithJSON(String action, JSONObject json) {
+        Utils.setBrightness(this, Utils.oldBrightness);
         mContinueIdentifying = false;
+        handler.removeCallbacksAndMessages(null);
         FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         intent.putExtra("Response", json.toString());
@@ -352,7 +362,7 @@ public class FaceIdentificationView extends AppCompatActivity {
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
         mOverlay.updateDisplayText(getString(R.string.IDENTIFY_FAIL));
         // Wait for ~1.5 seconds
-        new Handler().postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -363,7 +373,7 @@ public class FaceIdentificationView extends AppCompatActivity {
                     Log.d(mTAG,"JSON exception : " + e.toString());
                 }
                 // Wait for ~4.5 seconds
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mFailedAttempts++;
@@ -372,7 +382,7 @@ public class FaceIdentificationView extends AppCompatActivity {
                         if (mFailedAttempts >= mMaxFailedAttempts) {
                             mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
                             // Wait for ~2 seconds
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     exitViewWithJSON("voiceit-failure", response);
@@ -409,7 +419,7 @@ public class FaceIdentificationView extends AppCompatActivity {
                         mOverlay.updateDisplayText(getString(R.string.IDENTIFY_SUCCESS));
 
                         // Wait for ~2 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 mPictureFile.deleteOnExit();
@@ -435,7 +445,7 @@ public class FaceIdentificationView extends AppCompatActivity {
                     Log.e(mTAG, "No response from server");
                     mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                     // Wait for 2.0 seconds
-                    new Handler().postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             exitViewWithMessage("voiceit-failure", "No response from server");
@@ -447,9 +457,7 @@ public class FaceIdentificationView extends AppCompatActivity {
     }
 
     class FaceTrackerCallBackImpl implements FaceTracker.viewCallBacks { // Implements callback methods defined in FaceTracker interface
-        public void authMethodToCallBack() {
-            identifyUserFace();
-        }
+        public void authMethodToCallBack() { identifyUserFace(); }
         public void takePictureCallBack() { takePicture(); }
     }
 

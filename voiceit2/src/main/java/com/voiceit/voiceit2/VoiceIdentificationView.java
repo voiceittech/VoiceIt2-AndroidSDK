@@ -33,6 +33,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
 
     private RadiusOverlayView mOverlay;
     private MediaRecorder mMediaRecorder = null;
+    private final Handler handler = new Handler();
 
     private VoiceItAPI2 mVoiceIt2;
     private String mGroupId = "";
@@ -125,6 +126,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
     private void exitViewWithMessage(String action, String message) {
         mContinueIdentifying = false;
         stopRecording();
+        handler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         JSONObject json = new JSONObject();
         try {
@@ -140,6 +142,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
     private void exitViewWithJSON(String action, JSONObject json) {
         mContinueIdentifying = false;
         stopRecording();
+        handler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         intent.putExtra("Response", json.toString());
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
@@ -185,7 +188,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
         mOverlay.updateDisplayText(getString(R.string.IDENTIFY_FAIL));
 
         // Wait for ~1.5 seconds
-        new Handler().postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -201,7 +204,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
                     Log.d(mTAG,"JSON exception : " + e.toString());
                 }
                 // Wait for ~4.5 seconds
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -218,7 +221,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
                         if (mFailedAttempts >= mMaxFailedAttempts) {
                             mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
                             // Wait for ~2 seconds then exit
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     exitViewWithJSON("voiceit-failure", response);
@@ -280,7 +283,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
 
                 // Record and update amplitude display for ~5 seconds, then send data
                 // 4800ms to make sure recording is not over 5 seconds
-                new Handler().postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
 
@@ -303,7 +306,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
                                             mOverlay.updateDisplayTextAndLock(getString(R.string.IDENTIFY_SUCCESS));
 
                                             // Wait for ~2 seconds then exit
-                                            new Handler().postDelayed(new Runnable() {
+                                            handler.postDelayed(new Runnable() {
                                                 @Override
                                                 public void run() {
                                                     audioFile.deleteOnExit();
@@ -331,7 +334,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
                                         Log.e(mTAG, "No response from server");
                                         mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                                         // Wait for 2.0 seconds
-                                        new Handler().postDelayed(new Runnable() {
+                                        handler.postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
                                                 exitViewWithMessage("voiceit-failure", "No response from server");
@@ -361,7 +364,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
                     if(response.getJSONArray("users").length() < mNeededUsers) {
                         mOverlay.updateDisplayText(getString(R.string.MISU));
                         // Wait for ~4.0 seconds
-                        new Handler().postDelayed(new Runnable() {
+                        handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 exitViewWithMessage("voiceit-failure", "Not enough users in group");
@@ -370,7 +373,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
                     } else {
                         try {
                             // Wait for .5 seconds to read message
-                            new Handler().postDelayed(new Runnable() {
+                            handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     // Record Voice then verify
@@ -398,7 +401,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
                         Log.d(mTAG,"JSON exception : " + e.toString());
                     }
                     // Wait for 2.0 seconds
-                    new Handler().postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             exitViewWithJSON("voiceit-failure", errorResponse);
@@ -408,7 +411,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
                     Log.e(mTAG, "No response from server");
                     mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
                     // Wait for 2.0 seconds
-                    new Handler().postDelayed(new Runnable() {
+                    handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             exitViewWithMessage("voiceit-failure", "No response from server");
