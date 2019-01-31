@@ -3,6 +3,7 @@ package com.voiceit.voiceit2sdk;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedVoiceEnrollment onFailure Result : " + errorResponse.toString());
                 }
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedVoiceVerification onFailure Result : " + errorResponse.toString());
                 }
@@ -112,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedVoiceIdentification onFailure Result : " + errorResponse.toString());
                 }
@@ -128,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedVideoEnrollment onFailure Result : " + errorResponse.toString());
                 }
@@ -144,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedVideoVerification onFailure Result : " + errorResponse.toString());
                 }
@@ -161,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedVideoIdentification onFailure Result : " + errorResponse.toString());
                 }
@@ -177,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedFaceEnrollment onFailure Result : " + errorResponse.toString());
                 }
@@ -193,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedFaceVerification onFailure Result : " + errorResponse.toString());
                 }
@@ -210,11 +219,35 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedFaceIdentification onFailure Result : " + errorResponse.toString());
                 }
             }
         });
+    }
+
+    public void checkResponse(JSONObject response) {
+        try {
+            if (response.getString("responseCode").equals("IFVD")
+                    || response.getString("responseCode").equals("ACLR")
+                    || response.getString("responseCode").equals("IFAD")
+                    || response.getString("responseCode").equals("SRNR")
+                    || response.getString("responseCode").equals("UNFD")
+                    || response.getString("responseCode").equals("MISP")
+                    || response.getString("responseCode").equals("DAID")
+                    || response.getString("responseCode").equals("UNAC")
+                    || response.getString("responseCode").equals("CLNE")
+                    || response.getString("responseCode").equals("INCP")
+                    || response.getString("responseCode").equals("NPFC")) {
+                Toast.makeText(this, "responseCode: " + response.getString("responseCode")
+                         + ", " + getString(com.voiceit.voiceit2.R.string.CHECK_CODE), Toast.LENGTH_LONG).show();
+                Log.e("MainActivity","responseCode: " + response.getString("responseCode")
+                        + ", " + getString(com.voiceit.voiceit2.R.string.CHECK_CODE));
+            }
+        } catch (JSONException e) {
+            Log.d("MainActivity","JSON exception : " + e.toString());
+        }
     }
 
 }
