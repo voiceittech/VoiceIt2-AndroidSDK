@@ -27,7 +27,7 @@ A fully comprehensive SDK that gives you access to VoiceIt's API 2.0 featuring V
 The following show Voice Verification, Face Verification (With liveness detection on) and Video Verification (with Liveness turned off), respectively.
 
 <div style="background: #000 !important;">
-  <img width="250px" src="./Graphics/voiceVerification.gif" style="display: inline-block !important"/><img width="250px" src="./Graphics/faceVerification.gif" style="display: inline-block !important;"/><img width="250px" src="./Graphics/videoVerification.gif" style="display: inline-block !important;"/>
+  <img width="290px" src="./Graphics/voiceVerification.gif" style="display: inline-block !important"/><img width="290px" src="./Graphics/faceVerification.gif" style="display: inline-block !important;"/><img width="290px" src="./Graphics/videoVerification.gif" style="display: inline-block !important;"/>
 </div>
 
 ## Getting Started
