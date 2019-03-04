@@ -23,11 +23,16 @@ A fully comprehensive SDK that gives you access to VoiceIt's API 2.0 featuring V
   * [Other API Calls](#other-api-calls)
 
 
+## UI Screenshots
+The following show Voice Verification, Face Verification (With liveness detection on) and Video Verification (with Liveness turned off), respectively.
+
+<img width="290px" src="./Graphics/voiceVerification.gif" style="display: inline !important"/><img width="290px" src="./Graphics/faceVerification.gif" style="display: inline-block !important;"/><img width="290px" src="./Graphics/videoVerification.gif" style="display: inline-block !important;"/>
+
 ## Getting Started
 
 Sign up for a free Developer Account at <a href="https://voiceit.io/signup" target="_blank">VoiceIt.io</a> and view your API Key and Token in the settings page(as shown below). You can also review the HTTP Documentation at <a href="https://api.voiceit.io" target="_blank">api.voiceit.io</a>.
 
-<img src="Graphics/devSettings.png" alt="API Key and Token" width="400px" />
+<img src="./Graphics/getcredentials.png" alt="API Key and Token" width="400px" />
 
 ## Requirements
 
@@ -90,11 +95,9 @@ new JsonHttpResponseHandler() {
 For our Encapsulated Face and Video Verification methods, liveness detection can be enabled by parameter. 
 This enables a pre-check(prompting to the user to turn their head or smile) before the verification API call to decrease the chance a user is able to spoof with a photo of someone else.
 
-<img src="voiceit2/src/main/res/raw/android_face_verification.gif" width="25%" style="width:25%">
-
 ### Encapsulated Methods
 
-Encapsulated Methods take care of all the logic of enrollment/verification and the UI in new Android Activities that look similar to the gif shown above.
+Encapsulated Methods take care of all the logic of enrollment/verification and the UI in new Android Activities.
 Immediately upon calling a method it displays a enrollment/verification view controller that enrolls/verifies the user and 
 provides relevant callbacks for whether the API calls were successful or not with associated biometric confidence.
 Note: If less than the required enrollments exist for a user, enrollment methods delete them and re-enroll.
