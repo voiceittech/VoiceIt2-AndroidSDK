@@ -187,6 +187,14 @@ For example, you can check whether a user exists for the given userId(begins wit
 myVoiceIt.checkUserExists("USER_ID_HERE", new JsonHttpResponseHandler() {...});
 ```
 
+## Strings and Prompts
+
+All strings and prompts utilized in the encapsulated views can be overwitten by adding strings with the same names as found in:
+```
+/voiceit2/src/main/res/values/strings.xml
+```
+to the strings.xml file in your app.
+
 ## Author
 
 Stephen Akers, stephen@voiceit.io
