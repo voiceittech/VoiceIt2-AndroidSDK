@@ -195,9 +195,13 @@ All strings and prompts utilized in the encapsulated views can be overwitten by 
 ```
 to the strings.xml file in your app.
 
+## Contact
+
+support@voiceit.io
+
 ## Author
 
-Stephen Akers, stephen@voiceit.io
+Stephen Akers
 
 ## License
 
