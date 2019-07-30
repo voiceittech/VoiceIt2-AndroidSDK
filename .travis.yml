@@ -38,10 +38,6 @@ before_script:
 script:
     - ./gradlew -Pandroid.testInstrumentationRunnerArguments.key=$VIAPIKEY -Pandroid.testInstrumentationRunnerArguments.tok=$VIAPITOKEN connectedAndroidTest
 
-after_success:
-  - ./release.sh
-  - ./email.sh
-
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/

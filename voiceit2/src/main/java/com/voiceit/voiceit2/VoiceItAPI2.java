@@ -92,30 +92,6 @@ public class VoiceItAPI2 {
         client.delete(getAbsoluteUrl("/enrollments/" + userId + "/all"), responseHandler);
     }
 
-    public void deleteAllVoiceEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
-            return;
-        }
-        client.delete(getAbsoluteUrl("/enrollments/" + userId + "/voice"), responseHandler);
-    }
-
-    public void deleteAllFaceEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
-            return;
-        }
-        client.delete(getAbsoluteUrl("/enrollments/" + userId + "/face"), responseHandler);
-    }
-
-    public void deleteAllVideoEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
-            return;
-        }
-        client.delete(getAbsoluteUrl("/enrollments/" + userId + "/video"), responseHandler);
-    }
-
     public void getAllVoiceEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
@@ -317,30 +293,6 @@ public class VoiceItAPI2 {
 
         client.post(getAbsoluteUrl("/enrollments/video/byUrl"), params, responseHandler);
 
-    }
-
-    public void deleteVoiceEnrollment(String userId, String enrollmentId, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
-            return;
-        }
-        client.delete(getAbsoluteUrl("/enrollments/voice/" + userId + "/" + enrollmentId), responseHandler);
-    }
-
-    public void deleteFaceEnrollment(String userId, String faceEnrollmentId, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
-            return;
-        }
-        client.delete(getAbsoluteUrl("/enrollments/face/" + userId + "/" + faceEnrollmentId), responseHandler);
-    }
-
-    public void deleteVideoEnrollment(String userId, String enrollmentId, AsyncHttpResponseHandler responseHandler) {
-        if(!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
-            return;
-        }
-        client.delete(getAbsoluteUrl("/enrollments/video/" + userId + "/" + enrollmentId), responseHandler);
     }
 
     public void getAllGroups(AsyncHttpResponseHandler responseHandler) {

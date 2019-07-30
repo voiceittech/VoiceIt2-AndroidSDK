@@ -261,15 +261,11 @@ public class VoiceItInstrumentedTest {
         assertEquals(userIds.get(0), userIds.get(2));
 
         before();
-        myVoiceIt.deleteVideoEnrollment(userIds.get(0), enrollmentIds.get(0), ResponseHandler("deleteVideoEnrollment",200, "SUCC", signal));
-        after("deleteVideoEnrollment");
-
-        before();
-        myVoiceIt.deleteAllVideoEnrollments(userIds.get(0), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(0), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
         after("deleteAllVideoEnrollments");
 
         before();
-        myVoiceIt.deleteAllVideoEnrollments(userIds.get(1), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(1), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
         after("deleteAllVideoEnrollments");
 
         // Cleanup
@@ -360,11 +356,11 @@ public class VoiceItInstrumentedTest {
         assertEquals(userIds.get(0), userIds.get(2));
 
         before();
-        myVoiceIt.deleteAllVideoEnrollments(userIds.get(0), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(0), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
         after("deleteAllVideoEnrollments");
 
         before();
-        myVoiceIt.deleteAllVideoEnrollments(userIds.get(1), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(1), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
         after("deleteAllVideoEnrollments");
 
         before();
@@ -466,15 +462,11 @@ public class VoiceItInstrumentedTest {
         // Cleanup
 
         before();
-        myVoiceIt.deleteVoiceEnrollment(userIds.get(0), enrollmentIds.get(0), ResponseHandler("deleteVoiceEnrollment",200, "SUCC", signal));
-        after("deleteVideoEnrollment");
-
-        before();
-        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(0), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(0), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
         after("deleteAllVoiceEnrollments");
 
         before();
-        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(1), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(1), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
         after("deleteAllVoiceEnrollments");
 
         before();
@@ -566,11 +558,11 @@ public class VoiceItInstrumentedTest {
 
         // Cleanup
         before();
-        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(0), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(0), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
         after("deleteAllVoiceEnrollments");
 
         before();
-        myVoiceIt.deleteAllVoiceEnrollments(userIds.get(1), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(1), ResponseHandler("deleteAllVoiceEnrollments",200, "SUCC", signal));
         after("deleteAllVoiceEnrollments");
 
         before();
@@ -670,16 +662,13 @@ public class VoiceItInstrumentedTest {
         assertEquals(userIds.get(0), userIds.get(2));
 
         // Cleanup
-        before();
-        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(0), ResponseHandler("deleteFaceEnrollment",200, "SUCC", signal));
-        after("deleteFaceEnrollment");
 
         before();
-        myVoiceIt.deleteAllFaceEnrollments(userIds.get(0), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(0), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
         after("deleteAllFaceEnrollments");
 
         before();
-        myVoiceIt.deleteAllFaceEnrollments(userIds.get(1), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(1), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
         after("deleteAllFaceEnrollments");
 
         before();
@@ -772,11 +761,9 @@ public class VoiceItInstrumentedTest {
 
         // Cleanup
         before();
-        myVoiceIt.deleteFaceEnrollment(userIds.get(0), faceEnrollmentIds.get(0), ResponseHandler("deleteFaceEnrollment",200, "SUCC", signal));
-        after("deleteFaceEnrollment");
 
         before();
-        myVoiceIt.deleteAllFaceEnrollments(userIds.get(1), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
+        myVoiceIt.deleteAllEnrollments(userIds.get(1), ResponseHandler("deleteAllFaceEnrollments",200, "SUCC", signal));
         after("deleteAllFaceEnrollments");
 
         before();
