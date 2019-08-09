@@ -61,7 +61,7 @@ public class VoiceItAPI2 {
     }
 
     private String getAbsoluteUrl(String relativeUrl) {
-        return (BASE_URL + relativeUrl).replaceAll("\\s+","");
+        return (BASE_URL + relativeUrl);
     }
 
     public void getPhrases(String contentLanguage, AsyncHttpResponseHandler responseHandler) {
