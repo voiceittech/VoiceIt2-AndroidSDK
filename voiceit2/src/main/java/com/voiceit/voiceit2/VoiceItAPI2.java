@@ -29,6 +29,7 @@ public class VoiceItAPI2 {
     private final String apiToken;
 
     private final String mTAG = "VoiceItAPI2";
+    private String BASE_URL = "https://api.voiceit.io";
 
     public boolean mDisplayPreviewFrame = false;
 
@@ -44,12 +45,11 @@ public class VoiceItAPI2 {
     }
 
     public void setURL(String url) {
-        BASE_URL = url.replaceAll("\\s+","");
+      BASE_URL = url.replaceAll("\\s+","");
     }
 
     private String getAbsoluteUrl(String relativeUrl) {
-        final String BASE_URL = "https://api.voiceit.io";
-        return BASE_URL + relativeUrl;
+        return (BASE_URL + relativeUrl).replaceAll("\\s+","");
     }
 
     public void getPhrases(String contentLanguage, AsyncHttpResponseHandler responseHandler) {
