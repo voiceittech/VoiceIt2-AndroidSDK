@@ -43,6 +43,10 @@ public class VoiceItAPI2 {
         this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
     }
 
+    public void setURL(String url) {
+        BASE_URL = url.replaceAll("\\s+","");
+    }
+
     private String getAbsoluteUrl(String relativeUrl) {
         final String BASE_URL = "https://api.voiceit.io";
         return BASE_URL + relativeUrl;
