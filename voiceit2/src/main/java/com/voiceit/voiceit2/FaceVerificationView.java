@@ -53,6 +53,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
     private VoiceItAPI2 mVoiceIt2;
     private String mUserId = "";
     private boolean mDoLivenessCheck = false;
+    private boolean mDoLivenessAudioCheck = false;
     private int mLivenessChallengeFailsAllowed;
     private int mLivenessChallengesNeeded;
 
@@ -76,6 +77,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
             mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
             mUserId = bundle.getString("userId");
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
+            mDoLivenessAudioCheck = bundle.getBoolean("doLivenessAudioCheck");
             mLivenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
             mLivenessChallengesNeeded = bundle.getInt("livenessChallengesNeeded");
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
@@ -261,7 +263,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded);
+            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded);
         }
     }
 

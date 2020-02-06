@@ -220,7 +220,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, livenessChallengeFailsAllowed, mLivenessChallengesNeeded);
+            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, false, livenessChallengeFailsAllowed, mLivenessChallengesNeeded);
         }
     }
 

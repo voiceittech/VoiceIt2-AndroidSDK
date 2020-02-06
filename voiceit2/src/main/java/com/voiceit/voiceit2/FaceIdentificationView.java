@@ -217,7 +217,7 @@ public class FaceIdentificationView extends AppCompatActivity implements SensorE
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded);
+            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, false, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded);
         }
     }
 

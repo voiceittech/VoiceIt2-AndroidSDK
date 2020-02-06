@@ -25,9 +25,11 @@ public class MainActivity extends AppCompatActivity {
     private String phrase = "Never forget tomorrow is a new day";
     private String contentLanguage = "en-US";
     private boolean doLivenessCheck = false; // Liveness detection is not used for enrollment views
+    private boolean doLivenessAudioCheck = false;
 
     private Switch userIdSwitch;
     private Switch livenessSwitch;
+    private Switch livenessAudioSwitch;
     private Context mContext = this;
 
     @Override
@@ -41,11 +43,22 @@ public class MainActivity extends AppCompatActivity {
 
         userIdSwitch = findViewById(R.id.switch_user);
         livenessSwitch = findViewById(R.id.switch_liveness);
+        livenessAudioSwitch = findViewById(R.id.switch_liveness_audio);
         userIdSwitch.setText("User 1");
     }
 
     public void toggleLiveness(View view) {
         doLivenessCheck = livenessSwitch.isChecked();
+        if(doLivenessCheck){
+            livenessAudioSwitch.setVisibility(View.VISIBLE);
+    }
+        else {
+            livenessAudioSwitch.setVisibility(View.GONE);
+        }
+    }
+
+    public void toggleLivenessAudio(View view) {
+        doLivenessAudioCheck = livenessAudioSwitch.isChecked();
     }
 
     public void toggleUser(View view) {
@@ -193,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void encapsulatedFaceVerification(View view) {
-        myVoiceIt.encapsulatedFaceVerification(this, userId[userIdIndex], doLivenessCheck, new JsonHttpResponseHandler() {
+        myVoiceIt.encapsulatedFaceVerification(this, userId[userIdIndex], doLivenessCheck, doLivenessAudioCheck, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedFaceVerification onSuccess Result : " + response.toString());

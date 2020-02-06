@@ -180,7 +180,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), new int[]{}, false, 0, 0);
+            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), new int[]{}, false, false, 0, 0);
         }
     }
 

@@ -221,7 +221,7 @@ public class VideoIdentificationView extends AppCompatActivity implements Sensor
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, livenessChallengeFailsAllowed, mLivenessChallengesNeeded);
+            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, false, livenessChallengeFailsAllowed, mLivenessChallengesNeeded);
         }
     }
 
