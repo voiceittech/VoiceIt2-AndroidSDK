@@ -19,7 +19,7 @@ import com.voiceit.voiceit2.VoiceItAPI2;
 public class MainActivity extends AppCompatActivity {
 
     private VoiceItAPI2 myVoiceIt;
-    private String [] userId = {"USER_ID_1", "USER_ID_2"};
+    private String [] userId = {"usr_19fe7365ff5848108580260ce15f3495", "usr_3ee09a2113fa45d5b5afbc56d922aaf2"};
     private int userIdIndex = 0;
     private String groupId = "GROUP_ID";
     private String phrase = "Never forget tomorrow is a new day";
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         // If using user tokens, replace API_KEY below with the user token,
         // and leave the second argument as an empty string
-        myVoiceIt = new VoiceItAPI2("API_KEY","API_TOK");
+        myVoiceIt = new VoiceItAPI2("key_ca7825c5dc814a889ac83a76ca1aecef","tok_e76ff102577248e9b00339fca47a2e27");
 
         userIdSwitch = findViewById(R.id.switch_user);
         livenessSwitch = findViewById(R.id.switch_liveness);
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void encapsulatedFaceVerification(View view) {
-        myVoiceIt.encapsulatedFaceVerification(this, userId[userIdIndex], doLivenessCheck, doLivenessAudioCheck, new JsonHttpResponseHandler() {
+        myVoiceIt.encapsulatedFaceVerification(this, userId[userIdIndex], contentLanguage, doLivenessCheck, doLivenessAudioCheck, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedFaceVerification onSuccess Result : " + response.toString());
