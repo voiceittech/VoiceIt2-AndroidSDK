@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
@@ -66,6 +68,13 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 
     private SensorManager sensorManager = null;
     private Sensor lightSensor;
+
+    private boolean livenessSuccess = false;
+    private String lcoId = "";
+    private String uiLivenessInstruction;
+    private List<String> lcoStrings = new ArrayList<String>();
+    private List<String> lco= new ArrayList<String>();
+    private float challengeTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -338,6 +347,32 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         if(!playInstructionalVideo || !mDoLivenessCheck) {
             // Confirm permissions and start enrollment flow
             requestHardwarePermissions();
+        }
+        if(mDoLivenessCheck) {
+            mVoiceIt2.getInitialLivenessData(mUserId, mContentLanguage, "verification", new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
+                    Log.v("response", response.toString());
+                    try {
+                        lcoId = response.getString("lcoId");
+                        livenessSuccess = response.getBoolean("success");
+                        uiLivenessInstruction = response.getString("uiLivenessInstruction");
+                        for(int i = 0; i < response.getJSONArray("lcoStrings").length(); i++ ){
+                            lcoStrings.add(response.getJSONArray("lcoStrings").getString(i));
+                        }
+                        for(int i = 0; i < response.getJSONArray("lco").length(); i++ ){
+                            lco.add(response.getJSONArray("lco").getString(i));
+                        }
+                        challengeTime = response.getInt("challengeTime");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
+                    exitViewWithMessage("voiceit-failure","Error Getting Liveness Challenge");
+                }
+            });
         }
     }
 
