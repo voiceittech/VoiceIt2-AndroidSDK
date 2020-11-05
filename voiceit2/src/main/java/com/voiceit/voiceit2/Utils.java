@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.provider.Settings;
@@ -29,8 +30,9 @@ class Utils {
     private static final String mTAG = "Utils";
     static int oldBrightness;
     static float luxThreshold = 50.0f;
+    private static MediaPlayer mediaPlayer = new MediaPlayer();
 
-     /** Create a File for saving an image or audio file */
+    /** Create a File for saving an image or audio file */
      static File getOutputMediaFile(String suffix){
         try {
             return File.createTempFile("tempfile", suffix);
@@ -38,6 +40,24 @@ class Utils {
             Log.e(mTAG,"Creating " + suffix + " file failed with exception : " + e.getMessage());
             return null;
         }
+    }
+
+    static void playLivenessPrompt(final String livenessPrompt, final Activity activity) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.stop();
+                }
+                int resId = activity.getApplicationContext().getResources().getIdentifier(
+                        livenessPrompt,
+                        "raw",
+                        activity.getApplicationContext().getPackageName()
+                );
+                mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), resId);
+                mediaPlayer.start();
+            }
+        });
     }
 
     static void randomizeArrayOrder(int [] array) {

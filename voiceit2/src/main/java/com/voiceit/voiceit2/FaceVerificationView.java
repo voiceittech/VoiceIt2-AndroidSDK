@@ -11,6 +11,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -142,6 +143,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
             intent.putExtras(bundle);
             this.startActivityForResult(intent, 0);
         }
+        illuminateCircles("Left");
     }
 
     private void startVerificationFlow() {
@@ -254,6 +256,45 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
             });
         }
     }
+
+    private void setProgressCircleAngle(final Double startAngle, final Double endAngle) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mOverlay.setProgressCircleAngle(startAngle, endAngle);
+            }
+        });
+    }
+
+    private void setProgressCircleColor(final Integer color) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mOverlay.setProgressCircleColor(getResources().getColor(color));
+            }
+        });
+    }
+
+    private void illuminateCircles(String direction){
+        setProgressCircleColor(R.color.pendingLivenessSuccess);
+        switch (direction){
+            case "Left":
+                setProgressCircleAngle(135.0, 90.0);
+                break;
+            case "Right":
+                setProgressCircleAngle(315.0, 90.0);
+                break;
+            case "Up":
+                break;
+            case "Down":
+                break;
+            case "Tilt_Left":
+                break;
+            case "Tilt_Right":
+                break;
+        }
+    }
+
 
     /**
      * Factory for creating a face tracker to be associated with a new face.  The multiprocessor
@@ -582,5 +623,4 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
         public void authMethodToCallBack() { verifyUserFace(); }
         public void takePictureCallBack() { takePicture(); }
     }
-
 }
