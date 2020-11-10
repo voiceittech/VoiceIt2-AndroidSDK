@@ -203,9 +203,13 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
                                                 }
                                             }, 2500);
                                         } else {
-                                            mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
                                             // Start tracking faces
-                                            LivenessTracker.continueDetecting = true;
+                                            if(mDoLivenessCheck){
+                                                LivenessTracker.continueDetecting = true;
+                                            }else {
+                                                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                                LivenessTracker.continueDetecting = true;
+                                            }
                                         }
                                     } catch (JSONException e) {
                                         Log.d(mTAG, "JSON exception : " + e.toString());

@@ -54,6 +54,7 @@ class LivenessTracker extends Tracker<Face> {
 
     static boolean continueDetecting = true;
     static boolean lookingAway = false;
+    static boolean isLivenessTested = false;
     static final Handler livenessTimer = new Handler();
 
     LivenessTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int[] livenessChallengeOrder,
@@ -108,6 +109,7 @@ class LivenessTracker extends Tracker<Face> {
         });
     }
     private void playLivenessPrompt(final String livenessPrompt) {
+
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -329,9 +331,23 @@ class LivenessTracker extends Tracker<Face> {
      */
     @Override
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, final Face face) {
-        if(mDoLivenessCheck){
-            updateDisplayText(mUiLivenessInstruction,false);
-        }else {
+        if(mDoLivenessCheck) {
+            if (!isLivenessTested) {
+                isLivenessTested = true;
+                updateDisplayText(mUiLivenessInstruction,false);
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                performLivenessTest();
+                            }
+                        }, 5000);
+                    }
+                });
+            }
+        } else {
             if (LivenessTracker.continueDetecting) {
                 final int numFaces = detectionResults.getDetectedItems().size();
 
@@ -405,25 +421,46 @@ class LivenessTracker extends Tracker<Face> {
         }
     }
 
+    private void performLivenessTest() {
+      // start writing to video file
+      // start recording
+      updateDisplayText(mLcoStrings.get(0),false);
+      illuminateCircles(mLco.get(0).toLowerCase());
+      playLivenessPrompt(mLco.get(0).toLowerCase());
+      long time = (long)mChallengeTime/mLco.size();
+      for(int i=1;i<mLco.size();i++){
+            final String challenge = mLcoStrings.get(i);
+            final int finalI = i;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    playLivenessPrompt(mLco.get(finalI).toLowerCase());
+                    updateDisplayText(challenge,false);
+                    illuminateCircles(mLco.get(finalI).toLowerCase());
+                }
+            },time*1000);
+        }
+    }
+
     private void illuminateCircles(String direction){
         setProgressCircleColor(R.color.pendingLivenessSuccess);
         switch (direction){
-            case "Left":
+            case "face_left":
                 setProgressCircleAngle(135.0, 90.0);
                 break;
-            case "Right":
+            case "face_right":
                 setProgressCircleAngle(315.0, 90.0);
                 break;
-            case "Up":
+            case "face_up":
                 setProgressCircleAngle(-60.0, -65.0);
                 break;
-            case "Down":
+            case "face_down":
                 setProgressCircleAngle(60.0, 65.0);
                 break;
-            case "Tilt_Left":
+            case "face_tilt_left":
                 setProgressCircleAngle(270.0, -60.0);
                 break;
-            case "Tilt_Right":
+            case "face_tilt_right":
                 setProgressCircleAngle(-30.0, -60.0);
                 break;
         }
