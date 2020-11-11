@@ -11,7 +11,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -75,6 +74,8 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
     private List<String> lcoStrings = new ArrayList<String>();
     private List<String> lco= new ArrayList<String>();
     private float challengeTime;
+    private final String SCREEN_TYPE = "face_verification";
+    private final String mPhrase="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -338,8 +339,8 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
         public Tracker<Face> create(Face face) {
             return new LivenessTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(),
                     livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck,
-                    mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction,
-                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode);
+                    mPhrase, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction,
+                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE);
         }
     }
 

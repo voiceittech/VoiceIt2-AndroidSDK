@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void encapsulatedVideoVerification(View view) {
-        myVoiceIt.encapsulatedVideoVerification(this, userId[userIdIndex], contentLanguage, phrase, doLivenessCheck, new JsonHttpResponseHandler() {
+        myVoiceIt.encapsulatedVideoVerification(this, userId[userIdIndex], contentLanguage, phrase, doLivenessCheck, doLivenessAudioCheck, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedVideoVerification onSuccess Result : " + response.toString());

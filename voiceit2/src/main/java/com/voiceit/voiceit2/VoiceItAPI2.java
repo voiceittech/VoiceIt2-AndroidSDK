@@ -870,11 +870,11 @@ public class VoiceItAPI2 {
         requestWritePermission(activity);
     }
 
-    public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedVideoVerification(activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2, responseHandler);
+    public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
+        encapsulatedVideoVerification(doLivenessAudioCheck,activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2, responseHandler);
     }
 
-    public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedVideoVerification(boolean doLivenessAudioCheck, Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
@@ -891,6 +891,7 @@ public class VoiceItAPI2 {
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
+        bundle.putBoolean("doLivenessAudioCheck",doLivenessAudioCheck);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);

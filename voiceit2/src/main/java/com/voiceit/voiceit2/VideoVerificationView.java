@@ -69,12 +69,45 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
     private SensorManager sensorManager = null;
     private Sensor lightSensor;
 
+    private String mCountryCode ="en-US";
     private boolean livenessSuccess = false;
     private String lcoId = "";
     private String uiLivenessInstruction;
     private List<String> lcoStrings = new ArrayList<String>();
     private List<String> lco= new ArrayList<String>();
     private float challengeTime;
+    private final String SCREEN_TYPE = "video_verification";
+    private boolean mDoLivenessAudioCheck;
+
+
+    private void getLivenessData(){
+        mVoiceIt2.getInitialLivenessData(mUserId, mCountryCode, "verification", new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
+                Log.v("response", response.toString());
+                try {
+                    lcoId = response.getString("lcoId");
+                    livenessSuccess = response.getBoolean("success");
+                    uiLivenessInstruction = response.getString("uiLivenessInstruction");
+                    for(int i = 0; i < response.getJSONArray("lcoStrings").length(); i++ ){
+                        lcoStrings.add(response.getJSONArray("lcoStrings").getString(i));
+                    }
+                    for(int i = 0; i < response.getJSONArray("lco").length(); i++ ){
+                        lco.add(response.getJSONArray("lco").getString(i));
+                    }
+                    challengeTime = response.getInt("livenessChallengeTime");
+                    beginVerification();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
+                exitViewWithMessage("voiceit-failure","Error Getting Liveness Challenge");
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +123,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
+            mDoLivenessAudioCheck = bundle.getBoolean("doLivenessAudioCheck");
             livenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
             mLivenessChallengesNeeded = bundle.getInt("livenessChallengesNeeded");
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
@@ -145,7 +179,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         }
     }
 
-    private void startVerificationFlow() {
+    private void beginVerification(){
         mContinueVerifying = true;
         // Try to setup camera source
         mCameraSource = Utils.createCameraSource(this, new FaceTrackerFactory(this));
@@ -168,9 +202,12 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                                 }
                             }, 2500);
                         } else {
-                            mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
-                            // Start tracking faces
-                            FaceTracker.continueDetecting = true;
+                            if(mDoLivenessCheck){
+                                LivenessTracker.continueDetecting = true;
+                            }else {
+                                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                LivenessTracker.continueDetecting = true;
+                            }
                         }
                     } catch (JSONException e) {
                         Log.d(mTAG, "JSON exception : " + e.toString());
@@ -210,6 +247,16 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         }
     }
 
+    private void startVerificationFlow() {
+
+        // get Live-nes Challenges and time
+        if(mDoLivenessCheck) {
+            getLivenessData();
+        } else {
+            beginVerification();
+        }
+    }
+
     /**
      * Factory for creating a face tracker to be associated with a new face.  The multiprocessor
      * uses this factory to create face trackers as needed -- one for each individual.
@@ -221,15 +268,18 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 
         private FaceTrackerFactory(VideoVerificationView activity) {
             mActivity = activity;
-            FaceTracker.continueDetecting = false;
-            FaceTracker.livenessChallengesPassed = 0;
-            FaceTracker.livenessChallengeFails = 0;
+            LivenessTracker.continueDetecting = false;
+            LivenessTracker.livenessChallengesPassed = 0;
+            LivenessTracker.livenessChallengeFails = 0;
             Utils.randomizeArrayOrder(livenessChallengeOrder);
         }
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new FaceTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(), livenessChallengeOrder, mDoLivenessCheck, false, livenessChallengeFailsAllowed, mLivenessChallengesNeeded);
+            return new LivenessTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(),
+                    livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck, mPhrase,
+                    livenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction,
+                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE);
         }
     }
 
@@ -288,7 +338,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         Utils.setBrightness(this, Utils.oldBrightness);
         mContinueVerifying = false;
         timingHandler.removeCallbacksAndMessages(null);
-        FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
+        LivenessTracker.livenessTimer.removeCallbacksAndMessages(null);
         stopRecording();
         Intent intent = new Intent(action);
         JSONObject json = new JSONObject();
@@ -307,7 +357,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         Utils.setBrightness(this, Utils.oldBrightness);
         mContinueVerifying = false;
         timingHandler.removeCallbacksAndMessages(null);
-        FaceTracker.livenessTimer.removeCallbacksAndMessages(null);
+        LivenessTracker.livenessTimer.removeCallbacksAndMessages(null);
         stopRecording();
         Intent intent = new Intent(action);
         intent.putExtra("Response", json.toString());
@@ -347,32 +397,6 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         if(!playInstructionalVideo || !mDoLivenessCheck) {
             // Confirm permissions and start enrollment flow
             requestHardwarePermissions();
-        }
-        if(mDoLivenessCheck) {
-            mVoiceIt2.getInitialLivenessData(mUserId, mContentLanguage, "verification", new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
-                    Log.v("response", response.toString());
-                    try {
-                        lcoId = response.getString("lcoId");
-                        livenessSuccess = response.getBoolean("success");
-                        uiLivenessInstruction = response.getString("uiLivenessInstruction");
-                        for(int i = 0; i < response.getJSONArray("lcoStrings").length(); i++ ){
-                            lcoStrings.add(response.getJSONArray("lcoStrings").getString(i));
-                        }
-                        for(int i = 0; i < response.getJSONArray("lco").length(); i++ ){
-                            lco.add(response.getJSONArray("lco").getString(i));
-                        }
-                        challengeTime = response.getInt("challengeTime");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
-                    exitViewWithMessage("voiceit-failure","Error Getting Liveness Challenge");
-                }
-            });
         }
     }
 
@@ -445,7 +469,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                     verifyUser();
                 }  else {
                     // Continue liveness detection
-                    FaceTracker.continueDetecting = true;
+                    LivenessTracker.continueDetecting = true;
                 }
             }
         };
@@ -507,13 +531,13 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                                 }
                             },2000);
                         } else if (mContinueVerifying) {
-                            if(FaceTracker.lookingAway) {
+                            if(LivenessTracker.lookingAway) {
                                 mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
                             }
                             // Reset liveness check and try again
-                            FaceTracker.livenessChallengesPassed = 0;
-                            FaceTracker.livenessChallengeFails = 0;
-                            FaceTracker.continueDetecting = true;
+                            LivenessTracker.livenessChallengesPassed = 0;
+                            LivenessTracker.livenessChallengeFails = 0;
+                            LivenessTracker.continueDetecting = true;
                         }
                     }
                 }, 4500);
@@ -624,7 +648,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         }
     }
 
-    class FaceTrackerCallBackImpl implements FaceTracker.viewCallBacks { // Implements callback methods defined in FaceTracker interface
+    class FaceTrackerCallBackImpl implements LivenessTracker.viewCallBacks { // Implements callback methods defined in FaceTracker interface
         public void authMethodToCallBack() { verifyUser(); }
         public void takePictureCallBack() { takePicture(); }
     }

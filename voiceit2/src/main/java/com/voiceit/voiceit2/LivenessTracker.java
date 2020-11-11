@@ -10,7 +10,6 @@ import android.media.MediaPlayer;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
-import com.voiceit.voiceit2.RadiusOverlayView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +49,8 @@ class LivenessTracker extends Tracker<Face> {
     private String mUiLivenessInstruction;
     private float mChallengeTime;
     private String mCountryCode;
-
+    private String mScreenType;
+    private String mPhrase;
 
     static boolean continueDetecting = true;
     static boolean lookingAway = false;
@@ -58,9 +58,9 @@ class LivenessTracker extends Tracker<Face> {
     static final Handler livenessTimer = new Handler();
 
     LivenessTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int[] livenessChallengeOrder,
-                    boolean doLivenessCheck, boolean doLivenessAudioCheck, int livenessChallengeFailsAllowed,
+                    boolean doLivenessCheck, boolean doLivenessAudioCheck, String phrase, int livenessChallengeFailsAllowed,
                     int livenessChallengesNeeded, String uiLivenessInstruction, List<String> lcoStrings,
-                    List<String> lco, float challengeTime, boolean livenessSuccess, String lcoId, String countryCode) {
+                    List<String> lco, float challengeTime, boolean livenessSuccess, String lcoId, String countryCode, String screenType) {
         mOverlay = overlay;
         mActivity = activity;
         mCallbacks = callbacks;
@@ -76,6 +76,8 @@ class LivenessTracker extends Tracker<Face> {
         mLcoId = lcoId;
         mUiLivenessInstruction = uiLivenessInstruction;
         mCountryCode = countryCode;
+        mScreenType = screenType;
+        mPhrase = phrase;
     }
 
     private void setProgressCircleColor(final Integer color) {
@@ -421,24 +423,47 @@ class LivenessTracker extends Tracker<Face> {
         }
     }
 
-    private void performLivenessTest() {
-      // start writing to video file
-      // start recording
-      updateDisplayText(mLcoStrings.get(0),false);
-      illuminateCircles(mLco.get(0).toLowerCase());
-      playLivenessPrompt(mLco.get(0).toLowerCase());
-      long time = (long)mChallengeTime/mLco.size();
-      for(int i=1;i<mLco.size();i++){
+    private void beginChallenge() {
+        updateDisplayText(mLcoStrings.get(0), false);
+        illuminateCircles(mLco.get(0).toLowerCase());
+        playLivenessPrompt(mLco.get(0).toLowerCase());
+        long time = (long) mChallengeTime / mLco.size();
+        for (int i = 1; i < mLco.size(); i++) {
             final String challenge = mLcoStrings.get(i);
             final int finalI = i;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     playLivenessPrompt(mLco.get(finalI).toLowerCase());
-                    updateDisplayText(challenge,false);
+                    updateDisplayText(challenge, false);
                     illuminateCircles(mLco.get(finalI).toLowerCase());
                 }
-            },time*1000);
+            }, time * 1000);
+        }
+    }
+
+    private void performLivenessTest() {
+        if(mScreenType.equals("face_verification")) {
+            // start writing to video file
+            // start recording
+            beginChallenge();
+            // stop recording
+            // send video file and handle response
+        }
+        if(mScreenType.equals("video_verification")) {
+            // start writing to video/audio file
+            // start recording
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    updateDisplayText(mActivity.getString(R.string.SAY_PASSPHRASE, mPhrase), true);
+                    mOverlay.setProgressCircleColor(mActivity.getResources().getColor(R.color.progressCircle));
+                    mOverlay.startDrawingProgressCircle();
+                }
+            }, (long)mChallengeTime * 1000);
+            beginChallenge();
+            // stop recording
+            // send video/video file and handle response
         }
     }
 
