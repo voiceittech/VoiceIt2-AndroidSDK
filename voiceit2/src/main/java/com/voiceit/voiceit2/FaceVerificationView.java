@@ -11,6 +11,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,6 +50,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
     private Context mContext;
 
     private RadiusOverlayView mOverlay;
+    MediaRecorder recorder;
 
     private boolean playInstructionalVideo;
 
@@ -257,6 +259,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
                     }
                 }
 
+
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
                     if (errorResponse != null) {
@@ -338,9 +341,9 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
         @Override
         public Tracker<Face> create(Face face) {
             return new LivenessTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(),
-                    livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck,
+                    livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck, mPreview,
                     mPhrase, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction,
-                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE, mCameraSource);
+                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE, mCameraSource, recorder);
         }
     }
 

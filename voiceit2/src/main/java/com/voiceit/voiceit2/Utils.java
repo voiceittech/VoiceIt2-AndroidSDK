@@ -42,24 +42,6 @@ class Utils {
         }
     }
 
-    static void playLivenessPrompt(final String livenessPrompt, final Activity activity) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                }
-                int resId = activity.getApplicationContext().getResources().getIdentifier(
-                        livenessPrompt,
-                        "raw",
-                        activity.getApplicationContext().getPackageName()
-                );
-                mediaPlayer = MediaPlayer.create(activity.getApplicationContext(), resId);
-                mediaPlayer.start();
-            }
-        });
-    }
-
     static void randomizeArrayOrder(int [] array) {
         final Random rand = new Random();
         for(int i = 0; i < array.length; i++) {

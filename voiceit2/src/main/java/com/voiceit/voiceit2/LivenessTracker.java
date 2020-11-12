@@ -52,17 +52,19 @@ class LivenessTracker extends Tracker<Face> {
     private String mScreenType;
     private String mPhrase;
     private CameraSource mCameraSource;
-    private MediaRecorder recorder;
+    private MediaRecorder mRecorder;
     static boolean continueDetecting = true;
     static boolean lookingAway = false;
     static boolean isLivenessTested = false;
     static final Handler livenessTimer = new Handler();
+    private CameraSourcePreview mPreview;
+    File file;
 
     LivenessTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int[] livenessChallengeOrder,
-                    boolean doLivenessCheck, boolean doLivenessAudioCheck, String phrase, int livenessChallengeFailsAllowed,
-                    int livenessChallengesNeeded, String uiLivenessInstruction, List<String> lcoStrings,
+                    boolean doLivenessCheck, boolean doLivenessAudioCheck, CameraSourcePreview preview, String phrase,
+                    int livenessChallengeFailsAllowed, int livenessChallengesNeeded, String uiLivenessInstruction, List<String> lcoStrings,
                     List<String> lco, float challengeTime, boolean livenessSuccess, String lcoId, String countryCode,
-                    String screenType, CameraSource cameraSource) {
+                    String screenType, CameraSource cameraSource, MediaRecorder recorder) {
         mOverlay = overlay;
         mActivity = activity;
         mCallbacks = callbacks;
@@ -81,6 +83,13 @@ class LivenessTracker extends Tracker<Face> {
         mScreenType = screenType;
         mPhrase = phrase;
         mCameraSource = cameraSource;
+        mRecorder = recorder;
+        mPreview = preview;
+    }
+
+    private void createFile() throws IOException {
+        file = new File(mActivity.getFilesDir() + "/" + File.separator + "video.mp4");
+        file.createNewFile();
     }
 
     private void setProgressCircleColor(final Integer color) {
@@ -151,6 +160,7 @@ class LivenessTracker extends Tracker<Face> {
         if(mDoLivenessCheck) {
             if (!isLivenessTested) {
                 isLivenessTested = true;
+                prepareForVideoRecording();
                 updateDisplayText(mUiLivenessInstruction,false);
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
@@ -160,7 +170,7 @@ class LivenessTracker extends Tracker<Face> {
                             public void run() {
                                 performLivenessTest();
                             }
-                        }, 5000);
+                        }, 4000);
                     }
                 });
             }
@@ -255,33 +265,66 @@ class LivenessTracker extends Tracker<Face> {
         }
     }
 
-    public void startRecording(){
-        recorder = new MediaRecorder();
-        recorder.setCamera(mCameraSource.getCameraInstance());
-        recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-        recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-        recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
-        recorder.setOutputFile(mActivity.getFilesDir() + "/" + File.separator + "video.mp4");
-        try{
-            recorder.prepare();
-            recorder.start();
+    private boolean prepareForVideoRecording(){
+        try {
+            createFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mCameraSource.getCameraInstance().unlock();
+        mRecorder = new MediaRecorder();
+        mRecorder.setCamera(mCameraSource.getCameraInstance());
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+        mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+        mRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+        mRecorder.setOutputFile(mActivity.getFilesDir() + "/" + File.separator + "video.mp4");
+        mRecorder.setPreviewDisplay(mPreview.getSurfaceHolder().getSurface());
+        mRecorder.setVideoSize(1920,1080);
+
+        try{
+            mRecorder.prepare();
+        }catch (IOException e){
+            releaseMediaRecorder();
+            return false;
+        }
+        return true;
+    }
+
+    private void releaseMediaRecorder(){
+        if(mRecorder!=null){
+            mRecorder.reset();
+            mRecorder.release();
+            mRecorder = null;
+            mCameraSource.getCameraInstance().lock();
+        }
+    }
+
+    public void startRecording() {
+        mRecorder.start();
+    }
+
+    public void stopRecording() {
+        mRecorder.stop();
+        releaseMediaRecorder();
+        mCameraSource.getCameraInstance().lock();
     }
 
     private void performLivenessTest() {
         if(mScreenType.equals("face_verification")) {
-            // start writing to video file
-            // start recording
-            beginChallenge();
-            // stop recording
-            // send video file and handle response
-        }
-        if(mScreenType.equals("video_verification")) {
-
             startRecording();
+            beginChallenge();
 
+            long stop_time = (long)mChallengeTime;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    stopRecording();
+                }
+            }, stop_time*1000);
+        }
+
+        if(mScreenType.equals("video_verification")) {
+            // start recording
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -290,16 +333,8 @@ class LivenessTracker extends Tracker<Face> {
                     mOverlay.startDrawingProgressCircle();
                 }
             }, (long)mChallengeTime * 1000);
-
             beginChallenge();
-
-            float time = (mChallengeTime*1000) + 1000;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    recorder.stop();
-                }
-            }, (long)time);
+            // stop recording
         }
     }
 

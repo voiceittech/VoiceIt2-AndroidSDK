@@ -69,6 +69,10 @@ class CameraSourcePreview extends ViewGroup {
         }
     }
 
+    public SurfaceHolder getSurfaceHolder(){
+        return mSurfaceView.getHolder();
+    }
+
     public void stop() {
         if (mCameraSource != null) {
             mCameraSource.stop();
