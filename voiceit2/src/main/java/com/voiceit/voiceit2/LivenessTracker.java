@@ -1,9 +1,9 @@
 package com.voiceit.voiceit2;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.media.MediaPlayer;
 
@@ -11,9 +11,9 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -51,7 +51,8 @@ class LivenessTracker extends Tracker<Face> {
     private String mCountryCode;
     private String mScreenType;
     private String mPhrase;
-
+    private CameraSource mCameraSource;
+    private MediaRecorder recorder;
     static boolean continueDetecting = true;
     static boolean lookingAway = false;
     static boolean isLivenessTested = false;
@@ -60,7 +61,8 @@ class LivenessTracker extends Tracker<Face> {
     LivenessTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int[] livenessChallengeOrder,
                     boolean doLivenessCheck, boolean doLivenessAudioCheck, String phrase, int livenessChallengeFailsAllowed,
                     int livenessChallengesNeeded, String uiLivenessInstruction, List<String> lcoStrings,
-                    List<String> lco, float challengeTime, boolean livenessSuccess, String lcoId, String countryCode, String screenType) {
+                    List<String> lco, float challengeTime, boolean livenessSuccess, String lcoId, String countryCode,
+                    String screenType, CameraSource cameraSource) {
         mOverlay = overlay;
         mActivity = activity;
         mCallbacks = callbacks;
@@ -78,6 +80,7 @@ class LivenessTracker extends Tracker<Face> {
         mCountryCode = countryCode;
         mScreenType = screenType;
         mPhrase = phrase;
+        mCameraSource = cameraSource;
     }
 
     private void setProgressCircleColor(final Integer color) {
@@ -111,221 +114,33 @@ class LivenessTracker extends Tracker<Face> {
         });
     }
     private void playLivenessPrompt(final String livenessPrompt) {
-
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                }
-                if(mCountryCode == "es-ES"){
-                    int resId = mActivity.getApplicationContext().getResources().getIdentifier(
-                            livenessPrompt+"_es",
-                            "raw",
-                            mActivity.getApplicationContext().getPackageName()
-                    );
-                    mediaPlayer = MediaPlayer.create(mActivity.getApplicationContext(), resId);
-                    mediaPlayer.start();
-                } else{
-                    int resId = mActivity.getApplicationContext().getResources().getIdentifier(
-                            livenessPrompt,
-                            "raw",
-                            mActivity.getApplicationContext().getPackageName()
-                    );
-                    mediaPlayer = MediaPlayer.create(mActivity.getApplicationContext(), resId);
-                    mediaPlayer.start();
-                }
-            }
-        });
-    }
-
-
-    private void completeLivenessChallenge() {
-        LivenessTracker.continueDetecting = false;
-        LivenessTracker.livenessTimer.removeCallbacksAndMessages(null);
-        mDisplayingChallenge = false;
-        mDisplayingChallengeOutcome = false;
-        mTimingLiveness = false;
-
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Quick pause, .75 seconds, in-between challenges
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        setProgressCircleAngle(270.0, 0.0);
-                        LivenessTracker.livenessChallengesPassed++;
-                        if(challengeIndex >= mLivenessChallengeOrder.length-1) {
-                            challengeIndex = 0;
-                        } else {
-                            challengeIndex++;
-                        }
-                        // Take picture in the middle of liveness checks
-                        if (LivenessTracker.livenessChallengesPassed == 1) {
-                            // Capture preview picture to show to the user later
-                            CameraSource.captureNextPreviewFrame = true;
-
-                            mCallbacks.takePictureCallBack();
-                        } else {
-                            LivenessTracker.continueDetecting = true;
-                        }
+        if(mDoLivenessAudioCheck) {
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mediaPlayer.isPlaying()) {
+                        mediaPlayer.stop();
                     }
-                }, 750);
-            }
-        });
-    }
-
-    private void livenessCheck(Face face) {
-
-        switch (mLivenessChallengeOrder[challengeIndex]) {
-
-            // Smile
-            case 1:
-                if (!mDisplayingChallenge) {
-                    mDisplayingChallenge = true;
-
-                    // Smiling before prompt
-                    if (face.getIsSmilingProbability() > .5) {
-                        mDisplayingChallengeOutcome = true;
-                        failLiveness(true);
+                    if (mCountryCode == "es-ES") {
+                        int resId = mActivity.getApplicationContext().getResources().getIdentifier(
+                                livenessPrompt + "_es",
+                                "raw",
+                                mActivity.getApplicationContext().getPackageName()
+                        );
+                        mediaPlayer = MediaPlayer.create(mActivity.getApplicationContext(), resId);
+                        mediaPlayer.start();
                     } else {
-                        if(mDoLivenessAudioCheck) {
-                            playLivenessPrompt("smile");
-                        }
-                        updateDisplayText(mActivity.getString(R.string.SMILE), false);
-                    }
-
-                } else if (face.getIsSmilingProbability() > .5 && !mDisplayingChallengeOutcome) {
-                    mDisplayingChallengeOutcome = true;
-                    setProgressCircleColor(R.color.success);
-                    setProgressCircleAngle(270.0, 359.999);
-                    completeLivenessChallenge();
-                }
-                break;
-
-            // Turn face left
-            case 2:
-                if (!mDisplayingChallenge) {
-                    mDisplayingChallenge = true;
-
-                    // Turned before prompt
-                    if (face.getEulerY() > faceTurnedValue) {
-                        mDisplayingChallengeOutcome = true;
-                        failLiveness(true);
-                    } else {
-                        if(mDoLivenessAudioCheck) {
-                            playLivenessPrompt("face_left");
-                        }
-                        updateDisplayText(mActivity.getString(R.string.TURN_LEFT), false);
-                        setProgressCircleColor(R.color.pendingLivenessSuccess);
-                        setProgressCircleAngle(135.0, 90.0);
-                    }
-
-                } else if (!mDisplayingChallengeOutcome) {
-                    if(face.getEulerY() > faceTurnedValue) {
-                        mDisplayingChallengeOutcome = true;
-                        setProgressCircleColor(R.color.success);
-                        completeLivenessChallenge();
-
-                    } else if (face.getEulerY() < -22.0) {
-                        mDisplayingChallengeOutcome = true;
-                        // Turned wrong direction so fail
-                        failLiveness(false);
+                        int resId = mActivity.getApplicationContext().getResources().getIdentifier(
+                                livenessPrompt,
+                                "raw",
+                                mActivity.getApplicationContext().getPackageName()
+                        );
+                        mediaPlayer = MediaPlayer.create(mActivity.getApplicationContext(), resId);
+                        mediaPlayer.start();
                     }
                 }
-                break;
-
-            // Turn face right
-            case 3:
-                if (!mDisplayingChallenge) {
-                    mDisplayingChallenge = true;
-
-                    // Turned before prompt
-                    if(face.getEulerY() < -faceTurnedValue) {
-                        mDisplayingChallengeOutcome = true;
-                        failLiveness(true);
-                    } else {
-                        if(mDoLivenessAudioCheck) {
-                            playLivenessPrompt("face_right");
-                        }
-                        updateDisplayText(mActivity.getString(R.string.TURN_RIGHT), false);
-                        setProgressCircleColor(R.color.pendingLivenessSuccess);
-                        setProgressCircleAngle(315.0, 90.0);
-                    }
-
-                } else if (!mDisplayingChallengeOutcome) {
-                    if(face.getEulerY() < -faceTurnedValue) {
-                        mDisplayingChallengeOutcome = true;
-                        setProgressCircleColor(R.color.success);
-                        completeLivenessChallenge();
-
-                    } else if (face.getEulerY() > 22.0) {
-                        mDisplayingChallengeOutcome = true;
-                        // Turned wrong direction so fail
-                        failLiveness(false);
-                    }
-                }
-                break;
-
-            default:
-                break;
+            });
         }
-    }
-
-    private void failLiveness(boolean failedPrecheck) {
-        // Cleanup
-        LivenessTracker.continueDetecting = false;
-        LivenessTracker.livenessTimer.removeCallbacksAndMessages(null);
-        mDisplayingChallenge = false;
-        mDisplayingChallengeOutcome = false;
-        mTimingLiveness = false;
-
-        // Display fail to user
-        setProgressCircleAngle(0.0, 0.0);
-        setProgressCircleColor(R.color.failure);
-        setProgressCircleAngle(270.0, 359.0);
-
-        LivenessTracker.livenessChallengeFails++;
-        if(LivenessTracker.livenessChallengeFails > mLivenessChallengeFailsAllowed) {
-            updateDisplayText((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
-                    + mActivity.getString(R.string.FAILED_LIVENESS), false);
-            Log.d(mTAG, "display : " + ((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
-                    + mActivity.getString(R.string.FAILED_LIVENESS)));
-        } else {
-            updateDisplayText((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
-                    + mActivity.getString(R.string.FAILED_LIVENESS_CHALLENGE), false);
-            Log.d(mTAG, "display : " + ((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
-                    + mActivity.getString(R.string.FAILED_LIVENESS)));
-        }
-
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Wait for 2.5 seconds
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        // Exit if failed too many times, else restart
-                        if(LivenessTracker.livenessChallengeFails > mLivenessChallengeFailsAllowed) {
-                            Intent intent = new Intent("voiceit-failure");
-                            JSONObject json = new JSONObject();
-                            try {
-                                json.put("message", "User Failed Liveness Detection");
-                            } catch (JSONException e) {
-                                Log.d(mTAG, "JSON Exception : " + e.getMessage());
-                            }
-                            intent.putExtra("Response", json.toString());
-                            LocalBroadcastManager.getInstance(mActivity).sendBroadcast(intent);
-                            mActivity.finish();
-                        } else { // Give another try
-                            LivenessTracker.continueDetecting = true;
-                        }
-                    }
-                }, 2500);
-            }
-        });
     }
 
     /**
@@ -393,7 +208,6 @@ class LivenessTracker extends Tracker<Face> {
                     } else if (LivenessTracker.livenessChallengesPassed < mLivenessChallengesNeeded) {
 
                         // Display a liveness challenge to the user
-                        livenessCheck(face);
 
                         // Start a timer for current liveness challenge
                         if (!mTimingLiveness && LivenessTracker.continueDetecting) {
@@ -406,7 +220,6 @@ class LivenessTracker extends Tracker<Face> {
                                         @Override
                                         public void run() {
                                             // Fail if user didn't pass a liveness check in time
-                                            failLiveness(false);
                                         }
                                     }, 3000);
                                 }
@@ -442,6 +255,21 @@ class LivenessTracker extends Tracker<Face> {
         }
     }
 
+    public void startRecording(){
+        recorder = new MediaRecorder();
+        recorder.setCamera(mCameraSource.getCameraInstance());
+        recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+        recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+        recorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+        recorder.setOutputFile(mActivity.getFilesDir() + "/" + File.separator + "video.mp4");
+        try{
+            recorder.prepare();
+            recorder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void performLivenessTest() {
         if(mScreenType.equals("face_verification")) {
             // start writing to video file
@@ -451,8 +279,9 @@ class LivenessTracker extends Tracker<Face> {
             // send video file and handle response
         }
         if(mScreenType.equals("video_verification")) {
-            // start writing to video/audio file
-            // start recording
+
+            startRecording();
+
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -461,9 +290,16 @@ class LivenessTracker extends Tracker<Face> {
                     mOverlay.startDrawingProgressCircle();
                 }
             }, (long)mChallengeTime * 1000);
+
             beginChallenge();
-            // stop recording
-            // send video/video file and handle response
+
+            float time = (mChallengeTime*1000) + 1000;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    recorder.stop();
+                }
+            }, (long)time);
         }
     }
 

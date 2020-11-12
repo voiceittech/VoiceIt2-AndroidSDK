@@ -364,6 +364,17 @@ public class CameraSource {
     }
 
     /**
+     * Returns the Camera Instance if not null
+     */
+
+    public Camera getCameraInstance(){
+        if(mCamera != null)
+            return mCamera;
+
+        return null;
+    }
+
+    /**
      * Opens the camera and starts sending preview frames to the underlying detector.  The supplied
      * surface holder is used for the preview so frames can be displayed to the user.
      *

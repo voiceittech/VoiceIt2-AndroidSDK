@@ -295,7 +295,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
         if(mDoLivenessCheck) {
             getLivenessData();
         } else {
-           beginVerification();
+            beginVerification();
         }
     }
 
@@ -340,7 +340,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
             return new LivenessTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(),
                     livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck,
                     mPhrase, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction,
-                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE);
+                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE, mCameraSource);
         }
     }
 

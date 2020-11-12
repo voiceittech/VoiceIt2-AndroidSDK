@@ -129,6 +129,15 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
         }
 
+        // Initialize video file for recording data
+        if(mDoLivenessCheck) {
+            try {
+                createFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         // Hide action bar
         try {
             this.getSupportActionBar().hide();
@@ -247,6 +256,11 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         }
     }
 
+    private void createFile() throws IOException {
+        File file = new File(this.getFilesDir() + "/" + File.separator + "video.mp4");
+        file.createNewFile();
+    }
+
     private void startVerificationFlow() {
 
         // get Live-nes Challenges and time
@@ -279,7 +293,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
             return new LivenessTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(),
                     livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck, mPhrase,
                     livenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction,
-                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE);
+                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE, mCameraSource);
         }
     }
 
