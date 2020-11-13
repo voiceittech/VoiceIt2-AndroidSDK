@@ -10,11 +10,16 @@ import android.media.MediaPlayer;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Face tracker for each detected individual.
@@ -25,7 +30,6 @@ class LivenessTracker extends Tracker<Face> {
     private final RadiusOverlayView mOverlay;
     private final viewCallBacks mCallbacks;
 
-    private VoiceItAPI2 mVoiceIt2;
     private final String mTAG = "LivenessTracker";
 
     private final int [] mLivenessChallengeOrder;
@@ -51,6 +55,7 @@ class LivenessTracker extends Tracker<Face> {
     private float mChallengeTime;
     private String mCountryCode;
     private String mScreenType;
+    private String mUserId;
     private String mPhrase;
     private CameraSource mCameraSource;
     private MediaRecorder mRecorder;
@@ -59,13 +64,14 @@ class LivenessTracker extends Tracker<Face> {
     static boolean isLivenessTested = false;
     static final Handler livenessTimer = new Handler();
     private CameraSourcePreview mPreview;
+    private VoiceItAPI2 mVoiceItAPI2;
     File file;
 
-    LivenessTracker(RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int[] livenessChallengeOrder,
+    LivenessTracker(VoiceItAPI2 mVoiceIt2, RadiusOverlayView overlay, Activity activity, viewCallBacks callbacks, int[] livenessChallengeOrder,
                     boolean doLivenessCheck, boolean doLivenessAudioCheck, CameraSourcePreview preview, String phrase,
-                    int livenessChallengeFailsAllowed, int livenessChallengesNeeded, String uiLivenessInstruction, List<String> lcoStrings,
-                    List<String> lco, float challengeTime, boolean livenessSuccess, String lcoId, String countryCode,
-                    String screenType, CameraSource cameraSource, MediaRecorder recorder) {
+                    int livenessChallengeFailsAllowed, int livenessChallengesNeeded, String livenessInstruction,
+                    String userId, List<String> lcoStrings, List<String> lco, float challengeTime, boolean livenessSuccess,
+                    String lcoId, String countryCode, String screenType, CameraSource cameraSource, MediaRecorder recorder) {
         mOverlay = overlay;
         mActivity = activity;
         mCallbacks = callbacks;
@@ -79,13 +85,15 @@ class LivenessTracker extends Tracker<Face> {
         mLco = lco;
         mLcoStrings = lcoStrings;
         mLcoId = lcoId;
-        mUiLivenessInstruction = uiLivenessInstruction;
+        mUiLivenessInstruction = livenessInstruction;
         mCountryCode = countryCode;
         mScreenType = screenType;
         mPhrase = phrase;
         mCameraSource = cameraSource;
         mRecorder = recorder;
         mPreview = preview;
+        mUserId = userId;
+        mVoiceItAPI2 = mVoiceIt2;
     }
 
     private void createFile() throws IOException {
@@ -281,7 +289,6 @@ class LivenessTracker extends Tracker<Face> {
         mRecorder.setOutputFile(mActivity.getFilesDir() + "/" + File.separator + "video.mp4");
         mRecorder.setPreviewDisplay(mPreview.getSurfaceHolder().getSurface());
         mRecorder.setVideoSize(1920,1080);
-
         try{
             mRecorder.prepare();
         }catch (IOException e){
@@ -358,8 +365,31 @@ class LivenessTracker extends Tracker<Face> {
 
     private void sendVideoFile() {
         if(mScreenType.equals("face_verification")) {
+            mVoiceItAPI2.faceVerification(mUserId,mCountryCode,file,new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                }
+
+            });
 
         } if(mScreenType.equals("video_verification")) {
+            mVoiceItAPI2.videoVerification(mUserId,mCountryCode,mPhrase,file.getAbsolutePath(),new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    super.onSuccess(statusCode, headers, response);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    super.onFailure(statusCode, headers, throwable, errorResponse);
+                }
+            });
         }
     }
 

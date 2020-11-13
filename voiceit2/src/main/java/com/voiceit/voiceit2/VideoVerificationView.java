@@ -70,7 +70,6 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
     private SensorManager sensorManager = null;
     private Sensor lightSensor;
 
-    private String mCountryCode ="en-US";
     private boolean livenessSuccess = false;
     private String lcoId = "";
     private String uiLivenessInstruction;
@@ -82,7 +81,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 
 
     private void getLivenessData(){
-        mVoiceIt2.getInitialLivenessData(mUserId, mCountryCode, "verification", new JsonHttpResponseHandler() {
+        mVoiceIt2.getInitialLivenessData(mUserId, mContentLanguage, "verification", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                 Log.v("response", response.toString());
@@ -291,10 +290,10 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new LivenessTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(),
+            return new LivenessTracker(mVoiceIt2, mOverlay, mActivity, new FaceTrackerCallBackImpl(),
                     livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck, mPreview, mPhrase,
-                    livenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction,
-                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE, mCameraSource, mMediaRecorder);
+                    livenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction, mUserId,
+                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mContentLanguage, SCREEN_TYPE, mCameraSource, mMediaRecorder);
         }
     }
 

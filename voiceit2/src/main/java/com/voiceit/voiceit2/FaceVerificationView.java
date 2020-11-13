@@ -65,7 +65,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
     private int mFailedAttempts = 0;
     private final int mMaxFailedAttempts = 3;
     private boolean mContinueVerifying = false;
-    private String mCountryCode ="en-US";
+    private String mContentLanguage ="en-US";
 
     private SensorManager sensorManager = null;
     private Sensor lightSensor;
@@ -92,7 +92,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
             mUserId = bundle.getString("userId");
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
             mDoLivenessAudioCheck = bundle.getBoolean("doLivenessAudioCheck");
-            mCountryCode = bundle.getString("countryCode");
+            mContentLanguage = bundle.getString("contentLanguage");
             mLivenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
             mLivenessChallengesNeeded = bundle.getInt("livenessChallengesNeeded");
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
@@ -149,7 +149,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
     }
 
     private void getLivenessData(){
-        mVoiceIt2.getInitialLivenessData(mUserId, mCountryCode, "verification", new JsonHttpResponseHandler() {
+        mVoiceIt2.getInitialLivenessData(mUserId, mContentLanguage, "verification", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                 Log.v("response", response.toString());
@@ -340,10 +340,10 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
 
         @Override
         public Tracker<Face> create(Face face) {
-            return new LivenessTracker(mOverlay, mActivity, new FaceTrackerCallBackImpl(),
+            return new LivenessTracker(mVoiceIt2,mOverlay, mActivity, new FaceTrackerCallBackImpl(),
                     livenessChallengeOrder, mDoLivenessCheck, mDoLivenessAudioCheck, mPreview,
-                    mPhrase, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction,
-                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mCountryCode, SCREEN_TYPE, mCameraSource, recorder);
+                    mPhrase, mLivenessChallengeFailsAllowed, mLivenessChallengesNeeded, uiLivenessInstruction, mUserId,
+                    lcoStrings, lco, challengeTime, livenessSuccess, lcoId, mContentLanguage, SCREEN_TYPE, mCameraSource, recorder);
         }
     }
 

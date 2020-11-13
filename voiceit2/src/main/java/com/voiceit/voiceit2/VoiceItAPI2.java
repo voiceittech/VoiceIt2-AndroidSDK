@@ -493,6 +493,25 @@ public class VoiceItAPI2 {
         faceVerification(userId, new File(videoPath), responseHandler);
     }
 
+    public void faceVerification(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler){
+        if(!userIdFormatted(userId)) {
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            return;
+        }
+        RequestParams params = new RequestParams();
+        params.put("userId", userId);
+        params.put("contentLanguage", contentLanguage);
+        try {
+            params.put("video", video);
+        } catch (FileNotFoundException e) {
+            Log.e(mTAG, "FileNotFoundException: " + e.getMessage());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            return;
+        }
+
+        client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
+    }
+
     public void faceVerification(String userId, File video, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
@@ -967,7 +986,7 @@ public class VoiceItAPI2 {
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userId", userId);
-        bundle.putString("countryCode", countryCode);
+        bundle.putString("contentLanguage", countryCode);
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
         bundle.putBoolean("doLivenessAudioCheck", doLivenessAudioCheck);
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
