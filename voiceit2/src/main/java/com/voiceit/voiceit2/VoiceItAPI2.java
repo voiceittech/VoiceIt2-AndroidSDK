@@ -493,13 +493,14 @@ public class VoiceItAPI2 {
         faceVerification(userId, new File(videoPath), responseHandler);
     }
 
-    public void faceVerification(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler){
+    public void faceVerification(String userId, String contentLanguage, File video, AsyncHttpResponseHandler responseHandler, String lcoId){
         if(!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
         RequestParams params = new RequestParams();
         params.put("userId", userId);
+        params.put("lcoId", lcoId);
         params.put("contentLanguage", contentLanguage);
         try {
             params.put("video", video);
@@ -578,6 +579,27 @@ public class VoiceItAPI2 {
         params.put("userId", userId);
         params.put("contentLanguage", contentLanguage);
         params.put("phrase", phrase);
+        try {
+            params.put("video", video);
+        } catch (FileNotFoundException e) {
+            Log.e(mTAG, "FileNotFoundException: " + e.getMessage());
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            return;
+        }
+
+        client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
+    }
+
+    public void videoVerification(String userId, String contentLanguage, String phrase, File video, AsyncHttpResponseHandler responseHandler, String lcoId) {
+        if(!userIdFormatted(userId)) {
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            return;
+        }
+        RequestParams params = new RequestParams();
+        params.put("userId", userId);
+        params.put("contentLanguage", contentLanguage);
+        params.put("phrase", phrase);
+        params.put("lcoId", lcoId);
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {

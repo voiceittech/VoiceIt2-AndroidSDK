@@ -109,6 +109,29 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         });
     }
 
+    private void releaseMediaRecorder(){
+        if(mMediaRecorder!=null){
+            mMediaRecorder.reset();
+            mMediaRecorder.release();
+            mMediaRecorder = null;
+            mCameraSource.getCameraInstance().lock();
+        }
+    }
+
+    public void stopRecording() {
+        if(mMediaRecorder!=null && mDoLivenessCheck) {
+            mMediaRecorder.stop();
+            releaseMediaRecorder();
+            mCameraSource.getCameraInstance().lock();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopRecording();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
@@ -439,19 +462,6 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         super.onDestroy();
         if (mCameraSource != null) {
             mCameraSource.release();
-        }
-    }
-
-    private void stopRecording() {
-        if (mMediaRecorder != null) {
-            try {
-                mMediaRecorder.stop();
-            } catch (Exception e) {
-                Log.d(mTAG, "Error trying to stop MediaRecorder");
-            }
-            mMediaRecorder.reset();
-            mMediaRecorder.release();
-            mMediaRecorder = null;
         }
     }
 

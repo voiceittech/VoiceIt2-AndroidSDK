@@ -371,6 +371,29 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
         }
     }
 
+    private void releaseMediaRecorder(){
+        if(recorder!=null){
+            recorder.reset();
+            recorder.release();
+            recorder = null;
+            mCameraSource.getCameraInstance().lock();
+        }
+    }
+
+    public void stopRecording() {
+        if(recorder!=null && mDoLivenessCheck) {
+            recorder.stop();
+            releaseMediaRecorder();
+            mCameraSource.getCameraInstance().lock();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopRecording();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

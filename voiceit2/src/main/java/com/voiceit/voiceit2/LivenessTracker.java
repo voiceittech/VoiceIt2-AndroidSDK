@@ -285,10 +285,11 @@ class LivenessTracker extends Tracker<Face> {
         mRecorder.setCamera(mCameraSource.getCameraInstance());
         mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-        mRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+        mRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_720P));
         mRecorder.setOutputFile(mActivity.getFilesDir() + "/" + File.separator + "video.mp4");
         mRecorder.setPreviewDisplay(mPreview.getSurfaceHolder().getSurface());
-        mRecorder.setVideoSize(1920,1080);
+        mRecorder.setOrientationHint(270);
+        mRecorder.setVideoSize(640,480);
         try{
             mRecorder.prepare();
         }catch (IOException e){
@@ -308,19 +309,32 @@ class LivenessTracker extends Tracker<Face> {
     }
 
     public void startRecording() {
-        mRecorder.start();
+        try {
+            mRecorder.start();
+        } catch (IllegalStateException e){
+            e.printStackTrace();
+        }
     }
 
     public void stopRecording() {
-        mRecorder.stop();
-        releaseMediaRecorder();
-        mCameraSource.getCameraInstance().lock();
+        try {
+            mRecorder.stop();
+            releaseMediaRecorder();
+            mCameraSource.getCameraInstance().lock();
+        }
+        catch (IllegalStateException e){
+            e.printStackTrace();
+        }
     }
 
     private void performLivenessTest() {
         if(mScreenType.equals("face_verification")) {
             //start recording
-            startRecording();
+            try {
+                startRecording();
+            }catch (RuntimeException e){
+                e.printStackTrace();
+            }
 
             //begin challenge
             beginChallenge();
@@ -338,15 +352,18 @@ class LivenessTracker extends Tracker<Face> {
 
         if(mScreenType.equals("video_verification")) {
             //start recording
-            startRecording();
+            try {
+                startRecording();
+            }catch (RuntimeException e){
+                e.printStackTrace();
+            }
 
-            //after challenge phrase for liveness
+            //record after-challenge phrase
             final Handler handler = new Handler();
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     updateDisplayText(mActivity.getString(R.string.SAY_PASSPHRASE, mPhrase), true);
-                    mOverlay.setProgressCircleColor(mActivity.getResources().getColor(R.color.progressCircle));
                     mOverlay.startDrawingProgressCircle();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -365,7 +382,7 @@ class LivenessTracker extends Tracker<Face> {
 
     private void sendVideoFile() {
         if(mScreenType.equals("face_verification")) {
-            mVoiceItAPI2.faceVerification(mUserId,mCountryCode,file,new JsonHttpResponseHandler(){
+            mVoiceItAPI2.faceVerification(mUserId, mCountryCode, file, new JsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
@@ -376,10 +393,10 @@ class LivenessTracker extends Tracker<Face> {
                     super.onFailure(statusCode, headers, throwable, errorResponse);
                 }
 
-            });
+            },mLcoId);
 
         } if(mScreenType.equals("video_verification")) {
-            mVoiceItAPI2.videoVerification(mUserId,mCountryCode,mPhrase,file.getAbsolutePath(),new JsonHttpResponseHandler(){
+            mVoiceItAPI2.videoVerification(mUserId, mCountryCode, mPhrase, file, new JsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
@@ -389,7 +406,7 @@ class LivenessTracker extends Tracker<Face> {
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     super.onFailure(statusCode, headers, throwable, errorResponse);
                 }
-            });
+            }, mLcoId);
         }
     }
 
