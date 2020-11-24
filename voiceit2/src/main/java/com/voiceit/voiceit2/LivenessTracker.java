@@ -1,9 +1,11 @@
 package com.voiceit.voiceit2;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.media.MediaPlayer;
 
@@ -417,7 +419,33 @@ class LivenessTracker extends Tracker<Face> {
         }
     }
 
-    private void handleResponse(JSONObject response, File file) {
+    private void exitViewWithMessage(String action, String message){
+        Intent intent = new Intent(action);
+        JSONObject json = new JSONObject();
+        try {
+            json.put("message", message);
+        } catch(JSONException e) {
+            Log.d(mTAG,"JSON Exception : " + e.getMessage());
+        }
+        intent.putExtra("Response", json.toString());
+        LocalBroadcastManager.getInstance(mActivity).sendBroadcast(intent);
+        mActivity.finish();
+    }
+
+    private void exitViewWithJSON(String action, JSONObject message){
+        Intent intent = new Intent(action);
+        JSONObject json = new JSONObject();
+        try {
+            json.put("message", message);
+        } catch(JSONException e) {
+            Log.d(mTAG,"JSON Exception : " + e.getMessage());
+        }
+        intent.putExtra("Response", json.toString());
+        LocalBroadcastManager.getInstance(mActivity).sendBroadcast(intent);
+        mActivity.finish();
+    }
+
+    private void handleResponse(final JSONObject response, File file) {
         try {
             file.delete();
             String uiMessage = response.getString("uiMessage");
@@ -431,17 +459,39 @@ class LivenessTracker extends Tracker<Face> {
                 updateDisplayText(uiMessage, true);
                 prepareForVideoRecording();
                 performLivenessTest();
-                //after two seconds
             }
+
             if(!success && !retry){
                 updateDisplayText(uiMessage, true);
                 playLivenessPrompt(audioString);
-                //exitViewWithJSON after 2 seconds
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                exitViewWithMessage("voiceit-failure","Liveness Failure");
+                            }
+                        }, 3000);
+                    }
+                });
             }
+
             if(success){
                 updateDisplayText(uiMessage, true);
                 playLivenessPrompt(audioString);
-                //exitViewWithJSON after 2 seconds
+
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                exitViewWithJSON("voiceit-success", response);
+                            }
+                        }, 3000);
+                    }
+                });
             }
         } catch (JSONException e) {
             e.printStackTrace();
