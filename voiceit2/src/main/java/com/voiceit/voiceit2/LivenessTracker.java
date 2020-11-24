@@ -13,6 +13,7 @@ import com.google.android.gms.vision.face.FaceDetector;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -345,6 +346,8 @@ class LivenessTracker extends Tracker<Face> {
                 @Override
                 public void run() {
                     stopRecording();
+                    updateDisplayText("Please Wait...", true);
+                    setProgressCircleAngle(0.0,360.0);
                     sendVideoFile();
                 }
             }, stop_time*1000);
@@ -364,12 +367,13 @@ class LivenessTracker extends Tracker<Face> {
                 @Override
                 public void run() {
                     updateDisplayText(mActivity.getString(R.string.SAY_PASSPHRASE, mPhrase), true);
+                    setProgressCircleColor(R.color.progressCircle);
                     mOverlay.startDrawingProgressCircle();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             stopRecording();
-                            updateDisplayText("Checking", true);
+                            updateDisplayText("Please Wait...", true);
                             sendVideoFile();
                         }
                     }, 5000);
@@ -387,6 +391,7 @@ class LivenessTracker extends Tracker<Face> {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
+                    handleResponse(response, file);
                 }
 
                 @Override
@@ -401,6 +406,7 @@ class LivenessTracker extends Tracker<Face> {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
+                    handleResponse(response, file);
                 }
 
                 @Override
@@ -408,6 +414,37 @@ class LivenessTracker extends Tracker<Face> {
                     super.onFailure(statusCode, headers, throwable, errorResponse);
                 }
             }, mLcoId);
+        }
+    }
+
+    private void handleResponse(JSONObject response, File file) {
+        try {
+            file.delete();
+            String uiMessage = response.getString("uiMessage");
+            Boolean retry = response.getBoolean("retry");
+            Boolean success = response.getBoolean("success");
+            String audioPromptType = response.getString("audioPrompt");
+            String audioString = audioPromptType.toLowerCase().substring(0, audioPromptType.length() - 4);
+
+            if(!success && retry){
+                playLivenessPrompt(audioString);
+                updateDisplayText(uiMessage, true);
+                prepareForVideoRecording();
+                performLivenessTest();
+                //after two seconds
+            }
+            if(!success && !retry){
+                updateDisplayText(uiMessage, true);
+                playLivenessPrompt(audioString);
+                //exitViewWithJSON after 2 seconds
+            }
+            if(success){
+                updateDisplayText(uiMessage, true);
+                playLivenessPrompt(audioString);
+                //exitViewWithJSON after 2 seconds
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

@@ -390,7 +390,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         overridePendingTransition(0, 0);
     }
 
-    private void exitViewWithJSON(String action, JSONObject json) {
+    public void exitViewWithJSON(String action, JSONObject json) {
         Utils.setBrightness(this, Utils.oldBrightness);
         mContinueVerifying = false;
         timingHandler.removeCallbacksAndMessages(null);

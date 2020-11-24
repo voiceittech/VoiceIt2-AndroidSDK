@@ -408,7 +408,7 @@ public class FaceVerificationView extends AppCompatActivity implements SensorEve
         }
     }
 
-    private void exitViewWithMessage(String action, String message) {
+    public void exitViewWithMessage(String action, String message) {
         Utils.setBrightness(this, Utils.oldBrightness);
         mContinueVerifying = false;
         timingHandler.removeCallbacksAndMessages(null);
