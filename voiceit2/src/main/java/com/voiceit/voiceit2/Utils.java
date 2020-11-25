@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -52,14 +53,35 @@ class Utils {
         }
     }
 
+
+    static void startMediaRecorder(MediaRecorder mediaRecorder, File audioFile, CameraSource cameraSource, CameraSourcePreview mPreview){
+        cameraSource.getCameraInstance().unlock();
+        mediaRecorder.setCamera(cameraSource.getCameraInstance());
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+        mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+        mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_480P));
+        mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
+        mediaRecorder.setPreviewDisplay(mPreview.getSurfaceHolder().getSurface());
+        mediaRecorder.setOrientationHint(270);
+        mediaRecorder.setVideoSize(640,480);
+
+        try {
+            mediaRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(mTAG, "MediaRecorder prepare failed");
+        }
+        mediaRecorder.start();
+    }
+
     static void startMediaRecorder(MediaRecorder mediaRecorder, File audioFile) {
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
-        mediaRecorder.setAudioSamplingRate(44100);
+        mediaRecorder.setAudioSamplingRate(48000);
         mediaRecorder.setAudioChannels(1);
         mediaRecorder.setAudioEncodingBitRate(16000);
         mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
+
         try {
             mediaRecorder.prepare();
         } catch (IOException e) {

@@ -234,12 +234,12 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                                 }
                             }, 2500);
                         } else {
-                            if(mDoLivenessCheck){
-                                LivenessTracker.continueDetecting = true;
-                            }else {
+                            if(!mDoLivenessCheck){
                                 mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
-                                LivenessTracker.continueDetecting = true;
+                            } else{
+                                mOverlay.updateDisplayText(uiLivenessInstruction);
                             }
+                            LivenessTracker.continueDetecting = true;
                         }
                     } catch (JSONException e) {
                         Log.d(mTAG, "JSON exception : " + e.toString());

@@ -317,16 +317,36 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
         }
     }
 
-    private void stopRecording() {
-        if (mMediaRecorder != null) {
-            try {
-                mMediaRecorder.stop();
-            } catch (Exception e) {
-                Log.d(mTAG, "Error trying to stop MediaRecorder");
-            }
+//    private void stopRecording() {
+//        if (mMediaRecorder != null) {
+//            try {
+//                mMediaRecorder.stop();
+//            } catch (Exception e) {
+//                Log.d(mTAG, "Error trying to stop MediaRecorder");
+//            }
+//            mMediaRecorder.reset();
+//            mMediaRecorder.release();
+//            mMediaRecorder = null;
+//        }
+//    }
+
+    private void releaseMediaRecorder(){
+        if(mMediaRecorder!=null){
             mMediaRecorder.reset();
             mMediaRecorder.release();
             mMediaRecorder = null;
+            mCameraSource.getCameraInstance().lock();
+        }
+    }
+
+    public void stopRecording() {
+        try {
+            mMediaRecorder.stop();
+            releaseMediaRecorder();
+            mCameraSource.getCameraInstance().lock();
+        }
+        catch (IllegalStateException e){
+            e.printStackTrace();
         }
     }
 
@@ -432,7 +452,8 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
 
                 // Setup device and capture audio
                 mMediaRecorder = new MediaRecorder();
-                Utils.startMediaRecorder(mMediaRecorder, audioFile);
+                Utils.startMediaRecorder(mMediaRecorder, audioFile, mCameraSource, mPreview);
+//                Utils.startMediaRecorder(mMediaRecorder, audioFile);
 
                 mOverlay.setProgressCircleColor(getResources().getColor(R.color.progressCircle));
                 mOverlay.startDrawingProgressCircle();
