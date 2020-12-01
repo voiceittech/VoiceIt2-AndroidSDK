@@ -43,6 +43,30 @@ class Utils {
         }
     }
 
+    /** Create a File for saving an image or audio file */
+    static File getOutputVideoFile(String suffix, Activity mActivity){
+        try {
+            File file = new File(mActivity.getFilesDir() + "/" + File.separator + "video.mp4");
+            file.createNewFile();
+            return file;
+        } catch (IOException e) {
+            Log.e(mTAG,"Creating " + suffix + " file failed with exception : " + e.getMessage());
+            return null;
+        }
+    }
+
+    /** Create a File for saving an image or audio file */
+    static File getOutputAudioFile(String suffix, Activity mActivity){
+        try {
+            File file = new File(mActivity.getFilesDir() + "/" + File.separator + "audio.wav");
+            file.createNewFile();
+            return file;
+        } catch (IOException e) {
+            Log.e(mTAG,"Creating " + suffix + " file failed with exception : " + e.getMessage());
+            return null;
+        }
+    }
+
     static void randomizeArrayOrder(int [] array) {
         final Random rand = new Random();
         for(int i = 0; i < array.length; i++) {
@@ -211,5 +235,13 @@ class Utils {
         window.setAttributes(layoutparams);
 
         return true;
+    }
+
+    public static void stripAudio(File audioVideoFile, File audioFile, AudioExtractionCompletion audioExtractionCompletion) {
+        try {
+            new AudioExtractor().genVideoUsingMuxer(audioVideoFile.getPath(), audioFile.getAbsolutePath(),-1,-1,true,false, audioExtractionCompletion);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
