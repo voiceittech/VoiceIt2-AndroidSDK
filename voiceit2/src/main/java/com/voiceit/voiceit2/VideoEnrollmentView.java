@@ -122,45 +122,52 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
         if(!Utils.startCameraSource(this, mCameraSource, mPreview)){
             exitViewWithMessage("voiceit-failure","Error starting camera");
         } else {
-            // Delete enrollments and re-enroll
-            mVoiceIt2.deleteAllEnrollments(mUserId, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject Response) {
-                    mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
-                    // Start tracking faces
-                    FaceTracker.continueDetecting = true;
-                }
+            if (mEnrollmentCount < mNeededEnrollments) {
+                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                // Start tracking faces
+                FaceTracker.continueDetecting = true;
+            } else {
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
-                    if (errorResponse != null) {
-                        try {
-                            // Report error to user
-                            mOverlay.updateDisplayText(getString((getResources().getIdentifier(errorResponse.
-                                    getString("responseCode"), "string", getPackageName()))));
-                        } catch (JSONException e) {
-                            Log.d(mTAG, "JSON exception : " + e.toString());
-                        }
-                        // Wait for 2.0 seconds
-                        timingHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                exitViewWithJSON("voiceit-failure", errorResponse);
-                            }
-                        }, 2000);
-                    } else {
-                        Log.e(mTAG, "No response from server");
-                        mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
-                        // Wait for 2.0 seconds
-                        timingHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                exitViewWithMessage("voiceit-failure", "No response from server");
-                            }
-                        }, 2000);
+                // Delete enrollments and re-enroll
+                mVoiceIt2.deleteAllEnrollments(mUserId, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject Response) {
+                        mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                        // Start tracking faces
+                        FaceTracker.continueDetecting = true;
                     }
-                }
-            });
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
+                        if (errorResponse != null) {
+                            try {
+                                // Report error to user
+                                mOverlay.updateDisplayText(getString((getResources().getIdentifier(errorResponse.
+                                        getString("responseCode"), "string", getPackageName()))));
+                            } catch (JSONException e) {
+                                Log.d(mTAG, "JSON exception : " + e.toString());
+                            }
+                            // Wait for 2.0 seconds
+                            timingHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    exitViewWithJSON("voiceit-failure", errorResponse);
+                                }
+                            }, 2000);
+                        } else {
+                            Log.e(mTAG, "No response from server");
+                            mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                            // Wait for 2.0 seconds
+                            timingHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    exitViewWithMessage("voiceit-failure", "No response from server");
+                                }
+                            }, 2000);
+                        }
+                    }
+                });
+            }
         }
     }
 
