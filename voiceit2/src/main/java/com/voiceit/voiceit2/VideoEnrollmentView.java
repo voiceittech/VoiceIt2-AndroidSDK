@@ -244,7 +244,6 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
     private void exitViewWithMessage(String action, String message) {
         Utils.setBrightness(this, Utils.oldBrightness);
         mContinueEnrolling = false;
-        stopRecording();
         timingHandler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         JSONObject json = new JSONObject();
@@ -262,7 +261,6 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
     private void exitViewWithJSON(String action, JSONObject json) {
         Utils.setBrightness(this, Utils.oldBrightness);
         mContinueEnrolling = false;
-        stopRecording();
         timingHandler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
         intent.putExtra("Response", json.toString());
@@ -328,7 +326,6 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
         if(mMediaRecorder!=null){
             mMediaRecorder.reset();
             mMediaRecorder.release();
-            mMediaRecorder = null;
             mCameraSource.getCameraInstance().lock();
         }
     }
