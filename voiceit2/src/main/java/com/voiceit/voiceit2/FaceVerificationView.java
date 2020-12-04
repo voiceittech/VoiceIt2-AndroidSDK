@@ -149,6 +149,16 @@
             }
         }
 
+        private void handleError(){
+            mOverlay.updateDisplayText("Error Getting Liveness Challenge");
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    exitViewWithMessage("voiceit-failure","Error Getting Liveness Challenge");
+                }
+            },   3000);
+        }
+
         private void getLivenessData() {
             mVoiceIt2.getInitialLivenessData(mUserId, mContentLanguage, "verification", new JsonHttpResponseHandler() {
                 @Override
@@ -173,7 +183,13 @@
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, final JSONObject errorResponse) {
-                    exitViewWithMessage("voiceit-failure","Error Getting Liveness Challenge");
+                    handleError();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    handleError();
                 }
             });
         }
@@ -247,6 +263,7 @@
         }
 
         private void startVerificationFlow() {
+            mOverlay.updateDisplayText(getString(R.string.WAIT));
             // get Live-nes Challenges and time
             if(mDoLivenessCheck) {
                 getLivenessData();
@@ -376,7 +393,6 @@
             intent.putExtra("Response", json.toString());
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
             finish();
-            overridePendingTransition(0, 0);
         }
 
         private void exitViewWithJSON(String action, JSONObject json) {
@@ -388,7 +404,6 @@
             intent.putExtra("Response", json.toString());
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
             finish();
-            overridePendingTransition(0, 0);
         }
 
         @Override
@@ -450,6 +465,7 @@
             super.onDestroy();
             if (mCameraSource != null) {
                 mCameraSource.release();
+                mCameraSource=null;
             }
         }
 

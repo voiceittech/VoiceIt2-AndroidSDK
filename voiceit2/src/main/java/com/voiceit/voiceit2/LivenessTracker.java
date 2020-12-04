@@ -285,8 +285,8 @@ class LivenessTracker extends Tracker<Face> {
         mCameraSource.getCameraInstance().unlock();
         mRecorder = new MediaRecorder();
         mRecorder.setCamera(mCameraSource.getCameraInstance());
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_480P));
         mRecorder.setOutputFile(mActivity.getFilesDir() + "/" + File.separator + "video.mp4");
         mRecorder.setPreviewDisplay(mPreview.getSurfaceHolder().getSurface());
@@ -330,7 +330,6 @@ class LivenessTracker extends Tracker<Face> {
     }
 
     private void performLivenessTest() {
-
         //start recording
         try {
             startRecording();
@@ -402,9 +401,14 @@ class LivenessTracker extends Tracker<Face> {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     super.onFailure(statusCode, headers, throwable, errorResponse);
-                    exitViewWithMessage("voiceit-failure","Response Failure");
+                    handleError();
                 }
 
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    handleError();
+                }
             },mLcoId);
 
         } if(mScreenType.equals("video_verification")) {
@@ -422,6 +426,16 @@ class LivenessTracker extends Tracker<Face> {
                 }
             }, mLcoId);
         }
+    }
+
+    private void handleError(){
+        mOverlay.updateDisplayText("Server error please try again.");
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                exitViewWithMessage("voiceit-failure","Response Failure");
+            }
+        }, 3000);
     }
 
     private void exitViewWithMessage(String action, String message){
@@ -461,13 +475,15 @@ class LivenessTracker extends Tracker<Face> {
 
             if(!success && retry){
                 playLivenessPrompt(audioString);
+                mOverlay.updateDisplayText(uiMessage);
                 updateDisplayText(uiMessage, true);
                 prepareForVideoRecording();
                 performLivenessTest();
             }
 
             if(!success && !retry){
-                updateDisplayText(uiMessage, true);
+                releaseMediaRecorder();
+                mOverlay.updateDisplayText(uiMessage);
                 playLivenessPrompt(audioString);
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
@@ -483,7 +499,8 @@ class LivenessTracker extends Tracker<Face> {
             }
 
             if(success){
-                updateDisplayText(uiMessage, true);
+                releaseMediaRecorder();
+                mOverlay.updateDisplayText(uiMessage);
                 playLivenessPrompt(audioString);
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
