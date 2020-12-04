@@ -197,7 +197,7 @@ class LivenessTracker extends Tracker<Face> {
                         LivenessTracker.continueDetecting = false;
                         LivenessTracker.livenessChallengeFails = 0;
 
-                        updateDisplayText(mActivity.getString(R.string.WAIT), false);
+                        mOverlay.updateDisplayText(mActivity.getString(R.string.WAIT));
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -258,7 +258,7 @@ class LivenessTracker extends Tracker<Face> {
     }
 
     private void beginChallenge() {
-        updateDisplayText(mLcoStrings.get(0), true);
+        mOverlay.updateDisplayText(mLcoStrings.get(0));
         illuminateCircles(mLco.get(0).toLowerCase());
         playLivenessPrompt(mLco.get(0).toLowerCase());
         long time = (long) mChallengeTime / mLco.size();
@@ -269,7 +269,7 @@ class LivenessTracker extends Tracker<Face> {
                 @Override
                 public void run() {
                     playLivenessPrompt(mLco.get(finalI).toLowerCase());
-                    updateDisplayText(challenge, true);
+                    mOverlay.updateDisplayText(challenge);
                     illuminateCircles(mLco.get(finalI).toLowerCase());
                 }
             }, time * 1000);
@@ -350,7 +350,7 @@ class LivenessTracker extends Tracker<Face> {
                         @Override
                         public void run() {
                             stopRecording();
-                            updateDisplayText("Please Wait...", true);
+                            mOverlay.updateDisplayText("Please Wait...");
                             setProgressCircleAngle(0.0,360.0);
                             sendVideoFile();
                         }
@@ -369,14 +369,14 @@ class LivenessTracker extends Tracker<Face> {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            updateDisplayText(mActivity.getString(R.string.SAY_PASSPHRASE, mPhrase), true);
+                            updateDisplayText(mActivity.getString(R.string.SAY_PASSPHRASE, mPhrase), false);
                             setProgressCircleColor(R.color.progressCircle);
                             mOverlay.startDrawingProgressCircle();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     stopRecording();
-                                    updateDisplayText("Please Wait...", true);
+                                    mOverlay.updateDisplayText("Please Wait...");
                                     sendVideoFile();
                                 }
                             }, 5000);
@@ -422,7 +422,13 @@ class LivenessTracker extends Tracker<Face> {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     super.onFailure(statusCode, headers, throwable, errorResponse);
-                    exitViewWithMessage("voiceit-failure","Response Failure");
+                    handleError();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    handleError();
                 }
             }, mLcoId);
         }
