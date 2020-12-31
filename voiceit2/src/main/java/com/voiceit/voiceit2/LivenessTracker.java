@@ -56,7 +56,7 @@ class LivenessTracker extends Tracker<Face> {
     private String mLcoId;
     private String mUiLivenessInstruction;
     private float mChallengeTime;
-    private String mCountryCode;
+    private String contentLanguage;
     private String mScreenType;
     private String mUserId;
     private String mPhrase;
@@ -74,7 +74,7 @@ class LivenessTracker extends Tracker<Face> {
                     boolean doLivenessCheck, boolean doLivenessAudioCheck, CameraSourcePreview preview, String phrase,
                     int livenessChallengeFailsAllowed, int livenessChallengesNeeded, String livenessInstruction,
                     String userId, List<String> lcoStrings, List<String> lco, float challengeTime, boolean livenessSuccess,
-                    String lcoId, String countryCode, String screenType, CameraSource cameraSource, MediaRecorder recorder) {
+                    String lcoId, String contentLanguage, String screenType, CameraSource cameraSource, MediaRecorder recorder) {
         mOverlay = overlay;
         mActivity = activity;
         mCallbacks = callbacks;
@@ -89,7 +89,7 @@ class LivenessTracker extends Tracker<Face> {
         mLcoStrings = lcoStrings;
         mLcoId = lcoId;
         mUiLivenessInstruction = livenessInstruction;
-        mCountryCode = countryCode;
+        contentLanguage = contentLanguage;
         mScreenType = screenType;
         mPhrase = phrase;
         mCameraSource = cameraSource;
@@ -142,7 +142,7 @@ class LivenessTracker extends Tracker<Face> {
                     if (mediaPlayer.isPlaying()) {
                         mediaPlayer.stop();
                     }
-                    if (mCountryCode == "es-ES") {
+                    if (contentLanguage == "es-ES") {
                         int resId = mActivity.getApplicationContext().getResources().getIdentifier(
                                 livenessPrompt + "_es",
                                 "raw",
@@ -392,7 +392,7 @@ class LivenessTracker extends Tracker<Face> {
 
     private void sendVideoFile() {
         if(mScreenType.equals("face_verification")) {
-            mVoiceItAPI2.faceVerification(mUserId, mCountryCode, file, new JsonHttpResponseHandler(){
+            mVoiceItAPI2.faceVerification(mUserId, contentLanguage, file, new JsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);
@@ -413,7 +413,7 @@ class LivenessTracker extends Tracker<Face> {
             },mLcoId);
 
         } if(mScreenType.equals("video_verification")) {
-            mVoiceItAPI2.videoVerification(mUserId, mCountryCode, mPhrase, file, new JsonHttpResponseHandler(){
+            mVoiceItAPI2.videoVerification(mUserId, contentLanguage, mPhrase, file, new JsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     super.onSuccess(statusCode, headers, response);

@@ -30,7 +30,7 @@ public class VoiceItAPI2 {
 
     private final String mTAG = "VoiceItAPI2";
     private String BASE_URL = "https://api.voiceit.io";
-    private String LIVENESS_URL = "https://liveness.voiceit.io";
+    private String LIVENESS_URL = "https://liveness.voiceit.io/v1";
 
     public boolean mDisplayPreviewFrame = false;
 
@@ -73,12 +73,12 @@ public class VoiceItAPI2 {
         client.get(getAbsoluteUrl("/phrases/" + contentLanguage), responseHandler);
     }
 
-    public void getInitialLivenessData(String userID, String countryCode, String pageCategory, AsyncHttpResponseHandler responseHandler ) {
+    public void getInitialLivenessData(String userID, String contentLanguage, String pageCategory, AsyncHttpResponseHandler responseHandler ) {
         if(!userIdFormatted(userID)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteLivenessUrl("/"+pageCategory+"/"+userID+"/"+countryCode), responseHandler);
+        client.get(getAbsoluteLivenessUrl("/"+pageCategory+"/"+userID+"/"+contentLanguage), responseHandler);
     }
 
     public void getAllUsers(AsyncHttpResponseHandler responseHandler) {
@@ -994,11 +994,11 @@ public class VoiceItAPI2 {
         requestWritePermission(activity);
     }
 
-    public void encapsulatedFaceVerification(Activity activity, String userId, String countryCode, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedFaceVerification(activity, userId, countryCode, doLivenessCheck, doLivenessAudioCheck, 0, 2, responseHandler);
+    public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
+        encapsulatedFaceVerification(activity, userId, contentLanguage, doLivenessCheck, doLivenessAudioCheck, 0, 2, responseHandler);
     }
 
-    public void encapsulatedFaceVerification(Activity activity, String userId, String countryCode, boolean doLivenessCheck, boolean doLivenessAudioCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
@@ -1009,7 +1009,7 @@ public class VoiceItAPI2 {
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userId", userId);
-        bundle.putString("contentLanguage", countryCode);
+        bundle.putString("contentLanguage", contentLanguage);
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
         bundle.putBoolean("doLivenessAudioCheck", doLivenessAudioCheck);
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
