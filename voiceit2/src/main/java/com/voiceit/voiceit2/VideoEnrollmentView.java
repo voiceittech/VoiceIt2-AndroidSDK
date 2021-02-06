@@ -84,10 +84,10 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
             Log.d(mTAG,"Cannot hide action bar");
         }
 
-        // Set screen brightness to full
-        if(!Utils.setBrightness(this, 255)){
-            exitViewWithMessage("voiceit-failure","Hardware Permissions not granted");
-        }
+        // // Set screen brightness to full
+        // if(!Utils.setBrightness(this, 255)){
+        //     exitViewWithMessage("voiceit-failure","Hardware Permissions not granted");
+        // }
 
         // Set context
         mContext = this;

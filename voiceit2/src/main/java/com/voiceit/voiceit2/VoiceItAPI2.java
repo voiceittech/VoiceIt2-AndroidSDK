@@ -909,7 +909,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
@@ -940,7 +940,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     public void encapsulatedVideoIdentification(Activity activity, String groupId, String contentLanguage, String phrase, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
@@ -970,7 +970,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     public void encapsulatedFaceEnrollment(Activity activity, String userId, final JsonHttpResponseHandler responseHandler) {
@@ -991,7 +991,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
@@ -1021,7 +1021,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     public void encapsulatedFaceIdentification(Activity activity, String groupId, boolean doLivenessCheck, final JsonHttpResponseHandler responseHandler) {
@@ -1049,7 +1049,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     private void broadcastMessageHandler(final Activity activity, final JsonHttpResponseHandler responseHandler) {
@@ -1082,16 +1082,16 @@ public class VoiceItAPI2 {
         LocalBroadcastManager.getInstance(activity).registerReceiver(mMessageReceiver, intentFilter);
     }
 
-    private void requestWritePermission(Activity activity) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.System.canWrite(activity)) {
-                Toast.makeText(activity, activity.getString(R.string.GRANT_WRITE_PERMISSON), Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                intent.setData(Uri.parse("package:" + activity.getPackageName()));
-                activity.startActivity(intent);
-            }
-        }
-    }
+    // private void requestWritePermission(Activity activity) {
+    //     if (Build.VERSION.SDK_INT >= 23) {
+    //         if (!Settings.System.canWrite(activity)) {
+    //             Toast.makeText(activity, activity.getString(R.string.GRANT_WRITE_PERMISSON), Toast.LENGTH_LONG).show();
+    //             Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+    //             intent.setData(Uri.parse("package:" + activity.getPackageName()));
+    //             activity.startActivity(intent);
+    //         }
+    //     }
+    // }
 
     private boolean userIdFormatted(String arg) {
         String id = arg.substring(arg.lastIndexOf('_') + 1);

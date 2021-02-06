@@ -65,7 +65,7 @@
 
     <string name="CHECK_INTERNET">Unable to contact server.\nPlease check your internet connection.</string>
 
-    <string name="GRANT_WRITE_PERMISSON">"Grant permission for screen brightness"</string>
+    <!-- <string name="GRANT_WRITE_PERMISSON">"Grant permission for screen brightness"</string> -->
 
     <string name="CONTINUE">Continue</string>
 
