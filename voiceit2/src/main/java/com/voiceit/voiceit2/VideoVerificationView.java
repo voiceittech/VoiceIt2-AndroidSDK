@@ -54,6 +54,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 
     private boolean playInstructionalVideo;
 
+    boolean playLivenessTutorial = true;
     private VoiceItAPI2 mVoiceIt2;
     private String mUserId = "";
     private String mContentLanguage = "";
@@ -145,6 +146,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
             mUserId = bundle.getString("userId");
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
+            playLivenessTutorial = bundle.getBoolean("livenessTutorial");
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
             mDoLivenessAudioCheck = bundle.getBoolean("doLivenessAudioCheck");
             livenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
@@ -198,7 +200,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = sharedPref.edit();
-        playInstructionalVideo = sharedPref.getBoolean("playInstructionalVideo", true);
+        playInstructionalVideo = this.playLivenessTutorial && sharedPref.getBoolean("playInstructionalVideo", true);
         if(playInstructionalVideo && mDoLivenessCheck) {
             prefEditor.putBoolean("playInstructionalVideo", false);
             prefEditor.apply();

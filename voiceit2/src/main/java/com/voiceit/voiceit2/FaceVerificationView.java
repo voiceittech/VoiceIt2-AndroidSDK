@@ -56,6 +56,7 @@
 
         private VoiceItAPI2 mVoiceIt2;
         private String mUserId = "";
+        boolean playLivenessTutorial = true;
         private boolean mDoLivenessCheck = false;
         private boolean mDoLivenessAudioCheck = false;
         private int mLivenessChallengeFailsAllowed;
@@ -91,6 +92,7 @@
             if (bundle != null) {
                 mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
                 mUserId = bundle.getString("userId");
+                playLivenessTutorial = bundle.getBoolean("livenessTutorial");
                 mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
                 mDoLivenessAudioCheck = bundle.getBoolean("doLivenessAudioCheck");
                 mContentLanguage = bundle.getString("contentLanguage");
@@ -136,7 +138,7 @@
 
             SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor prefEditor = sharedPref.edit();
-            playInstructionalVideo = sharedPref.getBoolean("playInstructionalVideo", true);
+            playInstructionalVideo = this.playLivenessTutorial && sharedPref.getBoolean("playInstructionalVideo", true);
             if (playInstructionalVideo && mDoLivenessCheck) {
                 prefEditor.putBoolean("playInstructionalVideo", false);
                 prefEditor.apply();

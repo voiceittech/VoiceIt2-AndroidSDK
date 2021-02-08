@@ -913,10 +913,14 @@ public class VoiceItAPI2 {
     }
 
     public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedVideoVerification(doLivenessAudioCheck,activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2, responseHandler);
+        encapsulatedVideoVerification(doLivenessAudioCheck,activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2,true, responseHandler);
     }
 
-    public void encapsulatedVideoVerification(boolean doLivenessAudioCheck, Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, boolean doLivenessAudioCheck, boolean livenessTutorial, final JsonHttpResponseHandler responseHandler) {
+        encapsulatedVideoVerification(doLivenessAudioCheck,activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2,livenessTutorial, responseHandler);
+    }
+
+    public void encapsulatedVideoVerification(boolean doLivenessAudioCheck, Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded,boolean livenessTutorial, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
@@ -934,6 +938,7 @@ public class VoiceItAPI2 {
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         bundle.putBoolean("doLivenessAudioCheck",doLivenessAudioCheck);
+        bundle.putBoolean("livenessTutorial",livenessTutorial);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);
@@ -995,10 +1000,14 @@ public class VoiceItAPI2 {
     }
 
     public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedFaceVerification(activity, userId, contentLanguage, doLivenessCheck, doLivenessAudioCheck, 0, 2, responseHandler);
+        encapsulatedFaceVerification(activity, userId, contentLanguage, doLivenessCheck, doLivenessAudioCheck, true, 0, 2, responseHandler);
     }
 
-    public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, boolean playLivenessTutorial, final JsonHttpResponseHandler responseHandler) {
+        encapsulatedFaceVerification(activity, userId, contentLanguage, doLivenessCheck, doLivenessAudioCheck, playLivenessTutorial, 0, 2, responseHandler);
+    }
+
+    public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, boolean playLivenessTutorial, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
@@ -1015,6 +1024,7 @@ public class VoiceItAPI2 {
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
+        bundle.putBoolean("livenessTutorial", playLivenessTutorial);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);
