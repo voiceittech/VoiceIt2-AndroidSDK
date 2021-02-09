@@ -37,8 +37,14 @@ Sign up for a free Developer Account at <a href="https://voiceit.io/signup" targ
 <img src="./Graphics/getcredentials.png" alt="API Key and Token" width="400px" />
 
 ## Requirements
-
+#### SDK Version
+The minumum Android SDK version (API level) should be set to 17 in your build.gradle file: 
+```
 minSdkVersion: 17
+```
+
+#### Billing 
+In order to use en-US or other content languages you need to have a developer account that has funds. In order to add funds to your account please login at: https://voiceit.io/login and navigate to: https://voiceit.io/billing and add funds.
 
 ## Installation
 
