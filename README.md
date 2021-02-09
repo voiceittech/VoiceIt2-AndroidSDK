@@ -144,6 +144,12 @@ Verify user with given userId(begins with 'usr_'), and a boolean to enable liven
 myVoiceIt.encapsulatedFaceVerification(Activity, "USER_ID_HERE", true, new JsonHttpResponseHandler() {...});
 ```
 
+with optional boolean to disable or enable liveness tutorial: 
+
+```
+myVoiceIt.encapsulatedFaceVerification(Activity, "USER_ID_HERE", true, true, new JsonHttpResponseHandler() {...});
+```
+
 #### Encapsulated Face Identification
 
 Identify user from given groupId(begins with 'grp_'), and a boolean to enable liveness detection.
@@ -166,6 +172,11 @@ Verify user with given userId(begins with 'usr_'), contentLanguage('en-US','es-E
 
 ```java
 myVoiceIt.encapsulatedVideoVerification(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", true, new JsonHttpResponseHandler() {...});
+```
+With optional boolean to enable or disable liveness tutorial: 
+
+```java
+myVoiceIt.encapsulatedVideoVerification(Activity, "USER_ID_HERE", "CONTENT_LANGUAGE_HERE", "PHRASE_HERE", true, true, new JsonHttpResponseHandler() {...});
 ```
 
 #### Encapsulated Video Identification
