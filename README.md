@@ -7,6 +7,7 @@ A fully comprehensive SDK that gives you access to VoiceIt's API 2.0 featuring V
 * [Getting Started](#getting-started)
 * [Requirements](#requirements)
 * [Installation](#installation)
+* [Local Installation](#local-installation)
 * [API Calls](#api-calls)
   * [Initialization](#initialization)
   * [Liveness Detection](#liveness-detection)
@@ -52,6 +53,13 @@ Make sure you review your Voiceprint Phrases by navigating to: https://voiceit.i
 ## Installation
 
 VoiceItApi2AndroidSDK is available through [JitPack](https://jitpack.io/#voiceittech/VoiceItApi2AndroidSDK/).
+
+## Local Installation
+<ul>
+ <li> Clone the repo
+ <li> Open your android project in android studio, and navigate to File -> New -> Import Module
+ <li> Select the Android SDK repo that you just cloned. Check off the app module, only include the voiceit2 module
+</ul>
 
 ## API Calls
 
