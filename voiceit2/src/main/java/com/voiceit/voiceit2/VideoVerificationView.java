@@ -146,6 +146,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
             mUserId = bundle.getString("userId");
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
+            mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             playLivenessTutorial = bundle.getBoolean("livenessTutorial");
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
             mDoLivenessAudioCheck = bundle.getBoolean("doLivenessAudioCheck");

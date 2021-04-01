@@ -67,6 +67,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
         if(bundle != null) {
             mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
             mUserId = bundle.getString("userId");
+            mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
         }
 

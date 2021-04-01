@@ -58,6 +58,7 @@ public class VoiceIdentificationView extends AppCompatActivity {
         if(bundle != null) {
             mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
             mGroupId = bundle.getString("groupId");
+            mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
         }

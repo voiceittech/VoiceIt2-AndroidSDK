@@ -91,6 +91,7 @@
             Bundle bundle = getIntent().getExtras();
             if (bundle != null) {
                 mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
+                mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
                 mUserId = bundle.getString("userId");
                 playLivenessTutorial = bundle.getBoolean("livenessTutorial");
                 mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
@@ -291,6 +292,7 @@
                 }
             });
         }
+
 
 
         /**

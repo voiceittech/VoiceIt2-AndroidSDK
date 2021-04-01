@@ -27,6 +27,7 @@ public class VoiceItAPI2 {
     private final AsyncHttpClient client;
     private final String apiKey;
     private final String apiToken;
+    private String notificationURL;
 
     private final String mTAG = "VoiceItAPI2";
     private String BASE_URL = "https://api.voiceit.io";
@@ -70,7 +71,11 @@ public class VoiceItAPI2 {
     }
 
     public void getPhrases(String contentLanguage, AsyncHttpResponseHandler responseHandler) {
-        client.get(getAbsoluteUrl("/phrases/" + contentLanguage), responseHandler);
+        client.get(getAbsoluteUrl("/phrases/" + contentLanguage + "?notificationURL=" + this.notificationURL), responseHandler);
+    }
+
+    public void setNotificationURL(String notificationUrl) {
+        this.notificationURL = notificationUrl;
     }
 
     public void getInitialLivenessData(String userID, String contentLanguage, String pageCategory, AsyncHttpResponseHandler responseHandler ) {
@@ -78,15 +83,19 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteLivenessUrl("/"+pageCategory+"/"+userID+"/"+contentLanguage), responseHandler);
+        client.get(getAbsoluteLivenessUrl("/"+pageCategory+"/"+userID+"/"+contentLanguage + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void getAllUsers(AsyncHttpResponseHandler responseHandler) {
-        client.get(getAbsoluteUrl("/users"), responseHandler);
+        RequestParams params = new RequestParams();
+
+        client.get(getAbsoluteUrl("/users" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createUser(AsyncHttpResponseHandler responseHandler) {
-        client.post(getAbsoluteUrl("/users"), responseHandler);
+        RequestParams params = new RequestParams();
+
+        client.post(getAbsoluteUrl("/users" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void checkUserExists(String userId, AsyncHttpResponseHandler responseHandler) {
@@ -94,7 +103,7 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteUrl("/users/" + userId), responseHandler);
+        client.get(getAbsoluteUrl("/users/" + userId + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void deleteUser(String userId, AsyncHttpResponseHandler responseHandler) {
@@ -102,7 +111,8 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.delete(getAbsoluteUrl("/users/" + userId), responseHandler);
+
+        client.delete(getAbsoluteUrl("/users/" + userId + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void getGroupsForUser(String userId, AsyncHttpResponseHandler responseHandler) {
@@ -110,7 +120,7 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteUrl("/users/" + userId + "/groups"), responseHandler);
+        client.get(getAbsoluteUrl("/users/" + userId + "/groups" + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void deleteAllEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
@@ -118,7 +128,8 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.delete(getAbsoluteUrl("/enrollments/" + userId + "/all"), responseHandler);
+
+        client.delete(getAbsoluteUrl("/enrollments/" + userId + "/all" + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void getAllVoiceEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
@@ -126,7 +137,7 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteUrl("/enrollments/voice/" + userId), responseHandler);
+        client.get(getAbsoluteUrl("/enrollments/voice/" + userId + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void getAllFaceEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
@@ -134,7 +145,10 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteUrl("/enrollments/face/" + userId), responseHandler);
+        RequestParams params = new RequestParams();
+        params.put("notificationURL", this.notificationURL);
+
+        client.get(getAbsoluteUrl("/enrollments/face/" + userId + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void getAllVideoEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
@@ -142,7 +156,7 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteUrl("/enrollments/video/" + userId), responseHandler);
+        client.get(getAbsoluteUrl("/enrollments/video/" + userId + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void processLivenessFace(String userId,  String phrase, String videoPath, String lcoId,  AsyncHttpResponseHandler responseHandler) {
@@ -157,6 +171,7 @@ public class VoiceItAPI2 {
         RequestParams params = new RequestParams();
         params.put("userId", userId);
         params.put("lcoId", lcoId);
+
         try {
             params.put("file", video);
         } catch (FileNotFoundException e) {
@@ -165,7 +180,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteLivenessUrl("/face"), params, responseHandler);
+        client.post(getAbsoluteLivenessUrl("/face" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void processLivenessVideo(String userId,  String phrase, String videoPath, String lcoId,  AsyncHttpResponseHandler responseHandler) {
@@ -181,6 +196,7 @@ public class VoiceItAPI2 {
         params.put("userId", userId);
         params.put("lcoId", lcoId);
         params.put("phrase", phrase);
+
         try {
             params.put("file", video);
         } catch (FileNotFoundException e) {
@@ -189,7 +205,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteLivenessUrl("/video"), params, responseHandler);
+        client.post(getAbsoluteLivenessUrl("/video" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createVoiceEnrollment(String userId, String contentLanguage, String phrase, String recordingPath, AsyncHttpResponseHandler responseHandler) {
@@ -205,6 +221,7 @@ public class VoiceItAPI2 {
         params.put("userId", userId);
         params.put("contentLanguage", contentLanguage);
         params.put("phrase", phrase);
+
         try {
             params.put("recording", recording);
         } catch (FileNotFoundException e) {
@@ -213,7 +230,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/enrollments/voice"), params, responseHandler);
+        client.post(getAbsoluteUrl("/enrollments/voice" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createVoiceEnrollment(final String userId, final String contentLanguage, final String phrase, final AsyncHttpResponseHandler responseHandler) {
@@ -252,7 +269,7 @@ public class VoiceItAPI2 {
         params.put("phrase", phrase);
         params.put("fileUrl", fileUrl);
 
-        client.post(getAbsoluteUrl("/enrollments/voice/byUrl"), params, responseHandler);
+        client.post(getAbsoluteUrl("/enrollments/voice/byUrl" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createFaceEnrollment(String userId, String videoPath, AsyncHttpResponseHandler responseHandler) {
@@ -266,6 +283,7 @@ public class VoiceItAPI2 {
         }
         RequestParams params = new RequestParams();
         params.put("userId", userId);
+
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
@@ -274,7 +292,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
+        client.post(getAbsoluteUrl("/enrollments/face" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createFaceEnrollmentWithPhoto(String userId, String photoPath, AsyncHttpResponseHandler responseHandler) {
@@ -288,6 +306,7 @@ public class VoiceItAPI2 {
         }
         RequestParams params = new RequestParams();
         params.put("userId", userId);
+
         try {
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
@@ -296,7 +315,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/enrollments/face"), params, responseHandler);
+        client.post(getAbsoluteUrl("/enrollments/face" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createFaceEnrollmentByUrl(String userId, String fileUrl, AsyncHttpResponseHandler responseHandler) {
@@ -308,7 +327,7 @@ public class VoiceItAPI2 {
         params.put("userId", userId);
         params.put("fileUrl", fileUrl);
 
-        client.post(getAbsoluteUrl("/enrollments/face/byUrl"), params, responseHandler);
+        client.post(getAbsoluteUrl("/enrollments/face/byUrl" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, String phrase, File audio, File photo, AsyncHttpResponseHandler responseHandler) {
@@ -320,6 +339,7 @@ public class VoiceItAPI2 {
         params.put("userId", userId);
         params.put("contentLanguage", contentLanguage);
         params.put("phrase", phrase);
+
         try {
             params.put("audio", audio);
             params.put("photo", photo);
@@ -329,7 +349,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/enrollments/video"), params, responseHandler);
+        client.post(getAbsoluteUrl("/enrollments/video" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createVideoEnrollment(String userId, String contentLanguage, String phrase,String videoPath, AsyncHttpResponseHandler responseHandler) {
@@ -353,7 +373,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/enrollments/video"), params, responseHandler);
+        client.post(getAbsoluteUrl("/enrollments/video" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void createVideoEnrollmentByUrl(String userId, String contentLanguage, String phrase, String fileUrl, AsyncHttpResponseHandler responseHandler) {
@@ -367,12 +387,12 @@ public class VoiceItAPI2 {
         params.put("phrase", phrase);
         params.put("fileUrl", fileUrl);
 
-        client.post(getAbsoluteUrl("/enrollments/video/byUrl"), params, responseHandler);
+        client.post(getAbsoluteUrl("/enrollments/video/byUrl" + "?notificationURL=" + this.notificationURL), params, responseHandler);
 
     }
 
     public void getAllGroups(AsyncHttpResponseHandler responseHandler) {
-        client.get(getAbsoluteUrl("/groups"), responseHandler);
+        client.get(getAbsoluteUrl("/groups" + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void getGroup(String groupId, AsyncHttpResponseHandler responseHandler) {
@@ -380,7 +400,7 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteUrl("/groups/" + groupId), responseHandler);
+        client.get(getAbsoluteUrl("/groups/" + groupId + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void groupExists(String groupId, AsyncHttpResponseHandler responseHandler) {
@@ -388,13 +408,14 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.get(getAbsoluteUrl("/groups/" + groupId + "/exists"), responseHandler);
+        client.get(getAbsoluteUrl("/groups/" + groupId + "/exists" + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void createGroup(String description, AsyncHttpResponseHandler responseHandler) {
         RequestParams params = new RequestParams();
         params.put("description", description);
-        client.post(getAbsoluteUrl("/groups"), params, responseHandler);
+
+        client.post(getAbsoluteUrl("/groups" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void addUserToGroup(String groupId, String userId, AsyncHttpResponseHandler responseHandler) {
@@ -405,7 +426,8 @@ public class VoiceItAPI2 {
         RequestParams params = new RequestParams();
         params.put("groupId", groupId);
         params.put("userId", userId);
-        client.put(getAbsoluteUrl("/groups/addUser"), params, responseHandler);
+
+        client.put(getAbsoluteUrl("/groups/addUser" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void removeUserFromGroup(String groupId, String userId, AsyncHttpResponseHandler responseHandler) {
@@ -416,7 +438,8 @@ public class VoiceItAPI2 {
         RequestParams params = new RequestParams();
         params.put("groupId", groupId);
         params.put("userId", userId);
-        client.put(getAbsoluteUrl("/groups/removeUser"), params, responseHandler);
+
+        client.put(getAbsoluteUrl("/groups/removeUser" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void deleteGroup(String groupId, AsyncHttpResponseHandler responseHandler) {
@@ -424,7 +447,7 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.delete(getAbsoluteUrl("/groups/" + groupId), responseHandler);
+        client.delete(getAbsoluteUrl("/groups/" + groupId + "?notificationURL=" + this.notificationURL), responseHandler);
     }
 
     public void voiceVerification(String userId, String contentLanguage, String phrase, String recordingPath, AsyncHttpResponseHandler responseHandler) {
@@ -440,6 +463,7 @@ public class VoiceItAPI2 {
         params.put("userId", userId);
         params.put("contentLanguage", contentLanguage);
         params.put("phrase", phrase);
+
         try {
             params.put("recording", recording);
         } catch (FileNotFoundException e) {
@@ -447,7 +471,7 @@ public class VoiceItAPI2 {
             responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
             return;
         }
-        client.post(getAbsoluteUrl("/verification/voice"), params, responseHandler);
+        client.post(getAbsoluteUrl("/verification/voice" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void voiceVerification(final String userId, final String contentLanguage, final String phrase, final AsyncHttpResponseHandler responseHandler) {
@@ -486,7 +510,7 @@ public class VoiceItAPI2 {
         params.put("phrase", phrase);
         params.put("fileUrl", fileUrl);
 
-        client.post(getAbsoluteUrl("/verification/voice/byUrl"), params, responseHandler);
+        client.post(getAbsoluteUrl("/verification/voice/byUrl" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void faceVerification(String userId, String videoPath, AsyncHttpResponseHandler responseHandler) {
@@ -502,6 +526,7 @@ public class VoiceItAPI2 {
         params.put("userId", userId);
         params.put("lcoId", lcoId);
         params.put("contentLanguage", contentLanguage);
+
         try {
             params.put("file", video);
         } catch (FileNotFoundException e) {
@@ -510,7 +535,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteLivenessUrl("/verification/face"), params, responseHandler);
+        client.post(getAbsoluteLivenessUrl("/verification/face" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void faceVerification(String userId, File video, AsyncHttpResponseHandler responseHandler) {
@@ -520,6 +545,7 @@ public class VoiceItAPI2 {
         }
         RequestParams params = new RequestParams();
         params.put("userId", userId);
+
         try {
             params.put("video", video);
         } catch (FileNotFoundException e) {
@@ -528,7 +554,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
+        client.post(getAbsoluteUrl("/verification/face" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
 
@@ -543,6 +569,7 @@ public class VoiceItAPI2 {
         }
         RequestParams params = new RequestParams();
         params.put("userId", userId);
+
         try {
             params.put("photo", photo);
         } catch (FileNotFoundException e) {
@@ -551,7 +578,8 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/verification/face"), params, responseHandler);
+
+        client.post(getAbsoluteUrl("/verification/face" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void faceVerificationByUrl(String userId, String fileUrl, AsyncHttpResponseHandler responseHandler) {
@@ -563,7 +591,7 @@ public class VoiceItAPI2 {
         params.put("userId", userId);
         params.put("fileUrl", fileUrl);
 
-        client.post(getAbsoluteUrl("/verification/face/byUrl"), params, responseHandler);
+        client.post(getAbsoluteUrl("/verification/face/byUrl" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void videoVerification(String userId, String contentLanguage, String phrase, String videoPath, AsyncHttpResponseHandler responseHandler) {
@@ -587,7 +615,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
+        client.post(getAbsoluteUrl("/verification/video" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void videoVerification(String userId, String contentLanguage, String phrase, File video, AsyncHttpResponseHandler responseHandler, String lcoId) {
@@ -608,7 +636,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        String url = getAbsoluteLivenessUrl("/verification/video");
+        String url = getAbsoluteLivenessUrl("/verification/video"+ "?notificationURL=" + this.notificationURL);
         client.post(url, params, responseHandler);
     }
 
@@ -630,7 +658,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/verification/video"), params, responseHandler);
+        client.post(getAbsoluteUrl("/verification/video" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void videoVerificationByUrl(String userId, String contentLanguage, String phrase, String fileUrl, AsyncHttpResponseHandler responseHandler) {
@@ -644,7 +672,7 @@ public class VoiceItAPI2 {
         params.put("phrase", phrase);
         params.put("fileUrl", fileUrl);
 
-        client.post(getAbsoluteUrl("/verification/video/byUrl"), params, responseHandler);
+        client.post(getAbsoluteUrl("/verification/video/byUrl" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void voiceIdentification(String groupId, String contentLanguage, String phrase, String recordingPath, AsyncHttpResponseHandler responseHandler) {
@@ -668,7 +696,7 @@ public class VoiceItAPI2 {
             return;
         }
 
-        client.post(getAbsoluteUrl("/identification/voice"), params, responseHandler);
+        client.post(getAbsoluteUrl("/identification/voice" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void voiceIdentification(final String groupId, final String contentLanguage, final String phrase, final AsyncHttpResponseHandler responseHandler) {
@@ -707,7 +735,7 @@ public class VoiceItAPI2 {
         params.put("phrase", phrase);
         params.put("fileUrl", fileUrl);
 
-        client.post(getAbsoluteUrl("/identification/voice/byUrl"), params, responseHandler);
+        client.post(getAbsoluteUrl("/identification/voice/byUrl" + "?notificationURL=" + this.notificationURL), params, responseHandler);
     }
 
     public void encapsulatedVoiceEnrollment(Activity activity, String userId, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
@@ -723,6 +751,7 @@ public class VoiceItAPI2 {
         bundle.putString("userId", userId);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
+        bundle.putString("notificationURL", this.notificationURL);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);
@@ -741,6 +770,7 @@ public class VoiceItAPI2 {
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userId", userId);
+        bundle.putString("notificationURL", this.notificationURL);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
         intent.putExtras(bundle);
@@ -760,6 +790,7 @@ public class VoiceItAPI2 {
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
+        bundle.putString("notificationURL", this.notificationURL);
         bundle.putString("groupId", groupId);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
@@ -781,6 +812,7 @@ public class VoiceItAPI2 {
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userId", userId);
+        bundle.putString("notificationURL", this.notificationURL);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
@@ -814,6 +846,7 @@ public class VoiceItAPI2 {
         bundle.putString("userId", userId);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
+        bundle.putString("notificationURL", this.notificationURL);
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
@@ -839,6 +872,7 @@ public class VoiceItAPI2 {
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
+        bundle.putString("notificationURL", this.notificationURL);
         bundle.putString("userId", userId);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         intent.putExtras(bundle);
@@ -869,6 +903,7 @@ public class VoiceItAPI2 {
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userId", userId);
+        bundle.putString("notificationURL", this.notificationURL);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putBoolean("doLivenessCheck", doLivenessCheck);
         bundle.putBoolean("doLivenessAudioCheck", doLivenessAudioCheck);

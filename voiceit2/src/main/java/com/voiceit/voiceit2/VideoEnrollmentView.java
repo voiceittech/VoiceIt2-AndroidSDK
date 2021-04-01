@@ -74,6 +74,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
             mUserId = bundle.getString("userId");
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
+            mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
         }
 

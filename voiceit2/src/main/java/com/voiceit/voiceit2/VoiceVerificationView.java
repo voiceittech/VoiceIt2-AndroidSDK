@@ -57,6 +57,7 @@ public class VoiceVerificationView extends AppCompatActivity {
         if(bundle != null) {
             mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
             mUserId = bundle.getString("userId");
+            mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
         }
