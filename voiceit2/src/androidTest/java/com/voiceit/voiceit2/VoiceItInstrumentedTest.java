@@ -256,12 +256,6 @@ public class VoiceItInstrumentedTest {
         after("videoVerification");
 
         before();
-        myVoiceIt.videoIdentification(groupId, "en-US", phrase, dir+"/videoVerificationD2.mov",
-                ResponseHandler("videoIdentification",200, "SUCC", signal));
-        after("videoIdentification");
-        assertEquals(userIds.get(0), userIds.get(2));
-
-        before();
         myVoiceIt.deleteAllEnrollments(userIds.get(0), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
         after("deleteAllVideoEnrollments");
 
@@ -350,12 +344,6 @@ public class VoiceItInstrumentedTest {
         myVoiceIt.videoVerificationByUrl(userIds.get(0), "en-US", phrase, "https://drive.voiceit.io/files/videoVerificationD1.mov",
                 ResponseHandler("videoVerificationByUrl",200, "SUCC", signal));
         after("videoVerificationByUrl");
-
-        before();
-        myVoiceIt.videoIdentificationByUrl(groupId, "en-US", phrase, "https://drive.voiceit.io/files/videoVerificationD2.mov",
-                ResponseHandler("videoIdentificationByUrl",200, "SUCC", signal));
-        after("videoIdentificationByUrl");
-        assertEquals(userIds.get(0), userIds.get(2));
 
         before();
         myVoiceIt.deleteAllEnrollments(userIds.get(0), ResponseHandler("deleteAllVideoEnrollments",200, "SUCC", signal));
@@ -454,13 +442,6 @@ public class VoiceItInstrumentedTest {
         myVoiceIt.voiceVerification(userIds.get(0), "en-US", phrase, dir+"/verificationA1.wav",
                 ResponseHandler("voiceVerification",200, "SUCC", signal));
         after("voiceVerification");
-
-
-        before();
-        myVoiceIt.voiceIdentification(groupId, "en-US", phrase, dir+"/verificationA2.wav",
-                ResponseHandler("voiceIdentification",200, "SUCC", signal));
-        after("voiceIdentification");
-        assertEquals(userIds.get(0), userIds.get(2));
 
         // Cleanup
 
@@ -660,12 +641,6 @@ public class VoiceItInstrumentedTest {
                 ResponseHandler("faceVerification",200, "SUCC", signal));
         after("faceVerification");
 
-        before();
-        myVoiceIt.faceIdentification(groupId, dir+"/videoVerificationD2.mov",
-                ResponseHandler("faceIdentification",200, "SUCC", signal));
-        after("faceIdentification");
-        assertEquals(userIds.get(0), userIds.get(2));
-
         // Cleanup
 
         before();
@@ -758,12 +733,6 @@ public class VoiceItInstrumentedTest {
         myVoiceIt.faceVerificationByUrl(userIds.get(0), "https://drive.voiceit.io/files/videoVerificationD1.mov",
                 ResponseHandler("faceVerificationByUrl",200, "SUCC", signal));
         after("faceVerificationByUrl");
-
-        before();
-        myVoiceIt.faceIdentificationByUrl(groupId, "https://drive.voiceit.io/files/videoVerificationD2.mov",
-                ResponseHandler("faceIdentificationByUrl",200, "SUCC", signal));
-        after("faceIdentificationByUrl");
-        assertEquals(userIds.get(0), userIds.get(2));
 
         // Cleanup
         before();
