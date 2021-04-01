@@ -21,6 +21,7 @@
     import android.support.v4.content.LocalBroadcastManager;
     import android.support.v7.app.AppCompatActivity;
     import android.util.Log;
+    import android.view.WindowManager;
 
     import java.io.File;
     import java.io.FileNotFoundException;
@@ -150,6 +151,8 @@
                 intent.putExtras(bundle);
                 this.startActivityForResult(intent, 0);
             }
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            Utils.setBrightness(this,255);
         }
 
         private void handleError(){

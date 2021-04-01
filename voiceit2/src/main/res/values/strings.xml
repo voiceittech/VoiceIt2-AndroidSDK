@@ -60,6 +60,7 @@
     <string name="INPP">Sorry, something went wrong.\nPlease contact app developer with error code: INPP.</string>
     <string name="ACLR">Sorry, something went wrong.\nPlease try again, or contact app developer with error code: ACLR.</string>
     <string name="CHECK_CODE">Please check your code and try again.</string>
+    <string name="GRANT_WRITE_PERMISSON">"Grant permission for screen brightness"</string>
 
     <string name="GERR">Sorry, something went wrong.\nPlease try again.</string>
 
