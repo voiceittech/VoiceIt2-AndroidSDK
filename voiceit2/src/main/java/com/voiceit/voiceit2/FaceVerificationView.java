@@ -53,7 +53,7 @@
         private RadiusOverlayView mOverlay;
         MediaRecorder recorder;
 
-        private boolean playInstructionalVideo;
+//        private boolean playInstructionalVideo;
 
         private VoiceItAPI2 mVoiceIt2;
         private String mUserId = "";
@@ -138,19 +138,19 @@
                 lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
             }
 
-            SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor prefEditor = sharedPref.edit();
-            playInstructionalVideo = this.playLivenessTutorial && sharedPref.getBoolean("playInstructionalVideo", true);
-            if (playInstructionalVideo && mDoLivenessCheck) {
-                prefEditor.putBoolean("playInstructionalVideo", false);
-                prefEditor.apply();
-
-                Intent intent = new Intent(this, InstructionalVideoView.class);
-                bundle = new Bundle();
-                bundle.putBoolean("isVideo", false);
-                intent.putExtras(bundle);
-                this.startActivityForResult(intent, 0);
-            }
+//            SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+//            SharedPreferences.Editor prefEditor = sharedPref.edit();
+//            playInstructionalVideo = this.playLivenessTutorial && sharedPref.getBoolean("playInstructionalVideo", true);
+//            if (playInstructionalVideo && mDoLivenessCheck) {
+//                prefEditor.putBoolean("playInstructionalVideo", false);
+//                prefEditor.apply();
+//
+//                Intent intent = new Intent(this, FaceVerificationView.class);
+//                bundle = new Bundle();
+//                bundle.putBoolean("isVideo", false);
+//                intent.putExtras(bundle);
+//                this.startActivityForResult(intent, 0);
+//            }
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             Utils.setBrightness(this,255);
         }
@@ -451,10 +451,8 @@
         @Override
         protected void onStart() {
             super.onStart();
-            if(!playInstructionalVideo || !mDoLivenessCheck) {
                 // Confirm permissions and start enrollment flow
                 requestHardwarePermissions();
-            }
         }
 
         @Override

@@ -53,9 +53,9 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 
     private RadiusOverlayView mOverlay;
 
-    private boolean playInstructionalVideo;
+//    private boolean playInstructionalVideo;
 
-    boolean playLivenessTutorial = true;
+//    boolean playLivenessTutorial = true;
     private VoiceItAPI2 mVoiceIt2;
     private String mUserId = "";
     private String mContentLanguage = "";
@@ -148,7 +148,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
             mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
-            playLivenessTutorial = bundle.getBoolean("livenessTutorial");
+//            playLivenessTutorial = bundle.getBoolean("livenessTutorial");
             mDoLivenessCheck = bundle.getBoolean("doLivenessCheck");
             mDoLivenessAudioCheck = bundle.getBoolean("doLivenessAudioCheck");
             livenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
@@ -200,19 +200,19 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
             lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         }
 
-        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor prefEditor = sharedPref.edit();
-        playInstructionalVideo = this.playLivenessTutorial && sharedPref.getBoolean("playInstructionalVideo", true);
-        if(playInstructionalVideo && mDoLivenessCheck) {
-            prefEditor.putBoolean("playInstructionalVideo", false);
-            prefEditor.apply();
-
-            Intent intent = new Intent(this, InstructionalVideoView.class);
-            bundle = new Bundle();
-            bundle.putBoolean("isVideo", true);
-            intent.putExtras(bundle);
-            this.startActivityForResult(intent, 0);
-        }
+//        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+//        SharedPreferences.Editor prefEditor = sharedPref.edit();
+//        playInstructionalVideo = this.playLivenessTutorial && sharedPref.getBoolean("playInstructionalVideo", true);
+//        if(playInstructionalVideo && mDoLivenessCheck) {
+//            prefEditor.putBoolean("playInstructionalVideo", false);
+//            prefEditor.apply();
+//
+//            Intent intent = new Intent(this, InstructionalVideoView.class);
+//            bundle = new Bundle();
+//            bundle.putBoolean("isVideo", true);
+//            intent.putExtras(bundle);
+//            this.startActivityForResult(intent, 0);
+//        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Utils.setBrightness(this,255);
     }
@@ -437,10 +437,10 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
     @Override
     protected void onStart() {
         super.onStart();
-        if(!playInstructionalVideo || !mDoLivenessCheck) {
+//        if(!playInstructionalVideo || !mDoLivenessCheck) {
             // Confirm permissions and start enrollment flow
             requestHardwarePermissions();
-        }
+//        }
     }
 
     @Override
