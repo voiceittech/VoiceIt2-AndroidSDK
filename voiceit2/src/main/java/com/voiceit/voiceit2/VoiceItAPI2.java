@@ -15,10 +15,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.util.JsonUtils;
 import com.loopj.android.http.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,6 +47,7 @@ public class VoiceItAPI2 {
         this.client.addHeader("platformId", "40");
         this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
     }
+
     // TODO: add a constructor that also overrides the liveness URL constant
     public VoiceItAPI2(String apiKey, String apiToken, String url) {
         this.apiKey = apiKey;
@@ -740,7 +743,17 @@ public class VoiceItAPI2 {
 
     public void encapsulatedVoiceEnrollment(Activity activity, String userId, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            int duration = Toast.LENGTH_SHORT;
+            String response = buildJSONFormatMessage().toString();
+            Toast toast = Toast.makeText(activity, "Please make sure the user id is correct", duration);
+            try {
+                JSONObject json = new JSONObject(response);
+                toast = Toast.makeText(activity, json.get("message").toString(), duration);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            responseHandler.sendFailureMessage(200, null, response.getBytes(), new Throwable());
+            toast.show();
             return;
         }
 
@@ -761,7 +774,17 @@ public class VoiceItAPI2 {
 
     public void encapsulatedVoiceVerification(Activity activity, String userId, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            int duration = Toast.LENGTH_SHORT;
+            String response = buildJSONFormatMessage().toString();
+            Toast toast = Toast.makeText(activity, "Please make sure the user id is correct", duration);
+            try {
+                JSONObject json = new JSONObject(response);
+                toast = Toast.makeText(activity, json.get("message").toString(), duration);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            responseHandler.sendFailureMessage(200, null, response.getBytes(), new Throwable());
+            toast.show();
             return;
         }
 
@@ -803,7 +826,17 @@ public class VoiceItAPI2 {
 
     public void encapsulatedVideoEnrollment(Activity activity, String userId, String contentLanguage, String phrase, final JsonHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            int duration = Toast.LENGTH_SHORT;
+            String response = buildJSONFormatMessage().toString();
+            Toast toast = Toast.makeText(activity, "Please make sure the user id is correct", duration);
+            try {
+                JSONObject json = new JSONObject(response);
+                toast = Toast.makeText(activity, json.get("message").toString(), duration);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            responseHandler.sendFailureMessage(200, null, response.getBytes(), new Throwable());
+            toast.show();
             return;
         }
 
@@ -826,16 +859,22 @@ public class VoiceItAPI2 {
     }
 
     public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedVideoVerification(doLivenessAudioCheck,activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2,true, responseHandler);
+        encapsulatedVideoVerification(doLivenessAudioCheck,activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2, responseHandler);
     }
 
-    public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, boolean doLivenessAudioCheck, boolean livenessTutorial, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedVideoVerification(doLivenessAudioCheck,activity, userId, contentLanguage, phrase, doLivenessCheck, 0, 2,livenessTutorial, responseHandler);
-    }
-
-    public void encapsulatedVideoVerification(boolean doLivenessAudioCheck, Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded,boolean livenessTutorial, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedVideoVerification(boolean doLivenessAudioCheck, Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            int duration = Toast.LENGTH_SHORT;
+            String response = buildJSONFormatMessage().toString();
+            Toast toast = Toast.makeText(activity, "Please make sure the user id is correct", duration);
+            try {
+                JSONObject json = new JSONObject(response);
+                toast = Toast.makeText(activity, json.get("message").toString(), duration);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            responseHandler.sendFailureMessage(200, null, response.getBytes(), new Throwable());
+            toast.show();
             return;
         }
 
@@ -852,7 +891,6 @@ public class VoiceItAPI2 {
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         bundle.putBoolean("doLivenessAudioCheck",doLivenessAudioCheck);
-        bundle.putBoolean("livenessTutorial",livenessTutorial);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);
@@ -864,7 +902,17 @@ public class VoiceItAPI2 {
 
     public void encapsulatedFaceEnrollment(Activity activity, String userId, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            int duration = Toast.LENGTH_SHORT;
+            String response = buildJSONFormatMessage().toString();
+            Toast toast = Toast.makeText(activity, "Please make sure the user id is correct", duration);
+            try {
+                JSONObject json = new JSONObject(response);
+                toast = Toast.makeText(activity, json.get("message").toString(), duration);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            responseHandler.sendFailureMessage(200, null, response.getBytes(), new Throwable());
+            toast.show();
             return;
         }
 
@@ -885,16 +933,22 @@ public class VoiceItAPI2 {
     }
 
     public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedFaceVerification(activity, userId, contentLanguage, doLivenessCheck, doLivenessAudioCheck, true, 0, 2, responseHandler);
+        encapsulatedFaceVerification(activity, userId, contentLanguage, doLivenessCheck, doLivenessAudioCheck, 0, 2, responseHandler);
     }
 
-    public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, boolean playLivenessTutorial, final JsonHttpResponseHandler responseHandler) {
-        encapsulatedFaceVerification(activity, userId, contentLanguage, doLivenessCheck, doLivenessAudioCheck, playLivenessTutorial, 0, 2, responseHandler);
-    }
-
-    public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, boolean playLivenessTutorial, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, int livenessChallengeFailsAllowed, int livenessChallengesNeeded, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
-            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            int duration = Toast.LENGTH_SHORT;
+            String response = buildJSONFormatMessage().toString();
+            Toast toast = Toast.makeText(activity, "Please make sure the user id is correct", duration);
+            try {
+                JSONObject json = new JSONObject(response);
+                toast = Toast.makeText(activity, json.get("message").toString(), duration);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            responseHandler.sendFailureMessage(200, null, response.getBytes(), new Throwable());
+            toast.show();
             return;
         }
 
@@ -910,7 +964,6 @@ public class VoiceItAPI2 {
         bundle.putInt("livenessChallengeFailsAllowed", livenessChallengeFailsAllowed);
         bundle.putInt("livenessChallengesNeeded", livenessChallengesNeeded);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
-        bundle.putBoolean("livenessTutorial", playLivenessTutorial);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);
