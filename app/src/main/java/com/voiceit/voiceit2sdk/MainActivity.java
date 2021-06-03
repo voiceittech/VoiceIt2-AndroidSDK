@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private int userIdIndex = 0;
     private String groupId = "GROUP_ID";
     private String phrase = "Never forget tomorrow is a new day";
-    private String contentLanguage = "en-US";
+    private String contentLanguage = "CONTENT_LANGUAGE_HERE";
     private boolean doLivenessCheck = false; // Liveness detection is not used for enrollment views
     private boolean doLivenessAudioCheck = false;
 
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         // If using user tokens, replace API_KEY below with the user token,
         // and leave the second argument as an empty string
-        myVoiceIt = new VoiceItAPI2("API_KEY","API_TOKEN");
+        myVoiceIt = new VoiceItAPI2("API_KEY_HERE","API_TOKEN_HERE");
         userIdSwitch = findViewById(R.id.switch_user);
         livenessSwitch = findViewById(R.id.switch_liveness);
         livenessAudioSwitch = findViewById(R.id.switch_liveness_audio);

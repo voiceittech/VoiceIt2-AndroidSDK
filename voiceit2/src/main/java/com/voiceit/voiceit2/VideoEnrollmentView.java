@@ -42,6 +42,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
     private CameraSourcePreview mPreview;
     private MediaRecorder mMediaRecorder = null;
     private final Handler timingHandler = new Handler();
+    private int voiceitThemeColor = 0;
 
     private final String mTAG = "VideoEnrollmentView";
     private Context mContext;
@@ -77,6 +78,11 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
             mPhrase = bundle.getString("phrase");
             mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
+            this.voiceitThemeColor = bundle.getInt("voiceitThemeColor");
+            if (this.voiceitThemeColor == 0) {
+                this.voiceitThemeColor = getResources().getColor(R.color.progressCircle);
+                // color is a valid color
+            }
         }
 
         // Hide action bar
@@ -453,7 +459,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                 mMediaRecorder = new MediaRecorder();
                 Utils.startMediaRecorder(mMediaRecorder, audioVideoFile, mCameraSource, mPreview);
 
-                mOverlay.setProgressCircleColor(getResources().getColor(R.color.progressCircle));
+                mOverlay.setProgressCircleColor(this.voiceitThemeColor);
                 mOverlay.startDrawingProgressCircle();
                 // Record for ~5 seconds, then send enrollment data
                 // 4800 to make sure recording is not over 5 seconds

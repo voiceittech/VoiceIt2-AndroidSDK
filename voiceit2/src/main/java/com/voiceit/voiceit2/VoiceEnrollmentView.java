@@ -34,6 +34,7 @@ public class VoiceEnrollmentView extends AppCompatActivity {
     private RadiusOverlayView mOverlay;
     private MediaRecorder mMediaRecorder = null;
     private final Handler timingHandler = new Handler();
+    private int voiceitThemeColor = 0;
 
     private VoiceItAPI2 mVoiceIt2;
     private String mUserId = "";
@@ -63,6 +64,11 @@ public class VoiceEnrollmentView extends AppCompatActivity {
             mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
+            this.voiceitThemeColor = bundle.getInt("voiceitThemeColor");
+            if (this.voiceitThemeColor == 0) {
+                this.voiceitThemeColor = getResources().getColor(R.color.waveform);
+                // color is a valid color
+            }
         }
 
         // Hide action bar
@@ -79,6 +85,8 @@ public class VoiceEnrollmentView extends AppCompatActivity {
 
         // Text output on mOverlay
         mOverlay = findViewById(R.id.overlay);
+
+        mOverlay.setWaveformColor(this.voiceitThemeColor);
 
         // Lock orientation
         if (Build.VERSION.SDK_INT >= 18) {

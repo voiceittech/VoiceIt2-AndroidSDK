@@ -41,6 +41,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
     private CameraSourcePreview mPreview;
     private final File mPictureFile = Utils.getOutputMediaFile(".jpeg");
     private final Handler timingHandler = new Handler();
+    private int voiceitThemeColor = 0;
 
     private final String mTAG = "FaceEnrollmentView";
     private Context mContext;
@@ -70,6 +71,11 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
             mUserId = bundle.getString("userId");
             mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
+            this.voiceitThemeColor = bundle.getInt("voiceitThemeColor");
+            if (this.voiceitThemeColor == 0) {
+                this.voiceitThemeColor = getResources().getColor(R.color.progressCircle);
+                // color is a valid color
+            }
         }
 
         // Hide action bar
@@ -383,7 +389,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
     }
 
     private void enrollUserFace() {
-        mOverlay.setProgressCircleColor(getResources().getColor(R.color.progressCircle));
+        mOverlay.setProgressCircleColor(this.voiceitThemeColor);
         mOverlay.setProgressCircleAngle(270, 359);
 
         mVoiceIt2.createFaceEnrollmentWithPhoto(mUserId, mPictureFile, new JsonHttpResponseHandler() {

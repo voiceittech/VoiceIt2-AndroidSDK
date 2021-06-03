@@ -47,6 +47,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
     private MediaRecorder mMediaRecorder = null;
     private final Handler timingHandler = new Handler();
     private  File file;
+    private int voiceitThemeColor = 0;
 
     private final String mTAG = "VideoVerificationView";
     private Context mContext;
@@ -154,6 +155,11 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
             livenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
             mLivenessChallengesNeeded = bundle.getInt("livenessChallengesNeeded");
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
+            this.voiceitThemeColor = bundle.getInt("voiceitThemeColor");
+            if (this.voiceitThemeColor == 0) {
+                this.voiceitThemeColor = getResources().getColor(R.color.progressCircle);
+                // color is a valid color
+            }
         }
 
         // Initialize video file for recording data
@@ -590,7 +596,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                 mMediaRecorder = new MediaRecorder();
                 Utils.startMediaRecorder(mMediaRecorder, audioFile);
 
-                mOverlay.setProgressCircleColor(getResources().getColor(R.color.progressCircle));
+                mOverlay.setProgressCircleColor(voiceitThemeColor);
                 mOverlay.startDrawingProgressCircle();
                 // Record for ~5 seconds, then send data
                 // 4800 to make sure recording is not over 5 seconds

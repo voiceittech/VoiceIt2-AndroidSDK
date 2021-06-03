@@ -44,6 +44,7 @@ public class VoiceVerificationView extends AppCompatActivity {
     private final int mMaxFailedAttempts = 3;
     private boolean mContinueVerifying = false;
 
+    private int voiceitThemeColor = 0;
     private boolean displayWaveform = true;
     private final long REFRESH_WAVEFORM_INTERVAL_MS = 30;
 
@@ -61,6 +62,11 @@ public class VoiceVerificationView extends AppCompatActivity {
             mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             mContentLanguage = bundle.getString("contentLanguage");
             mPhrase = bundle.getString("phrase");
+            this.voiceitThemeColor = bundle.getInt("voiceitThemeColor");
+            if (this.voiceitThemeColor == 0) {
+                this.voiceitThemeColor = getResources().getColor(R.color.waveform);
+                // color is a valid color
+            }
         }
 
         // Hide action bar
@@ -77,6 +83,7 @@ public class VoiceVerificationView extends AppCompatActivity {
 
         // Get overlay
         mOverlay = findViewById(R.id.overlay);
+        mOverlay.setWaveformColor(this.voiceitThemeColor);
 
         // Lock orientation
         if (Build.VERSION.SDK_INT >= 18) {

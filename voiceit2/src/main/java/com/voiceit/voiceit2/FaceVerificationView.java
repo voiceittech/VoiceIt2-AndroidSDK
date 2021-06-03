@@ -7,6 +7,7 @@
     import android.content.SharedPreferences;
     import android.content.pm.ActivityInfo;
     import android.content.pm.PackageManager;
+    import android.graphics.Color;
     import android.hardware.Sensor;
     import android.hardware.SensorEvent;
     import android.hardware.SensorEventListener;
@@ -57,6 +58,7 @@
 
         private VoiceItAPI2 mVoiceIt2;
         private String mUserId = "";
+        private int voiceitThemeColor = 0;
         boolean playLivenessTutorial = true;
         private boolean mDoLivenessCheck = false;
         private boolean mDoLivenessAudioCheck = false;
@@ -101,6 +103,11 @@
                 mLivenessChallengeFailsAllowed = bundle.getInt("livenessChallengeFailsAllowed");
                 mLivenessChallengesNeeded = bundle.getInt("livenessChallengesNeeded");
                 CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
+                this.voiceitThemeColor = bundle.getInt("voiceitThemeColor");
+                if (this.voiceitThemeColor == 0) {
+                    this.voiceitThemeColor = getResources().getColor(R.color.progressCircle);
+                    // color is a valid color
+                }
             }
 
             // Hide action bar
@@ -582,7 +589,7 @@
         }
 
         private  void verifyUserFace() {
-            mOverlay.setProgressCircleColor(getResources().getColor(R.color.progressCircle));
+            mOverlay.setProgressCircleColor(this.voiceitThemeColor);
             mOverlay.setProgressCircleAngle(270, 359);
 
             mVoiceIt2.faceVerificationWithPhoto(mUserId, mPictureFile, new JsonHttpResponseHandler() {

@@ -30,6 +30,7 @@ public class VoiceItAPI2 {
     private final String apiKey;
     private final String apiToken;
     private String notificationURL;
+    private int voiceitThemeColor = 0;
 
     private final String mTAG = "VoiceItAPI2";
     private String BASE_URL = "https://api.voiceit.io";
@@ -48,7 +49,18 @@ public class VoiceItAPI2 {
         this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
     }
 
-    // TODO: add a constructor that also overrides the liveness URL constant
+    public VoiceItAPI2(String apiKey, String apiToken, int voiceitThemeColor) {
+        this.apiKey = apiKey;
+        this.apiToken = apiToken;
+        this.client = new AsyncHttpClient();
+        this.client.removeAllHeaders();
+        this.client.setTimeout(30 * 1000);
+        this.client.setBasicAuth(apiKey, apiToken);
+        this.client.addHeader("platformId", "40");
+        this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
+        this.voiceitThemeColor = voiceitThemeColor;
+    }
+
     public VoiceItAPI2(String apiKey, String apiToken, String url) {
         this.apiKey = apiKey;
         this.apiToken = apiToken;
@@ -761,9 +773,11 @@ public class VoiceItAPI2 {
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
+        bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("userId", userId);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
+        bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("notificationURL", this.notificationURL);
         intent.putExtras(bundle);
         activity.startActivity(intent);
@@ -792,6 +806,7 @@ public class VoiceItAPI2 {
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
+        bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("userId", userId);
         bundle.putString("notificationURL", this.notificationURL);
         bundle.putString("contentLanguage", contentLanguage);
@@ -813,6 +828,7 @@ public class VoiceItAPI2 {
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
+        bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("notificationURL", this.notificationURL);
         bundle.putString("groupId", groupId);
         bundle.putString("contentLanguage", contentLanguage);
@@ -844,6 +860,7 @@ public class VoiceItAPI2 {
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
+        bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("userId", userId);
         bundle.putString("notificationURL", this.notificationURL);
         bundle.putString("contentLanguage", contentLanguage);
@@ -882,6 +899,7 @@ public class VoiceItAPI2 {
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
+        bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("userId", userId);
         bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("phrase", phrase);
@@ -921,6 +939,7 @@ public class VoiceItAPI2 {
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("notificationURL", this.notificationURL);
+        bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("userId", userId);
         bundle.putBoolean("displayPreviewFrame", mDisplayPreviewFrame);
         intent.putExtras(bundle);
@@ -955,6 +974,7 @@ public class VoiceItAPI2 {
         Intent intent = new Intent(activity, FaceVerificationView.class);
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
+        bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("apiToken", this.apiToken);
         bundle.putString("userId", userId);
         bundle.putString("notificationURL", this.notificationURL);

@@ -54,6 +54,7 @@ class RadiusOverlayView extends LinearLayout {
     private boolean mDrawingProgressCircle = false;
     private double mDrawingProgressCircleStartTime;
     private final Paint progressCirclePaint = new Paint();
+    private final Paint waveformPaint = new Paint(1);
 
     private boolean mDrawWaveform = false;
     private float mWaveAmplitude = 0.0f;
@@ -62,7 +63,7 @@ class RadiusOverlayView extends LinearLayout {
     private final ArrayList<Paint> mWaveformLinePaints = new ArrayList<>();
     private Path mWaveformPath;
     private float mWaveformPhase = 0.0f;
-    private final int mWaveColor = getResources().getColor(R.color.waveform);
+    private int mWaveColor = getResources().getColor(R.color.waveform);
 
     private Bitmap mPicture = null;
     public boolean displayPicture = false;
@@ -102,6 +103,12 @@ class RadiusOverlayView extends LinearLayout {
         this.invalidate();
     }
 
+    public void setWaveformColor(int colorId){
+        mWaveColor = colorId;
+        waveformPaint.setColor(colorId);
+        this.invalidate();
+    }
+
     public void setWaveformMaxAmplitude(float amplitude) {
         // Clamp amp value
         final float mWaveformPhaseShift = -0.25f;
@@ -117,21 +124,18 @@ class RadiusOverlayView extends LinearLayout {
 
             for (int i = 0; i < mNumberOfWaves; i++) {
                 float multiplier = Math.min(1.0f, (((1.0f - (((float) i) / ((float) mNumberOfWaves))) / 3.0f) * 2.0f) + 0.33333334f);
-                Paint p;
                 if (i == 0) {
-                    p = new Paint(1);
-                    p.setColor(mWaveColor);
-                    p.setStrokeWidth(10);
-                    p.setStyle(Paint.Style.STROKE);
-                    mWaveformLinePaints.add(p);
+                    waveformPaint.setColor(mWaveColor);
+                    waveformPaint.setStrokeWidth(10);
+                    waveformPaint.setStyle(Paint.Style.STROKE);
+                    mWaveformLinePaints.add(waveformPaint);
                 } else {
-                    p = new Paint(1);
 //                    Log.v("Color", BuildConfig.FLAVOR + ((int) ((((double) (1.0f * multiplier)) * 0.7d) * 255.0d)));
-                    p.setColor(mWaveColor);
-                    p.setAlpha((int) ((((double) (1.0f * multiplier)) * 0.8d) * 255.0d));
-                    p.setStrokeWidth(3);
-                    p.setStyle(Paint.Style.STROKE);
-                    mWaveformLinePaints.add(p);
+                    waveformPaint.setColor(mWaveColor);
+                    waveformPaint.setAlpha((int) ((((double) (1.0f * multiplier)) * 0.8d) * 255.0d));
+                    waveformPaint.setStrokeWidth(3);
+                    waveformPaint.setStyle(Paint.Style.STROKE);
+                    mWaveformLinePaints.add(waveformPaint);
                 }
             }
             mWaveformPath = new Path();
