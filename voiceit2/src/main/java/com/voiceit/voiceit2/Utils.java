@@ -230,6 +230,9 @@ class Utils {
                     Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
             // Get the current system brightness
             Utils.oldBrightness = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS);
+            if (Utils.oldBrightness < 128){
+                Utils.oldBrightness = 128;
+            }
         } catch (Settings.SettingNotFoundException e) {
             Log.e("Error", "SettingNotFoundException: " + e.getMessage());
             return false;
