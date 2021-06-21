@@ -872,7 +872,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     public void encapsulatedVideoVerification(Activity activity, String userId, String contentLanguage, String phrase, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
@@ -915,7 +915,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     public void encapsulatedFaceEnrollment(Activity activity, String userId, final JsonHttpResponseHandler responseHandler) {
@@ -948,7 +948,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
     public void encapsulatedFaceVerification(Activity activity, String userId, String contentLanguage, boolean doLivenessCheck, boolean doLivenessAudioCheck, final JsonHttpResponseHandler responseHandler) {
@@ -990,7 +990,7 @@ public class VoiceItAPI2 {
 
         broadcastMessageHandler(activity, responseHandler);
 
-        requestWritePermission(activity);
+        //requestWritePermission(activity);
     }
 
 
