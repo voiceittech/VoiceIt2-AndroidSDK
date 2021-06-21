@@ -220,7 +220,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
 //            this.startActivityForResult(intent, 0);
 //        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Utils.setBrightness(this,255);
+        //Utils.setBrightness(this,255);
     }
 
     private void beginVerification(){
@@ -384,7 +384,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
     }
 
     private void exitViewWithMessage(String action, String message) {
-        Utils.setBrightness(this, Utils.oldBrightness);
+        //Utils.setBrightness(this, Utils.oldBrightness);
         mContinueVerifying = false;
         timingHandler.removeCallbacksAndMessages(null);
         LivenessTracker.livenessTimer.removeCallbacksAndMessages(null);
@@ -403,7 +403,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
     }
 
     public void exitViewWithJSON(String action, JSONObject json) {
-        Utils.setBrightness(this, Utils.oldBrightness);
+        //Utils.setBrightness(this, Utils.oldBrightness);
         mContinueVerifying = false;
         timingHandler.removeCallbacksAndMessages(null);
         LivenessTracker.livenessTimer.removeCallbacksAndMessages(null);

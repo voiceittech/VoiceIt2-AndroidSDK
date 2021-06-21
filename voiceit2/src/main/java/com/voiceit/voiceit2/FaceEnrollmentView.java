@@ -113,7 +113,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
             lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Utils.setBrightness(this,255);
+        //Utils.setBrightness(this,255);
     }
 
     private void startEnrollmentFlow() {
@@ -225,7 +225,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
     }
 
     private void exitViewWithMessage(String action, String message) {
-        Utils.setBrightness(this, Utils.oldBrightness);
+        //Utils.setBrightness(this, Utils.oldBrightness);
         mContinueEnrolling = false;
         timingHandler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
@@ -242,7 +242,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
     }
 
     private void exitViewWithJSON(String action, JSONObject json) {
-        Utils.setBrightness(this, Utils.oldBrightness);
+        //Utils.setBrightness(this, Utils.oldBrightness);
         mContinueEnrolling = false;
         timingHandler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);

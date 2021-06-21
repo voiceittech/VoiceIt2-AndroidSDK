@@ -159,7 +159,7 @@
 //                this.startActivityForResult(intent, 0);
 //            }
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            Utils.setBrightness(this,255);
+            //Utils.setBrightness(this,255);
         }
 
         private void handleError(String res){
@@ -409,7 +409,7 @@
         }
 
         public void exitViewWithMessage(String action, String message) {
-            Utils.setBrightness(this, Utils.oldBrightness);
+            //Utils.setBrightness(this, Utils.oldBrightness);
             mContinueVerifying = false;
             timingHandler.removeCallbacksAndMessages(null);
             LivenessTracker.livenessTimer.removeCallbacksAndMessages(null);
@@ -426,7 +426,7 @@
         }
 
         private void exitViewWithJSON(String action, JSONObject json) {
-            Utils.setBrightness(this, Utils.oldBrightness);
+            //Utils.setBrightness(this, Utils.oldBrightness);
             mContinueVerifying = false;
             timingHandler.removeCallbacksAndMessages(null);
             LivenessTracker.livenessTimer.removeCallbacksAndMessages(null);

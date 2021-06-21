@@ -121,7 +121,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
         }
         mPictureFile = Utils.getOutputMediaFile(".jpeg", this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Utils.setBrightness(this,255);
+        //Utils.setBrightness(this,255);
     }
 
     private void startEnrollmentFlow() {
@@ -252,7 +252,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
     }
 
     private void exitViewWithMessage(String action, String message) {
-        Utils.setBrightness(this, Utils.oldBrightness);
+        //Utils.setBrightness(this, Utils.oldBrightness);
         mContinueEnrolling = false;
         timingHandler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);
@@ -269,7 +269,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
     }
 
     private void exitViewWithJSON(String action, JSONObject json) {
-        Utils.setBrightness(this, Utils.oldBrightness);
+        //Utils.setBrightness(this, Utils.oldBrightness);
         mContinueEnrolling = false;
         timingHandler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(action);

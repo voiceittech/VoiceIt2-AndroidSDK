@@ -174,11 +174,11 @@ class CameraSourcePreview extends ViewGroup {
         }
 
         // Swap width and height sizes when in portrait, since it will be rotated 90 degrees
-//        if (isPortraitMode(mContext)) {
+        if (isPortraitMode(mContext)) {
             int tmp = previewWidth;
             previewWidth = previewHeight;
             previewHeight = tmp;
-//        }
+        }
 
         final int layoutWidth = right - left-1;
         final int layoutHeight = bottom - top-1;
