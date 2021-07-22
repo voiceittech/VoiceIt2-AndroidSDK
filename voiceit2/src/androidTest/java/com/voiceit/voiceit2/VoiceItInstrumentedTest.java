@@ -1,6 +1,6 @@
 package com.voiceit.voiceit2;
 
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -24,7 +24,7 @@ import cz.msebera.android.httpclient.Header;
 
 import static org.junit.Assert.*;
 
-@RunWith(AndroidJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class VoiceItInstrumentedTest {
 
     final private String apiKey = InstrumentationRegistry.getArguments().getString("key");
