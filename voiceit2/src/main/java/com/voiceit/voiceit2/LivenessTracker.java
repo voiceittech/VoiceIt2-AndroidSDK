@@ -197,7 +197,17 @@ class LivenessTracker extends Tracker<Face> {
                         LivenessTracker.continueDetecting = false;
                         LivenessTracker.livenessChallengeFails = 0;
 
-                        mOverlay.updateDisplayText(mActivity.getString(R.string.WAIT));
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                new Handler().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mOverlay.updateDisplayText(mActivity.getString(R.string.WAIT));
+                                    }
+                                });
+                            }
+                        });
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
