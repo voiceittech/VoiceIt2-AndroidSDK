@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void encapsulatedFaceEnrollment(View view) {
-        myVoiceIt.encapsulatedFaceEnrollment(this, userId[userIdIndex], new JsonHttpResponseHandler() {
+        myVoiceIt.encapsulatedFaceEnrollment(this, userId[userIdIndex], contentLanguage, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 System.out.println("encapsulatedFaceEnrollment onSuccess Result : " + response.toString());
@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+
                 checkResponse(errorResponse);
                 if (errorResponse != null) {
                     System.out.println("encapsulatedFaceEnrollment onFailure Result : " + errorResponse.toString());

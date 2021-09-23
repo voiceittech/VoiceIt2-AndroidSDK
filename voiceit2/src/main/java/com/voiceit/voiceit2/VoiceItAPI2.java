@@ -918,7 +918,7 @@ public class VoiceItAPI2 {
         //requestWritePermission(activity);
     }
 
-    public void encapsulatedFaceEnrollment(Activity activity, String userId, final JsonHttpResponseHandler responseHandler) {
+    public void encapsulatedFaceEnrollment(Activity activity, String userId, String contentLanguage, final JsonHttpResponseHandler responseHandler) {
         if (!userIdFormatted(userId)) {
             int duration = Toast.LENGTH_SHORT;
             String response = buildJSONFormatMessage().toString();
@@ -938,6 +938,7 @@ public class VoiceItAPI2 {
         Bundle bundle = new Bundle();
         bundle.putString("apiKey", this.apiKey);
         bundle.putString("apiToken", this.apiToken);
+        bundle.putString("contentLanguage", contentLanguage);
         bundle.putString("notificationURL", this.notificationURL);
         bundle.putInt("voiceitThemeColor", this.voiceitThemeColor);
         bundle.putString("userId", userId);

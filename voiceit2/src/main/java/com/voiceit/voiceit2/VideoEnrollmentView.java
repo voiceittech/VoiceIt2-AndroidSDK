@@ -133,7 +133,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
             exitViewWithMessage("voiceit-failure","Error starting camera");
         } else {
             if (mEnrollmentCount < mNeededEnrollments) {
-                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                mOverlay.updateDisplayText("LOOK_INTO_CAM");
                 // Start tracking faces
                 FaceTracker.continueDetecting = true;
             } else {
@@ -142,7 +142,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                 mVoiceIt2.deleteAllEnrollments(mUserId, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject Response) {
-                        mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                        mOverlay.updateDisplayText("LOOK_INTO_CAM");
                         // Start tracking faces
                         FaceTracker.continueDetecting = true;
                     }
@@ -152,8 +152,8 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                         if (errorResponse != null) {
                             try {
                                 // Report error to user
-                                mOverlay.updateDisplayText(getString((getResources().getIdentifier(errorResponse.
-                                        getString("responseCode"), "string", getPackageName()))));
+                                mOverlay.updateDisplayText(errorResponse.
+                                        getString("responseCode"));
                             } catch (JSONException e) {
                                 Log.d(mTAG, "JSON exception : " + e.toString());
                             }
@@ -166,7 +166,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                             }, 2000);
                         } else {
                             Log.e(mTAG, "No response from server");
-                            mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                            mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                             // Wait for 2.0 seconds
                             timingHandler.postDelayed(new Runnable() {
                                 @Override
@@ -391,7 +391,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
         mOverlay.setPicture(null);
 
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
-        mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
+        mOverlay.updateDisplayText("ENROLL_FAIL");
 
         // Wait for ~1.5 seconds
         timingHandler.postDelayed(new Runnable() {
@@ -400,11 +400,11 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                 try {
                     // Report error to user
                     if (response.getString("responseCode").equals("PDNM")) {
-                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                                getString("responseCode"), "string", getPackageName())), mPhrase));
+                        mOverlay.updateDisplayText(response.
+                                getString("responseCode"));
                     } else {
-                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                                getString("responseCode"), "string", getPackageName()))));
+                        mOverlay.updateDisplayText(response.
+                                getString("responseCode"));
                     }
                 } catch (JSONException e) {
                     Log.d(mTAG,"JSON exception : " + e.toString());
@@ -417,7 +417,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
 
                         // User failed too many times
                         if(mFailedAttempts >= mMaxFailedAttempts) {
-                            mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
+                            mOverlay.updateDisplayText("TOO_MANY_ATTEMPTS");
                             // Wait for ~2 seconds
                             timingHandler.postDelayed(new Runnable() {
                                 @Override
@@ -427,7 +427,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                             }, 2000);
                         } else if (mContinueEnrolling) {
                             if(FaceTracker.lookingAway) {
-                                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                mOverlay.updateDisplayText("LOOK_INTO_CAM");
                             }
                             // Try again
                             FaceTracker.continueDetecting = true;
@@ -442,7 +442,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
     private void enrollUser() {
         if(mContinueEnrolling) {
             // Display enrollment mPhrase to user
-            mOverlay.updateDisplayText(getString(getResources().getIdentifier("ENROLL_" + (mEnrollmentCount + 1) + "_PHRASE", "string", getPackageName()), mPhrase));
+            mOverlay.updateDisplayText("ENROLL_" + (mEnrollmentCount + 1) + "_PHRASE", mPhrase);
             try {
 
                 final File audioVideoFile = Utils.getOutputVideoFile(".mp4", this);
@@ -472,14 +472,14 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                             Utils.stripAudio(audioVideoFile, audioFile, new AudioExtractionCompletion() {
                                 @Override
                                 public void finished() {
-                                    mOverlay.updateDisplayText(getString(R.string.WAIT));
+                                    mOverlay.updateDisplayText("WAIT");
                                     mVoiceIt2.createVideoEnrollment(mUserId, mContentLanguage, mPhrase, audioFile, mPictureFile, new JsonHttpResponseHandler() {
                                         @Override
                                         public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                                             try {
                                                 if (response.getString("responseCode").equals("SUCC")) {
                                                     mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
-                                                    mOverlay.updateDisplayText(getString(R.string.ENROLL_SUCCESS));
+                                                    mOverlay.updateDisplayText("ENROLL_SUCCESS");
 
                                                     // Wait for ~2 seconds
                                                     timingHandler.postDelayed(new Runnable() {
@@ -491,7 +491,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                                                             mEnrollmentCount++;
 
                                                             if (mEnrollmentCount == mNeededEnrollments) {
-                                                                mOverlay.updateDisplayText(getString(R.string.ALL_ENROLL_SUCCESS));
+                                                                mOverlay.updateDisplayText("ALL_ENROLL_SUCCESS");
                                                                 // Wait for ~2.5 seconds
                                                                 timingHandler.postDelayed(new Runnable() {
                                                                     @Override
@@ -501,7 +501,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                                                                 }, 2500);
                                                             } else {
                                                                 if (FaceTracker.lookingAway) {
-                                                                    mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                                                    mOverlay.updateDisplayText("LOOK_INTO_CAM");
                                                                 }
                                                                 // Continue showing live camera preview
                                                                 mOverlay.setPicture(null);
@@ -533,7 +533,7 @@ public class VideoEnrollmentView extends AppCompatActivity implements SensorEven
                                                 failEnrollment(errorResponse);
                                             } else {
                                                 Log.e(mTAG, "No response from server");
-                                                mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                                                mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                                                 // Wait for 2.0 seconds
                                                 timingHandler.postDelayed(new Runnable() {
                                                     @Override

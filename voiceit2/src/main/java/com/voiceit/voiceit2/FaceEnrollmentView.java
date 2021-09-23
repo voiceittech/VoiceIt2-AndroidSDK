@@ -46,6 +46,8 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
     private final String mTAG = "FaceEnrollmentView";
     private Context mContext;
 
+    private String mContentLanguage;
+
     private RadiusOverlayView mOverlay;
 
     private VoiceItAPI2 mVoiceIt2;
@@ -68,6 +70,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
             mVoiceIt2 = new VoiceItAPI2(bundle.getString("apiKey"), bundle.getString("apiToken"));
+            mContentLanguage = bundle.getString("contentLanguage");
             mUserId = bundle.getString("userId");
             mVoiceIt2.setNotificationURL(bundle.getString("notificationURL"));
             CameraSource.displayPreviewFrame = bundle.getBoolean("displayPreviewFrame");
@@ -99,6 +102,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
         // Text output on mOverlay
         mOverlay = findViewById(R.id.overlay);
         CameraSource.mOverlay = mOverlay;
+        mOverlay.setContentLanguage(mContentLanguage);
 
         // Lock orientation
         if (Build.VERSION.SDK_INT >= 18) {
@@ -128,7 +132,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
             mVoiceIt2.deleteAllEnrollments(mUserId, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject Response) {
-                    mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                    mOverlay.updateDisplayText("LOOK_INTO_CAM");
                     // Start tracking faces
                     FaceTracker.continueDetecting = true;
                 }
@@ -138,8 +142,8 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
                     if (errorResponse != null) {
                         try {
                             // Report error to user
-                            mOverlay.updateDisplayText(getString((getResources().getIdentifier(errorResponse.
-                                    getString("responseCode"), "string", getPackageName()))));
+                            mOverlay.updateDisplayText(errorResponse.
+                                    getString("responseCode"));
                         } catch (JSONException e) {
                             Log.d(mTAG, "JSON exception : " + e.toString());
                         }
@@ -152,7 +156,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
                         }, 2000);
                     } else {
                         Log.e(mTAG, "No response from server");
-                        mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                        mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                         // Wait for 2.0 seconds
                         timingHandler.postDelayed(new Runnable() {
                             @Override
@@ -347,15 +351,15 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
         mOverlay.setPicture(null);
 
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
-        mOverlay.updateDisplayText(getString(R.string.ENROLL_FAIL));
+        mOverlay.updateDisplayText("ENROLL_FAIL");
         // Wait for ~1.5 seconds
         timingHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
                     // Report error to user
-                    mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                            getString("responseCode"), "string", getPackageName()))));
+                    mOverlay.updateDisplayText(response.
+                            getString("responseCode"));
                 } catch (JSONException e) {
                     Log.d(mTAG,"JSON exception : " + e.toString());
                 }
@@ -367,7 +371,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
 
                         // User failed too many times
                         if (mFailedAttempts >= mMaxFailedAttempts) {
-                            mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
+                            mOverlay.updateDisplayText("TOO_MANY_ATTEMPTS");
                             // Wait for ~2 seconds
                             timingHandler.postDelayed(new Runnable() {
                                 @Override
@@ -377,7 +381,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
                             }, 2000);
                         } else if (mContinueEnrolling) {
                             if(FaceTracker.lookingAway) {
-                                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                mOverlay.updateDisplayText("LOOK_INTO_CAM");
                             }
                             // Try again
                             FaceTracker.continueDetecting = true;
@@ -400,7 +404,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
                     if (response.getString("responseCode").equals("SUCC")) {
 
                         mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
-                        mOverlay.updateDisplayText(getString(R.string.ENROLL_SUCCESS));
+                        mOverlay.updateDisplayText("ENROLL_SUCCESS");
 
                         // Wait for ~2 seconds
                         timingHandler.postDelayed(new Runnable() {
@@ -429,7 +433,7 @@ public class FaceEnrollmentView extends AppCompatActivity implements SensorEvent
                     failEnrollment(errorResponse);
                 } else {
                     Log.e(mTAG, "No response from server");
-                    mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                    mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                     // Wait for 2.0 seconds
                     timingHandler.postDelayed(new Runnable() {
                         @Override

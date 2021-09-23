@@ -158,7 +158,7 @@ class FaceTracker extends Tracker<Face> {
                         if(mDoLivenessAudioCheck) {
                             playLivenessPrompt("smile");
                         }
-                        updateDisplayText(mActivity.getString(R.string.SMILE), false);
+                        updateDisplayText("SMILE", false);
                     }
 
                 } else if (face.getIsSmilingProbability() > .5 && !mDisplayingChallengeOutcome) {
@@ -182,7 +182,7 @@ class FaceTracker extends Tracker<Face> {
                         if(mDoLivenessAudioCheck) {
                             playLivenessPrompt("face_left");
                         }
-                        updateDisplayText(mActivity.getString(R.string.TURN_LEFT), false);
+                        updateDisplayText("TURN_LEFT", false);
                         setProgressCircleColor(R.color.pendingLivenessSuccess);
                         setProgressCircleAngle(135.0, 90.0);
                     }
@@ -214,7 +214,7 @@ class FaceTracker extends Tracker<Face> {
                         if(mDoLivenessAudioCheck) {
                             playLivenessPrompt("face_right");
                         }
-                        updateDisplayText(mActivity.getString(R.string.TURN_RIGHT), false);
+                        updateDisplayText("TURN_RIGHT", false);
                         setProgressCircleColor(R.color.pendingLivenessSuccess);
                         setProgressCircleAngle(315.0, 90.0);
                     }
@@ -253,13 +253,11 @@ class FaceTracker extends Tracker<Face> {
 
         FaceTracker.livenessChallengeFails++;
         if(FaceTracker.livenessChallengeFails > mLivenessChallengeFailsAllowed) {
-            updateDisplayText((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
-                    + mActivity.getString(R.string.FAILED_LIVENESS), false);
+            updateDisplayText((failedPrecheck ? "FAILED_PRECHECK" : "FAILED_LIVENESS"), false);
             Log.d(mTAG, "display : " + ((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
                     + mActivity.getString(R.string.FAILED_LIVENESS)));
         } else {
-            updateDisplayText((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
-                    + mActivity.getString(R.string.FAILED_LIVENESS_CHALLENGE), false);
+            updateDisplayText((failedPrecheck ? "FAILED_PRECHECK" : "FAILED_LIVENESS_CHALLENGE"), false);
             Log.d(mTAG, "display : " + ((failedPrecheck ? mActivity.getString(R.string.FAILED_PRECHECK) + " " : "")
                     + mActivity.getString(R.string.FAILED_LIVENESS)));
         }
@@ -310,7 +308,7 @@ class FaceTracker extends Tracker<Face> {
                     FaceTracker.continueDetecting = false;
                     FaceTracker.livenessChallengeFails = 0;
 
-                    updateDisplayText(mActivity.getString(R.string.WAIT), false);
+                    updateDisplayText("WAIT", false);
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -365,7 +363,7 @@ class FaceTracker extends Tracker<Face> {
 
             } else if (numFaces > 1) {
                 Log.d(mTAG, "Too many faces present");
-                updateDisplayText(mActivity.getString(R.string.TOO_MANY_FACES), false);
+                updateDisplayText("TOO_MANY_FACES", false);
                 setProgressCircleAngle(270.0, 0.0);
             }
         }
@@ -381,7 +379,7 @@ class FaceTracker extends Tracker<Face> {
             Log.d(mTAG, "No face present");
 
             setProgressCircleAngle(270.0, 0.0);
-            updateDisplayText(mActivity.getString(R.string.LOOK_INTO_CAM), false);
+            updateDisplayText("LOOK_INTO_CAM", false);
         }
     }
 

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ES_app_name">API_2_SDK</string>
+
+    <string name="ES_SAY_PASSPHRASE">Por favor di \"%1$s\"</string>
+    <string name="ES_INCORRECT_PASSPHRASE">Frase de contraseña incorrecta. Por favor say \"%1$s\"</string>
+    <string name="ES_LOOK_INTO_CAM">Por favor mira a la cámara</string>
+    <string name="ES_TOO_MANY_FACES">Encontré demasiadas caras. Asegúrate de que solo tu cara sea visible</string>
+    <string name="ES_WAIT">Espere por favor..</string>
+    <string name="ES_ENROLL_1_PHRASE">Por favor di \"%1$s\"</string>
+    <string name="ES_ENROLL_2_PHRASE">Por favor di \"%1$s\" again</string>
+    <string name="ES_ENROLL_3_PHRASE">Por favor di \"%1$s\" one more time</string>
+    <string name="ES_ENROLL_SUCCESS">¡Inscripción exitosa!</string>
+    <string name="ES_ENROLL_FAIL">Inscripción fallida</string>
+    <string name="ES_ALL_ENROLL_SUCCESS">¡Todas las inscripciones fueron exitosas!</string>
+    <string name="ES_NOT_ENOUGH_ENROLLMENTS">No tienes suficientes inscripciones. Inscríbete y vuelve a intentarlo.</string>
+    <string name="ES_VERIFY_SUCCESS">¡Ha sido verificado con éxito!</string>
+    <string name="ES_VERIFY_FAIL">Verificación fallida</string>
+    <string name="ES_IDENTIFY_SUCCESS">¡Has sido identificado con éxito!</string>
+    <string name="ES_IDENTIFY_FAIL">Identificación fallida</string>
+    <string name="ES_TOO_MANY_ATTEMPTS">Se hicieron demasiados intentos. Por favor, inténtelo de nuevo más tarde.</string>
+    <string name="ES_BLINK_1_TIME">Parpadea 1 vez más</string>
+    <string name="ES_BLINK_2_TIME">Parpadea 2 veces</string>
+    <string name="ES_TURN_RIGHT">Gire la cara a la derecha y luego retroceda hacia adelante.</string>
+    <string name="ES_TURN_LEFT">Gire la cara a la izquierda y luego retroceda hacia adelante.</string>
+    <string name="ES_SMILE">Por favor sonríe</string>
+    <string name="ES_FAILED_LIVENESS">Detección de vitalidad fallida</string>
+    <string name="ES_FAILED_LIVENESS_CHALLENGE">Desafío de vivacidad fallido. Vuelve a intentarlo.</string>
+    <string name="ES_FAILED_PRECHECK">Desafío de vida fallido: espere a que se le solicite antes de tomar medidas.</string>
+    <string name="ES_MOVE_CLOSER">Acércate a la cámara.</string>
+
+    <string name="ES_FNFD">Lo siento, no pudimos ver tu cara. Inténtalo de nuevo.</string>
+    <string name="ES_DDNE">Lo siento, algo salió mal. Vuelve a intentarlo.</string>
+    <string name="ES_FAIL">No se pudo verificar debido a la baja confianza. Inténtalo de nuevo.</string>
+    <string name="ES_IFWD">Lo siento, se produjo un error. \n Vuelva a intentarlo..</string>
+    <string name="ES_TVER">Lo sentimos, no se detectaron inscripciones de video \n Inscríbase y vuelva a intentarlo</string>
+    <string name="ES_NEHSD">Lo siento, no pudimos captar eso del todo \n Por favor habla más lento</string>
+    <string name="ES_STTF">Lo siento, no pudimos entenderte \n Habla con más claridad o muévete a un entorno más tranquilo"</string>
+    <string name="ES_RWPU">No utilice grabaciones e inténtelo de nuevo.</string>
+    <string name="ES_FTMF">Asegúrate de que solo tu cara sea visible \n Inténtalo de nuevo</string>
+    <string name="ES_SSTQ">Lo siento, habla más alto e inténtalo de nuevo.</string>
+    <string name="ES_SSTL">Lo siento, habla más bajo y vuelve a intentarlo.</string>
+    <string name="ES_NFEF">Lo sentimos, no se detectaron inscripciones de rostros \n Inscríbete y vuelve a intentarlo</string>
+    <string name="ES_PNTE">Lo sentimos, no se detectaron inscripciones con esa frase \n Inscríbase antes de verificar</string>
+    <string name="ES_PDNM">Lo siento, dijiste la frase incorrecta \n Por favor di \"%1$s\".</string>
+    <string name="ES_MISU">Lo sentimos, el grupo no tiene suficientes usuarios, necesita dos o más usuarios para la identificación \n Inscríbase antes de identificarse</string>
+
+    <string name="ES_NPFC">Lo sentimos, no se pudieron encontrar frases para ese idioma de contenido \n Por favor, póngase en contacto con el desarrollador de la aplicación </string>
+
+    <string name="ES_IFVD">Lo siento, algo salió mal \n Vuelve a intentarlo</string>
+    <string name="ES_IFAD">Lo siento, algo salió mal \n Vuelve a intentarlo</string>
+    <string name="ES_SRNR">Lo sentimos, algo salió mal \n Comuníquese con el desarrollador de la aplicación con el código de error: SRNR</string>
+    <string name="ES_UNFD">Lo sentimos, algo salió mal \n Comuníquese con el desarrollador de la aplicación con el código de error: UNFD</string>
+    <string name="ES_MISP">Lo sentimos, algo salió mal \n Comuníquese con el desarrollador de la aplicación con el código de error: MISP</string>
+    <string name="ES_DAID">Lo sentimos, algo salió mal \n Comuníquese con el desarrollador de la aplicación con el código de error: DAID</string>
+    <string name="ES_UNAC">Lo sentimos, algo salió mal \n Comuníquese con el desarrollador de la aplicación con el código de error: UNAC</string>
+    <string name="ES_CLNE">Lo sentimos, algo salió mal \n Comuníquese con el desarrollador de la aplicación con el código de error: CLNE</string>
+    <string name="ES_INCP">Lo sentimos, algo salió mal \n Comuníquese con el desarrollador de la aplicación con el código de error: INCP</string>
+    <string name="ES_INPP">Lo sentimos, algo salió mal \n Comuníquese con el desarrollador de la aplicación con el código de error: INPP</string>
+    <string name="ES_ACLR">Lo sentimos, algo salió mal \n Vuelva a intentarlo o comuníquese con el desarrollador de la aplicación con el código de error: ACLR</string>
+    <string name="ES_CHECK_CODE">Comprueba tu código e inténtalo de nuevo.</string>
+    <string name="ES_GRANT_WRITE_PERMISSON">Otorgar permiso para el brillo de la pantalla</string>
+
+    <string name="ES_GERR">Lo siento, algo salió mal \n Vuelve a intentarlo</string>
+
+    <string name="ES_CHECK_INTERNET">No se puede contactar con el servidor \n Verifique su conexión a Internet</string>
+
+    <!-- <string name="ES_GRANT_WRITE_PERMISSON">"Grant permission for screen brightness"</string> -->
+
+    <string name="ES_CONTINUE">Continuar</string>
+
+</resources>

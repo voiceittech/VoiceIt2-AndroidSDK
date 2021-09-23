@@ -237,7 +237,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                     try {
                         // Check If enough enrollments, otherwise return to previous activity
                         if (Response.getInt("count") < mNeededEnrollments) {
-                            mOverlay.updateDisplayText(getString(R.string.NOT_ENOUGH_ENROLLMENTS));
+                            mOverlay.updateDisplayText("NOT_ENOUGH_ENROLLMENTS");
                             // Wait for ~2.5 seconds
                             timingHandler.postDelayed(new Runnable() {
                                 @Override
@@ -247,9 +247,9 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                             }, 2500);
                         } else {
                             if(!mDoLivenessCheck){
-                                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                mOverlay.updateDisplayText("LOOK_INTO_CAM");
                             } else{
-                                mOverlay.updateDisplayText(uiLivenessInstruction);
+                                mOverlay.updateDisplayTextDirectly(uiLivenessInstruction);
                             }
                             LivenessTracker.continueDetecting = true;
                         }
@@ -263,8 +263,8 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                     if (errorResponse != null) {
                         try {
                             // Report error to user
-                            mOverlay.updateDisplayText(getString((getResources().getIdentifier(errorResponse.
-                                    getString("responseCode"), "string", getPackageName()))));
+                            mOverlay.updateDisplayText(errorResponse.
+                                    getString("responseCode"));
                         } catch (JSONException e) {
                             Log.d(mTAG, "JSON exception : " + e.toString());
                         }
@@ -277,7 +277,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                         }, 2000);
                     } else {
                         Log.e(mTAG, "No response from server");
-                        mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                        mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                         // Wait for 2.0 seconds
                         timingHandler.postDelayed(new Runnable() {
                             @Override
@@ -525,7 +525,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
         mOverlay.setPicture(null);
 
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
-        mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
+        mOverlay.updateDisplayText("VERIFY_FAIL");
 
         // Wait for ~1.5 seconds
         timingHandler.postDelayed(new Runnable() {
@@ -534,11 +534,11 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                 try {
                     // Report error to user
                     if (response.getString("responseCode").equals("PDNM")) {
-                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                                getString("responseCode"), "string", getPackageName())), mPhrase));
+                        mOverlay.updateDisplayText(response.
+                                getString("responseCode"), mPhrase);
                     } else {
-                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                                getString("responseCode"), "string", getPackageName()))));
+                        mOverlay.updateDisplayText(response.
+                                getString("responseCode"));
                     }
                 } catch (JSONException e) {
                     Log.d(mTAG,"JSON exception : " + e.toString());
@@ -558,7 +558,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                         mFailedAttempts++;
                         // User failed too many times
                         if(mFailedAttempts >= mMaxFailedAttempts) {
-                            mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
+                            mOverlay.updateDisplayText("TOO_MANY_ATTEMPTS");
                             // Wait for ~2 seconds
                             timingHandler.postDelayed(new Runnable() {
                                 @Override
@@ -568,7 +568,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                             },2000);
                         } else if (mContinueVerifying) {
                             if(LivenessTracker.lookingAway) {
-                                mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                mOverlay.updateDisplayText("LOOK_INTO_CAM");
                             }
                             // Reset liveness check and try again
                             LivenessTracker.livenessChallengesPassed = 0;
@@ -584,7 +584,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
     private void verifyUser() {
         if(mContinueVerifying) {
 
-            mOverlay.updateDisplayText(getString(R.string.SAY_PASSPHRASE, mPhrase));
+            mOverlay.updateDisplayText("SAY_PASSPHRASE", mPhrase);
             try {
                 // Create file for audio
                 final File audioFile = Utils.getOutputMediaFile(".wav");
@@ -606,14 +606,14 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                         if (mContinueVerifying) {
                             stopRecording();
 
-                            mOverlay.updateDisplayText(getString(R.string.WAIT));
+                            mOverlay.updateDisplayText("WAIT");
                             mVoiceIt2.videoVerification(mUserId, mContentLanguage, mPhrase, audioFile, mPictureFile, new JsonHttpResponseHandler() {
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                                     try {
                                          if (response.getString("responseCode").equals("SUCC")) {
                                             mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
-                                            mOverlay.updateDisplayTextAndLock(getString(R.string.VERIFY_SUCCESS));
+                                            mOverlay.updateDisplayTextAndLock("VERIFY_SUCCESS");
 
                                             // Wait for ~2 seconds
                                             timingHandler.postDelayed(new Runnable() {
@@ -662,7 +662,7 @@ public class VideoVerificationView extends AppCompatActivity implements SensorEv
                                         failVerification(errorResponse);
                                     } else {
                                         Log.e(mTAG, "No response from server");
-                                        mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                                        mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                                         // Wait for 2.0 seconds
                                         timingHandler.postDelayed(new Runnable() {
                                             @Override

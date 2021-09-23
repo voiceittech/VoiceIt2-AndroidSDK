@@ -227,7 +227,7 @@
                         try {
                             // Check If enough enrollments, otherwise return to previous activity
                             if (Response.getInt("count") < mNeededFaceEnrollments) {
-                                mOverlay.updateDisplayText(getString(R.string.NOT_ENOUGH_ENROLLMENTS));
+                                mOverlay.updateDisplayText("NOT_ENOUGH_ENROLLMENTS");
                                 // Wait for ~2.5 seconds
                                 timingHandler.postDelayed(new Runnable() {
                                     @Override
@@ -239,7 +239,7 @@
                                 if(mDoLivenessCheck){
                                     mOverlay.updateDisplayText(uiLivenessInstruction);
                                 } else {
-                                    mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                    mOverlay.updateDisplayText("LOOK_INTO_CAM");
                                 }
                                 LivenessTracker.continueDetecting = true;
                             }
@@ -253,8 +253,8 @@
                         if (errorResponse != null) {
                             try {
                                 // Report error to user
-                                mOverlay.updateDisplayText(getString((getResources().getIdentifier(errorResponse.
-                                        getString("responseCode"), "string", getPackageName()))));
+                                mOverlay.updateDisplayText(errorResponse.
+                                        getString("responseCode"));
                             } catch (JSONException e) {
                                 Log.d(mTAG, "JSON exception : " + e.toString());
                             }
@@ -267,7 +267,7 @@
                             }, 2000);
                         } else {
                             Log.e(mTAG, "No response from server");
-                            mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                            mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                             // Wait for 2.0 seconds
                             timingHandler.postDelayed(new Runnable() {
                                 @Override
@@ -282,7 +282,7 @@
         }
 
         private void startVerificationFlow() {
-            mOverlay.updateDisplayText(getString(R.string.WAIT));
+            mOverlay.updateDisplayText("WAIT");
             // get Live-nes Challenges and time
             if(mDoLivenessCheck) {
                 getLivenessData();
@@ -545,15 +545,15 @@
             mOverlay.setPicture(null);
 
             mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
-            mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
+            mOverlay.updateDisplayText("VERIFY_FAIL");
             // Wait for ~1.5 seconds
             timingHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         // Report error to user
-                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                                getString("responseCode"), "string", getPackageName()))));
+                        mOverlay.updateDisplayText(response.
+                                getString("responseCode"));
                     } catch (JSONException e) {
                         Log.d(mTAG,"JSON exception : " + e.toString());
                     }
@@ -565,7 +565,7 @@
 
                             // User failed too many times
                             if (mFailedAttempts >= mMaxFailedAttempts) {
-                                mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
+                                mOverlay.updateDisplayText("TOO_MANY_ATTEMPTS");
                                 // Wait for ~2 seconds
                                 timingHandler.postDelayed(new Runnable() {
                                     @Override
@@ -575,7 +575,7 @@
                                 }, 2000);
                             } else if (mContinueVerifying) {
                                 if(LivenessTracker.lookingAway) {
-                                    mOverlay.updateDisplayText(getString(R.string.LOOK_INTO_CAM));
+                                    mOverlay.updateDisplayText("LOOK_INTO_CAM");
                                 }
                                 // Reset liveness check and try again
                                 LivenessTracker.livenessChallengesPassed = 0;
@@ -601,7 +601,7 @@
                             LivenessTracker.continueDetecting = false;
 
                             mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
-                            mOverlay.updateDisplayText(getString(R.string.VERIFY_SUCCESS));
+                            mOverlay.updateDisplayText("VERIFY_SUCCESS");
 
                             // Wait for ~2 seconds
                             timingHandler.postDelayed(new Runnable() {
@@ -628,7 +628,7 @@
                         failVerification(errorResponse);
                     } else {
                         Log.e(mTAG, "No response from server");
-                        mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                        mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                         // Wait for 2.0 seconds
                         timingHandler.postDelayed(new Runnable() {
                             @Override

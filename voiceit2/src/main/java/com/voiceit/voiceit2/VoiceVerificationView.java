@@ -195,7 +195,7 @@ public class VoiceVerificationView extends AppCompatActivity {
 
     private void failVerification(final JSONObject response) {
         mOverlay.setProgressCircleColor(getResources().getColor(R.color.failure));
-        mOverlay.updateDisplayText(getString(R.string.VERIFY_FAIL));
+        mOverlay.updateDisplayText("VERIFY_FAIL");
 
         // Wait for ~1.5 seconds
         timingHandler.postDelayed(new Runnable() {
@@ -204,11 +204,11 @@ public class VoiceVerificationView extends AppCompatActivity {
                 try {
                     // Report error to user
                     if (response.getString("responseCode").equals("PDNM")) {
-                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                                getString("responseCode"), "string", getPackageName())), mPhrase));
+                        mOverlay.updateDisplayText(response.
+                                getString("responseCode"), mPhrase);
                     } else {
-                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(response.
-                                getString("responseCode"), "string", getPackageName()))));
+                        mOverlay.updateDisplayText(response.
+                                getString("responseCode"));
                     }
                 } catch (JSONException e) {
                     Log.d(mTAG,"JSON exception : " + e.toString());
@@ -228,7 +228,7 @@ public class VoiceVerificationView extends AppCompatActivity {
                         mFailedAttempts++;
                         // User failed too many times
                         if (mFailedAttempts >= mMaxFailedAttempts) {
-                            mOverlay.updateDisplayText(getString(R.string.TOO_MANY_ATTEMPTS));
+                            mOverlay.updateDisplayText("TOO_MANY_ATTEMPTS");
                             // Wait for ~2 seconds then exit
                             timingHandler.postDelayed(new Runnable() {
                                 @Override
@@ -264,7 +264,7 @@ public class VoiceVerificationView extends AppCompatActivity {
     private void recordVoice() {
         if (mContinueVerifying) {
 
-            mOverlay.updateDisplayText(getString(R.string.SAY_PASSPHRASE, mPhrase));
+            mOverlay.updateDisplayText("SAY_PASSPHRASE", mPhrase);
             try {
                 // Create file for audio
                 final File audioFile = Utils.getOutputMediaFile(".wav");
@@ -305,14 +305,14 @@ public class VoiceVerificationView extends AppCompatActivity {
                             // Reset sine wave
                             mOverlay.setWaveformMaxAmplitude(1);
 
-                            mOverlay.updateDisplayText(getString(R.string.WAIT));
+                            mOverlay.updateDisplayText("WAIT");
                             mVoiceIt2.voiceVerification(mUserId, mContentLanguage, mPhrase, audioFile, new JsonHttpResponseHandler() {
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                                     try {
                                         if (response.getString("responseCode").equals("SUCC")) {
                                             mOverlay.setProgressCircleColor(getResources().getColor(R.color.success));
-                                            mOverlay.updateDisplayTextAndLock(getString(R.string.VERIFY_SUCCESS));
+                                            mOverlay.updateDisplayTextAndLock("VERIFY_SUCCESS");
 
                                             // Wait for ~2 seconds then exit
                                             timingHandler.postDelayed(new Runnable() {
@@ -341,7 +341,7 @@ public class VoiceVerificationView extends AppCompatActivity {
                                         failVerification(errorResponse);
                                     } else {
                                         Log.e(mTAG, "No response from server");
-                                        mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                                        mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                                         // Wait for 2.0 seconds
                                         timingHandler.postDelayed(new Runnable() {
                                             @Override
@@ -378,7 +378,7 @@ public class VoiceVerificationView extends AppCompatActivity {
                                 try {
                                     // Check If enough enrollments, otherwise return to previous activity
                                     if(response.getInt("count") < mNeededEnrollments) {
-                                        mOverlay.updateDisplayText(getString(R.string.NOT_ENOUGH_ENROLLMENTS));
+                                        mOverlay.updateDisplayText("NOT_ENOUGH_ENROLLMENTS");
                                         // Wait for ~2.5 seconds
                                         timingHandler.postDelayed(new Runnable() {
                                             @Override
@@ -411,8 +411,8 @@ public class VoiceVerificationView extends AppCompatActivity {
                                 if (errorResponse != null) {
                                     try {
                                         // Report error to user
-                                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(errorResponse.
-                                                getString("responseCode"), "string", getPackageName()))));
+                                        mOverlay.updateDisplayText(errorResponse.
+                                                getString("responseCode"));
                                     } catch (JSONException e) {
                                         Log.d(mTAG,"JSON exception : " + e.toString());
                                     }
@@ -425,7 +425,7 @@ public class VoiceVerificationView extends AppCompatActivity {
                                     }, 2000);
                                 } else {
                                     Log.e(mTAG, "No response from server");
-                                    mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                                    mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                                     // Wait for 2.0 seconds
                                     timingHandler.postDelayed(new Runnable() {
                                         @Override
@@ -461,8 +461,8 @@ public class VoiceVerificationView extends AppCompatActivity {
                 if (errorResponse != null) {
                     try {
                         // Report error to user
-                        mOverlay.updateDisplayText(getString((getResources().getIdentifier(errorResponse.
-                                getString("responseCode"), "string", getPackageName()))));
+                        mOverlay.updateDisplayText(errorResponse.
+                                getString("responseCode"));
                     } catch (JSONException e) {
                         Log.d(mTAG,"JSON exception : " + e.toString());
                     }
@@ -475,7 +475,7 @@ public class VoiceVerificationView extends AppCompatActivity {
                     }, 2000);
                 } else {
                     Log.e(mTAG, "No response from server");
-                    mOverlay.updateDisplayTextAndLock(getString(R.string.CHECK_INTERNET));
+                    mOverlay.updateDisplayTextAndLock("CHECK_INTERNET");
                     // Wait for 2.0 seconds
                     timingHandler.postDelayed(new Runnable() {
                         @Override

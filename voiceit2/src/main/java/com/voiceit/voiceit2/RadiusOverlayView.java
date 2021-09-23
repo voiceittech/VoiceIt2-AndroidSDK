@@ -18,6 +18,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.vision.face.Face;
@@ -29,6 +30,7 @@ class RadiusOverlayView extends LinearLayout {
     private Bitmap mWindowFrame;
 
     private final String mTAG = "RadiusOverlayView";
+    private String contentLanguage = "en-US";
 
     private String mDisplayText = "";
     private boolean mUpdateText = true;
@@ -72,7 +74,7 @@ class RadiusOverlayView extends LinearLayout {
         mLockTextDisplay = false;
     }
 
-    public void updateDisplayText(String str) {
+    public void updateDisplayTextDirectly(String str){
         if(!mLockTextDisplay) {
             mDisplayText = str;
             mUpdateText = true;
@@ -80,8 +82,61 @@ class RadiusOverlayView extends LinearLayout {
         }
     }
 
+    public void updateDisplayText(String str) {
+        String identifier = "";
+        if (this.contentLanguage.substring(0,2).equals("ES") || this.contentLanguage.substring(0,2).equals("es")){
+            identifier += "ES_";
+        }
+        identifier += str;
+        Log.d("resource", identifier);
+        String finalString = getContext().getString(getResources().getIdentifier(identifier, "string", getContext().getPackageName()));
+        if(!mLockTextDisplay) {
+            mDisplayText = finalString;
+            mUpdateText = true;
+            this.invalidate();
+        }
+    }
+
+    public void updateDisplayText(String str, String phrase) {
+        String identifier = "";
+        if (this.contentLanguage.substring(0,2).equals("ES") || this.contentLanguage.substring(0,2).equals("es")){
+            identifier += "ES_";
+        }
+        identifier += str;
+        Log.d("resource", identifier);
+        String finalString = getContext().getString(getResources().getIdentifier(identifier, "string", getContext().getPackageName()),phrase);
+        if(!mLockTextDisplay) {
+            mDisplayText = finalString;
+            mUpdateText = true;
+            this.invalidate();
+        }
+    }
+
+
+
+    public void setContentLanguage(String contentLanguage){
+        this.contentLanguage = contentLanguage;
+    }
+
     public void updateDisplayTextAndLock(String str) {
-        mDisplayText = str;
+        String identifier = "";
+        if (this.contentLanguage.substring(0,2).equals("ES") || this.contentLanguage.substring(0,2).equals("es")){
+            identifier += "ES_";
+        }
+        identifier += str;
+        mDisplayText = getContext().getString(getResources().getIdentifier(identifier, "string", getContext().getPackageName()));;
+        mUpdateText = true;
+        mLockTextDisplay = true;
+        this.invalidate();
+    }
+
+    public void updateDisplayTextAndLock(String str, String concat) {
+        String identifier = "";
+        if (this.contentLanguage.substring(0,2).equals("ES") || this.contentLanguage.substring(0,2).equals("es")){
+            identifier += "ES_";
+        }
+        identifier += str;
+        mDisplayText = getContext().getString(getResources().getIdentifier(identifier, "string", getContext().getPackageName()),concat);
         mUpdateText = true;
         mLockTextDisplay = true;
         this.invalidate();
@@ -419,7 +474,7 @@ class RadiusOverlayView extends LinearLayout {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    updateDisplayText(getContext().getString(R.string.MOVE_CLOSER));
+                    updateDisplayText("MOVE_CLOSER");
                 }
             });
             return false;

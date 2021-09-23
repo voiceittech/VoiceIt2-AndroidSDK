@@ -122,14 +122,14 @@ class LivenessTracker extends Tracker<Face> {
         });
     }
 
-    private void updateDisplayText(final String text, final boolean lock) {
+    private void updateDisplayText(final String text, final String concatText, final boolean lock) {
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if(lock) {
-                    mOverlay.updateDisplayTextAndLock(text);
+                    mOverlay.updateDisplayTextAndLock(text, concatText);
                 } else {
-                    mOverlay.updateDisplayText(text);
+                    mOverlay.updateDisplayText(text,concatText);
                 }
             }
         });
@@ -203,7 +203,7 @@ class LivenessTracker extends Tracker<Face> {
                                 new Handler().post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mOverlay.updateDisplayText(mActivity.getString(R.string.WAIT));
+                                        mOverlay.updateDisplayText("WAIT");
                                     }
                                 });
                             }
@@ -260,7 +260,7 @@ class LivenessTracker extends Tracker<Face> {
 
                 } else if (numFaces > 1) {
                     Log.d(mTAG, "Too many faces present");
-                    updateDisplayText(mActivity.getString(R.string.TOO_MANY_FACES), false);
+                    updateDisplayText("TOO_MANY_FACES", "", false);
                     setProgressCircleAngle(270.0, 0.0);
                 }
             }
@@ -360,7 +360,7 @@ class LivenessTracker extends Tracker<Face> {
                         @Override
                         public void run() {
                             stopRecording();
-                            mOverlay.updateDisplayText("Please Wait...");
+                            mOverlay.updateDisplayText("WAIT");
                             setProgressCircleAngle(0.0,360.0);
                             sendVideoFile();
                         }
@@ -379,7 +379,7 @@ class LivenessTracker extends Tracker<Face> {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            updateDisplayText(mActivity.getString(R.string.SAY_PASSPHRASE, mPhrase), false);
+                            updateDisplayText("SAY_PASSPHRASE", mPhrase, false);
                             setProgressCircleAngle(270.0,360.0);
                             setProgressCircleColor(R.color.progressCircle);
                             mOverlay.startDrawingProgressCircle();
@@ -387,7 +387,7 @@ class LivenessTracker extends Tracker<Face> {
                                 @Override
                                 public void run() {
                                     stopRecording();
-                                    mOverlay.updateDisplayText("Please Wait...");
+                                    mOverlay.updateDisplayText("WAIT");
                                     sendVideoFile();
                                 }
                             }, 5000);
@@ -574,7 +574,7 @@ class LivenessTracker extends Tracker<Face> {
             Log.d(mTAG, "No face present");
 
             setProgressCircleAngle(270.0, 0.0);
-            updateDisplayText(mActivity.getString(R.string.LOOK_INTO_CAM), false);
+            updateDisplayText("LOOK_INTO_CAM", "", false);
         }
     }
 
