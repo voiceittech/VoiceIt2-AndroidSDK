@@ -70,7 +70,7 @@
         private int mFailedAttempts = 0;
         private final int mMaxFailedAttempts = 3;
         private boolean mContinueVerifying = false;
-        private String mContentLanguage ="en-US";
+        private String mContentLanguage;
 
         private SensorManager sensorManager = null;
         private Sensor lightSensor;
@@ -131,6 +131,7 @@
             // Text output on mOverlay
             mOverlay = findViewById(R.id.overlay);
             CameraSource.mOverlay = mOverlay;
+            mOverlay.setContentLanguage(mContentLanguage);
 
             // Lock orientation
             if (Build.VERSION.SDK_INT >= 18) {
