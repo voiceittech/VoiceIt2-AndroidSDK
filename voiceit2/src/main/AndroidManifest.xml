@@ -27,6 +27,7 @@
             android:value="face"/>
 
         <activity android:name=".InstructionalVideoView"
+            android:exported="true"
             android:label="@string/app_name">
 
             <intent-filter>
@@ -35,6 +36,7 @@
         </activity>
 
         <activity android:name=".VideoEnrollmentView"
+            android:exported="true"
             android:label="@string/app_name"
             android:keepScreenOn="true">
 
@@ -44,6 +46,7 @@
         </activity>
 
         <activity android:name=".VideoVerificationView"
+            android:exported="true"
             android:label="@string/app_name">
 
             <intent-filter>
@@ -52,6 +55,7 @@
         </activity>
 
         <activity android:name=".FaceEnrollmentView"
+            android:exported="true"
             android:label="@string/app_name">
 
             <intent-filter>
@@ -60,6 +64,7 @@
         </activity>
 
         <activity android:name=".FaceVerificationView"
+            android:exported="true"
             android:label="@string/app_name">
 
             <intent-filter>
@@ -68,6 +73,7 @@
         </activity>
 
         <activity android:name=".VoiceEnrollmentView"
+            android:exported="true"
             android:label="@string/app_name">
 
             <intent-filter>
@@ -76,6 +82,7 @@
         </activity>
 
         <activity android:name=".VoiceVerificationView"
+            android:exported="true"
             android:label="@string/app_name">
 
             <intent-filter>
@@ -84,6 +91,7 @@
         </activity>
 
         <activity android:name=".VoiceIdentificationView"
+            android:exported="true"
             android:label="@string/app_name">
 
             <intent-filter>
