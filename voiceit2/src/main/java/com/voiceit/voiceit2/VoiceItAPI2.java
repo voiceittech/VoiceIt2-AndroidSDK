@@ -146,6 +146,30 @@ public class VoiceItAPI2 {
 
         client.delete(getAbsoluteUrl("/enrollments/" + userId + "/all" + "?notificationURL=" + this.notificationURL), responseHandler);
     }
+    
+    public void deleteAllVoiceEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
+        if(!userIdFormatted(userId)) {
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            return;
+        }
+        client.delete(getAbsoluteUrl("/enrollments/" + userId + "/voice"), responseHandler);
+    }
+
+    public void deleteAllFaceEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
+        if(!userIdFormatted(userId)) {
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            return;
+        }
+        client.delete(getAbsoluteUrl("/enrollments/" + userId + "/face"), responseHandler);
+    }
+
+    public void deleteAllVideoEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
+        if(!userIdFormatted(userId)) {
+            responseHandler.sendFailureMessage(200, null, buildJSONFormatMessage().toString().getBytes(), new Throwable());
+            return;
+        }
+        client.delete(getAbsoluteUrl("/enrollments/" + userId + "/video"), responseHandler);
+    }
 
     public void getAllVoiceEnrollments(String userId, AsyncHttpResponseHandler responseHandler) {
         if(!userIdFormatted(userId)) {
