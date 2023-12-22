@@ -49,6 +49,18 @@ public class VoiceItAPI2 {
         this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
     }
 
+    public VoiceItAPI2(String apiKey, String apiToken, String url) {
+        this.apiKey = apiKey;
+        this.apiToken = apiToken;
+        this.client = new AsyncHttpClient();
+        this.client.removeAllHeaders();
+        this.client.setTimeout(30 * 1000);
+        this.client.setBasicAuth(apiKey, apiToken);
+        this.client.addHeader("platformId", "40");
+        this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
+        BASE_URL = url;
+    }
+
     public VoiceItAPI2(String apiKey, String apiToken, int voiceitThemeColor) {
         this.apiKey = apiKey;
         this.apiToken = apiToken;
@@ -61,7 +73,7 @@ public class VoiceItAPI2 {
         this.voiceitThemeColor = voiceitThemeColor;
     }
 
-    public VoiceItAPI2(String apiKey, String apiToken, String url) {
+    public VoiceItAPI2(String apiKey, String apiToken, int voiceitThemeColor, String url) {
         this.apiKey = apiKey;
         this.apiToken = apiToken;
         this.client = new AsyncHttpClient();
@@ -70,6 +82,7 @@ public class VoiceItAPI2 {
         this.client.setBasicAuth(apiKey, apiToken);
         this.client.addHeader("platformId", "40");
         this.client.addHeader("platformVersion", BuildConfig.VERSION_NAME);
+        this.voiceitThemeColor = voiceitThemeColor;
         BASE_URL = url;
     }
 
