@@ -34,7 +34,7 @@ The following show Voice Verification, Face Verification (With liveness detectio
 
 ## Getting Started
 
-Sign up for a free Developer Account at <a href="https://voiceit.io/signup" target="_blank">VoiceIt.io</a> and view your API Key and Token in the settings page (as shown below). You can also review the HTTP Documentation at <a href="https://api.voiceit.io" target="_blank">api.voiceit.io</a>.
+Contact us at <a href="mailto:support@voiceit.io" target="_blank">support@voiceit.io</a> to get started with an account to use API 2.0.
 
 <img src="./Graphics/getcredentials.png" alt="API Key and Token" width="400px" />
 
@@ -45,11 +45,13 @@ The minumum Android SDK version (API level) should be set to 17 in your build.gr
 minSdkVersion: 17
 ```
 
-#### Billing 
-In order to use en-US or other content languages you need to have a developer account that has funds. In order to add funds to your account please login at: https://voiceit.io/login and navigate to: https://voiceit.io/billing and add funds.
+#### API Key and Token 
+
+Contact us at <a href="mailto:support@voiceit.io" target="_blank">support@voiceit.io</a> to get started with an account to use API 2.0.
 
 #### Voiceprint Phrases 
-Make sure you review your Voiceprint Phrases by navigating to: https://voiceit.io/phraseManagement in order to know what to pass for voicePrintPhrase parameter
+
+Make sure you review your Voiceprint Phrases by navigating to <a href="https://dashboard.voiceit.io/phrase_manager/phrase_list" target="_blank">Dashboard</a> in order to know what to pass for voicePrintPhrase parameter.
 
 #### AndroidX
 Make sure your project has the useAndroidX and enableJetifier flags as true: Navigate to the gradle.properties of your project and add the following: 
@@ -240,13 +242,9 @@ All strings and prompts utilized in the encapsulated views can be overwitten by 
 ```
 to the strings.xml file in your app.
 
-## Contact
-
-support@voiceit.io
-
 ## Author
 
-VoiceIt Technologies, LLC.
+VoiceIt Technologies, <a href="mailto:support@voiceit.io" target="_blank">support@voiceit.io</a>
 
 ## License
 
